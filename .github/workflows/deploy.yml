@@ -1,0 +1,64 @@
+name: Build and deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  repository_dispatch:
+    types: [spacr-release]
+  schedule:
+    - cron: "17 6 * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build, encrypt protected pages, check for leaks
+        run: node tools/build.mjs
+        env:
+          SITE_PASSWORD: ${{ secrets.SITE_PASSWORD }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push dist/ to EinarOlafsson.github.io
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
+          git clone --depth 1 git@github.com:EinarOlafsson/EinarOlafsson.github.io.git out
+          old_digest="$(cat out/.protected-digest 2>/dev/null || true)"
+          find out -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -a dist/. out/
+          cd out
+          if [ -n "$old_digest" ] && [ "$old_digest" = "$(cat .protected-digest)" ]; then
+            git checkout -- projects/live-cell/index.html projects/cellect/index.html 2>/dev/null || true
+          fi
+          git config user.name "site-build"
+          git config user.email "site-build@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Nothing changed."
+            exit 0
+          fi
+          git commit -m "Deploy site-src ${GITHUB_SHA::7}"
+          git push origin HEAD:main
