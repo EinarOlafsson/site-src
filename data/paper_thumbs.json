@@ -1,0 +1,117 @@
+[
+  {
+    "doi": "10.64898/2026.07.08.737057",
+    "short": "Olafsson EB et al., bioRxiv 2026 (EAF1)",
+    "file": null,
+    "licence": "CC BY-NC-ND 4.0 (http://creativecommons.org/licenses/by-nc-nd/4.0/)",
+    "licence_sources": [
+      "https://api.biorxiv.org/details/biorxiv/10.64898/2026.07.08.737057 (license: cc_by_nc_nd)",
+      "https://api.crossref.org/works/10.64898/2026.07.08.737057",
+      "Europe PMC PPR1275982 (license: cc by-nc-nd)"
+    ],
+    "reusable": false,
+    "reason": "NoDerivatives: cropping into a thumbnail is an adaptation",
+    "figure": null,
+    "attribution": null,
+    "badge": {
+      "journal": "bioRxiv",
+      "year": 2026
+    }
+  },
+  {
+    "doi": "10.21203/rs.3.rs-7368254/v1",
+    "short": "Olafsson EB et al., Research Square 2025 (spaCR)",
+    "file": "olafsson2025_researchsquare_fig3.webp",
+    "licence": "CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)",
+    "licence_sources": [
+      "https://www.researchsquare.com/api/article/rs-7368254/v1 (license: CC BY 4.0)",
+      "https://api.crossref.org/works/10.21203/rs.3.rs-7368254/v1",
+      "Europe PMC PPR1070285 (license: cc by)"
+    ],
+    "reusable": true,
+    "figure": {
+      "number": "Fig. 3",
+      "panel": "3a (DsRed, Cell Mask, Object merge columns)",
+      "title": "Classification of GFP-TSG101 recruitment",
+      "source_url": "https://assets-eu.researchsquare.com/files/rs-7368254/v1/1cb5ae0e8567a48016e8c3e1.jpg"
+    },
+    "attribution": "Fig. 3 from Olafsson et al. Research Square 2025, CC BY 4.0 (cropped)",
+    "badge": {
+      "journal": "Research Square",
+      "year": 2025
+    },
+    "bytes": 37282,
+    "size_px": "480x320"
+  },
+  {
+    "doi": "10.1128/msphere.01011-24",
+    "short": "Rimple PA et al., mSphere 2025 (PMC12039266)",
+    "file": "rimple2025_msphere_figS3.webp",
+    "licence": "CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)",
+    "licence_sources": [
+      "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=PMCID:PMC12039266&resultType=core (license: cc by)",
+      "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12039266/fullTextXML (<license> CC BY 4.0)",
+      "https://api.crossref.org/works/10.1128/msphere.01011-24 (vor: CC BY 4.0)",
+      "https://pmc-oa-opendata.s3.amazonaws.com/metadata/PMC12039266.1.json (license_code: CC BY)"
+    ],
+    "reusable": true,
+    "figure": {
+      "number": "Fig. S3",
+      "panel": "S3A (spaCR plaque segmentation of a whole well, with zoom)",
+      "title": "Analysis of plaque efficiency and size for screen hits",
+      "source_url": "https://pmc-oa-opendata.s3.amazonaws.com/PMC12039266.1/msphere.01011-24-s0003.tif",
+      "note": "The plaque figure is supplementary; main Figs 1-4 are screen, IC50, metabolomics and growth data not produced with spaCR"
+    },
+    "attribution": "Fig. S3 from Rimple et al. mSphere 2025, CC BY 4.0 (cropped)",
+    "badge": {
+      "journal": "mSphere",
+      "year": 2025
+    },
+    "bytes": 30858,
+    "size_px": "480x320"
+  },
+  {
+    "doi": "10.1016/j.celrep.2025.115694",
+    "short": "McFadden MJ et al., Cell Reports 2025 (PMC12166542)",
+    "file": null,
+    "licence": "CC BY-NC-ND 4.0 (http://creativecommons.org/licenses/by-nc-nd/4.0/)",
+    "licence_sources": [
+      "https://api.crossref.org/works/10.1016/j.celrep.2025.115694 (vor: CC BY-NC-ND 4.0)",
+      "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=PMCID:PMC12166542&resultType=core (license: cc by-nc-nd)"
+    ],
+    "reusable": false,
+    "reason": "NonCommercial + NoDerivatives",
+    "figure": null,
+    "attribution": null,
+    "badge": {
+      "journal": "Cell Reports",
+      "year": 2025
+    }
+  },
+  {
+    "doi": "10.64898/2026.07.20.739547",
+    "short": "Kaur H et al., bioRxiv 2026 (GRA8)",
+    "file": "kaur2026_biorxiv_fig4.webp",
+    "licence": "CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/); US Government work, not subject to copyright under 17 USC 105",
+    "licence_sources": [
+      "https://api.biorxiv.org/details/biorxiv/10.64898/2026.07.20.739547 (license: cc0)",
+      "https://api.crossref.org/works/10.64898/2026.07.20.739547",
+      "https://www.biorxiv.org/content/early/2026/07/23/2026.07.20.739547.source.xml (<license>)"
+    ],
+    "reusable": true,
+    "figure": {
+      "number": "Fig. 4",
+      "panel": "4A-D (dGRA8 vs complemented images; ALG-2 and ALIX PV/cytoplasm quantification)",
+      "title": "TgGRA8 is essential for PV recruitment of ALG-2",
+      "source_url": "https://www.biorxiv.org/content/biorxiv/early/2026/07/23/2026.07.20.739547/F4.large.jpg",
+      "note": "spaCR (ref 33 workflow) used for the high-content PV/cytoplasm recruitment quantification in panels B, D, F"
+    },
+    "attribution": "Fig. 4 from Kaur et al. bioRxiv 2026, CC0 1.0 (cropped)",
+    "badge": {
+      "journal": "bioRxiv",
+      "year": 2026
+    },
+    "bytes": 20220,
+    "size_px": "480x320"
+  }
+]

@@ -42,7 +42,16 @@
    "year": 2026,
    "type": "preprint",
    "relation": "spacr-paper",
-   "evidence": "Abstract: 'we developed spaCR (spatial phenotype analysis of CRISPR-Cas9 screens), a pooled image-based screening framework'; Data and Code Availability: 'spaCR (v1.3.4) is available at https://github.com/EinarOlafsson/spaCR' and PyPI. Posted 2026-07-09; also PMID 42465465 / PMC13370926 (preprint record).",
+   "evidence": [
+    {
+     "quote": "we developed spaCR (spatial phenotype analysis of CRISPR-Cas9 screens), a pooled image-based screening framework",
+     "location": "Abstract"
+    },
+    {
+     "quote": "spaCR (v1.3.4) is available at https://github.com/EinarOlafsson/spaCR",
+     "location": "Data and Code Availability"
+    }
+   ],
    "checked_via": "bioRxiv full text (WebFetch), bioRxiv API, OpenAlex, Europe PMC PPR1275982"
   },
   {
@@ -53,7 +62,12 @@
    "year": 2025,
    "type": "preprint",
    "relation": "spacr-paper",
-   "evidence": "The software paper itself (preprint v1, posted 2025-08-19; Crossref type posted-content, DOI confirmed). Introduces spaCR and spaCRPower; proof of concept on a pooled Toxoplasma library.",
+   "evidence": [
+    {
+     "quote": "spaCR: Spatial phenotype analysis of CRISPR-Cas9 screens (title); the preprint introduces the software and applies it to a pooled Toxoplasma library",
+     "location": "Title and abstract, Research Square preprint v1, posted 2025-08-19"
+    }
+   ],
    "checked_via": "Crossref, OpenAlex, Europe PMC PPR1070285, Research Square page"
   },
   {
@@ -64,7 +78,12 @@
    "year": 2025,
    "type": "article",
    "relation": "uses",
-   "evidence": "Methods (plaque assay): 'Plaques were detected and quantified using the plaque assay module in SpaCR (v. 0.3.62, https://github.com/EinarOlafsson/spacr and https://pypi.org/project/spacr/). First, plaques were manually annotated using the SpaCR module spacr.make_masks ... fine-tuned ... with the spacr.train module'. Peer-reviewed. (Cited by URL only, not as a reference entry.)",
+   "evidence": [
+    {
+     "quote": "Plaques were detected and quantified using the plaque assay module in SpaCR (v. 0.3.62, https://github.com/EinarOlafsson/spacr and https://pypi.org/project/spacr/). First, plaques were manually annotated using the SpaCR module spacr.make_masks on 100 stitched whole-well images. The Cellpose cyto model (38) was fine-tuned (39) on 90 images with the spacr.train module (Table S9). [...] The plaque counts and sizes were computed by SpaCR.",
+     "location": "Methods, 'Validation of screens' (mSphere 10:e01011-24, PMC12039266). Same text in the bioRxiv preprint 10.1101/2024.11.27.625683, PDF page 20, lines 434-442; Table S9 'spacr settings'."
+    }
+   ],
    "checked_via": "Europe PMC full text PMC12039266",
    "preprint": {
     "doi": "10.1101/2024.11.27.625683",
@@ -80,7 +99,12 @@
    "year": 2025,
    "type": "article",
    "relation": "uses",
-   "evidence": "Methods: 'For analysis of cellular calcium flux, the Python package spacr (https://github.com/EinarOlafsson/spacr) was used to segment and track cells over time and quantify single cell calcium oscillations.' Key resources table lists spacr; Code availability: 'Software for cellular calcium flux analysis are available from GitHub (https://github.com/EinarOlafsson/spacr)'. Peer-reviewed; PII S2211-1247(25)00465-6.",
+   "evidence": [
+    {
+     "quote": "For analysis of cellular calcium flux, the Python package spacr (https://github.com/EinarOlafsson/spacr) was used to segment and track cells over time and quantify single cell calcium oscillations.",
+     "location": "STAR Methods, 'Quantification of calcium flux' (Cell Reports 44:115694, PMC12166542); also the Key Resources Table ('Cellular Calcium Flux Analysis software ... https://github.com/EinarOlafsson/spacr') and the code availability statement. Same sentence in the preprint 10.1101/2023.10.02.560560 v2, 'Calcium flux assay and analysis' (PMC10592910)."
+    }
+   ],
    "checked_via": "Europe PMC full text PMC12166542, Crossref (alt-id S2211124725004656)",
    "preprint": {
     "doi": "10.1101/2023.10.02.560560",
@@ -96,19 +120,13 @@
    "year": 2026,
    "type": "preprint",
    "relation": "uses",
-   "evidence": "Reference 33: 'Olafsson E, Arnold CS, Rimple P, ... spaCR: Spatial phenotype analysis of CRISPR-Cas9 screens. In Review; 2025 ... doi:10.21203/rs.3.rs-7368254/v1' (also in Crossref reference metadata). Methods (ESCRT protein recruitment): 'All quantitative image analysis was performed as described in (33) in detail.' Software not named in the text; classed 'uses' because the image analysis follows the spaCR method; 'cites' at minimum. Posted 2026-07-23.",
+   "evidence": [
+    {
+     "quote": "All quantitative image analysis was performed as described in (33) in detail.",
+     "location": "Methods, ESCRT protein recruitment. Reference 33 is the spaCR preprint, doi:10.21203/rs.3.rs-7368254/v1 (confirmed in Crossref reference metadata). spaCR is used through the cited method; the software is not named in the sentence."
+    }
+   ],
    "checked_via": "Crossref reference list, bioRxiv full text (WebFetch), bioRxiv API, OpenAlex"
-  },
-  {
-   "doi": "10.48550/arXiv.2507.01163",
-   "title": "cp_measure: API-first feature extraction for image-based profiling workflows",
-   "authors_short": "Muñoz AF, et al.",
-   "venue": "arXiv",
-   "year": 2025,
-   "type": "preprint",
-   "relation": "cites",
-   "evidence": "Introduction: 'Alternative tools can extract features for image-based profiles, such as scikit-image (van der Walt et al., 2014), ScaleFex, or SpaCR (Comolet et al., 2024; Olafsson, 2025)'. Reference: 'Olafsson, E. et al. SpaCr: Spatial phenotype analysis of CRISPR-Cas9 screens. Manuscript in preparation, April 2025.' Independent group (Broad Institute).",
-   "checked_via": "arXiv HTML full text v1, arXiv API, OpenAlex"
   }
  ],
  "also_known": [
@@ -139,5 +157,6 @@
   "GET https://api.semanticscholar.org/graph/v1/paper/DOI:<doi>/citations (rs-7368254: not found; 737057: 0 citations; Zenodo DOIs: not found); /paper/search?query=spaCR -> HTTP 429 rate-limited, not completed",
   "WebFetch https://www.biorxiv.org/content/10.64898/2026.07.20.739547v1.full ; https://www.biorxiv.org/content/10.64898/2026.07.08.737057v1.full ; https://www.researchsquare.com/article/rs-7368254/v1 ; https://arxiv.org/html/2507.01163v1",
   "WebSearch: \"spaCR\" CRISPR screen image analysis Olafsson; \"github.com/EinarOlafsson/spacr\"; \"spaCR\" Toxoplasma image analysis bioRxiv 2026; \"spacr\" python package cellpose segmentation used in study; \"Spatial phenotype analysis of CRISPR-Cas9 screens\" cited; \"zenodo.21343316\" OR \"rs-7368254\" spaCR; \"cp_measure\" ... journal; McFadden IRE1 phagosomal calcium bioRxiv preprint"
- ]
+ ],
+ "rule": "Listed only if the paper's methods (or, for the spaCR papers themselves, the paper) use spaCR. Papers that only cite or mention spaCR go to papers_rejected.json. Each entry quotes the evidence and gives its location (section and, where the PDF was retrievable, page and line)."
 }

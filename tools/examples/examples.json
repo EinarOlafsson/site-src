@@ -1,0 +1,195 @@
+{
+  "item": "N687",
+  "spacr_commit": "55dbed313 (origin/nightly worktree claude-n687-20261010)",
+  "generated": "2026-10-10",
+  "examples": [
+    {
+      "file": "dose_response.webp",
+      "dataset": {
+        "repo": "einarolafsson/spacr-example-dose",
+        "repo_type": "dataset",
+        "files": [
+          "dose_plate.csv"
+        ]
+      },
+      "licence": "CC0-1.0",
+      "spacr": [
+        "spacr.qt.screens.dose_response.DoseResponseScreen (_open_the_dose_example, fit, show_group, _draw)",
+        "spacr.qt.widgets.dose_response.fit_frame (4PL, profile-likelihood 95% CI)",
+        "spacr.plot.save_figure",
+        "spacr.figures.style._apply_user_style"
+      ],
+      "settings": {
+        "concentration": "dose_uM",
+        "response": "Cells_Number_Object_Number",
+        "group": "compound",
+        "model": "4pl",
+        "ci_method": "profile",
+        "unit": "µM"
+      },
+      "key_numbers": {
+        "wells": 1536,
+        "plates": 4,
+        "compound_groups_fitted": 59,
+        "status_counts": {
+          "unbounded": 28,
+          "refused": 26,
+          "fitted": 5
+        },
+        "bounded_ec50_uM": {
+          "SNX-2112": {
+            "ec50": 0.299,
+            "ci95": [
+              0.279,
+              0.319
+            ],
+            "hill": -2.78,
+            "r2": 0.996
+          },
+          "pevonedistat": {
+            "ec50": 0.327,
+            "ci95": [
+              0.249,
+              0.405
+            ],
+            "hill": -1.65,
+            "r2": 0.978
+          },
+          "AZD5438": {
+            "ec50": 0.486,
+            "ci95": [
+              0.405,
+              0.572
+            ],
+            "hill": -2.4,
+            "r2": 0.976
+          },
+          "ENMD-2076": {
+            "ec50": 1.026,
+            "ci95": [
+              0.921,
+              1.168
+            ],
+            "hill": -2.7,
+            "r2": 0.985
+          },
+          "CP-724714": {
+            "ec50": 3.359,
+            "ci95": [
+              2.804,
+              9.475
+            ],
+            "hill": -21.34,
+            "r2": 0.845
+          }
+        },
+        "highlighted": "SNX-2112"
+      },
+      "caption": "Four-parameter logistic fits of median cell count against dose for the 5 of 58 LINCS compounds (A549, 4 plates) with a bounded EC50; SNX-2112 EC50 0.299 µM (95% profile CI 0.279–0.319).",
+      "notes": "Fit over all compounds with the engine (fit_frame); the figure redraws the 5 bounded fits in the screen. 28 groups were unbounded (EC50 outside the tested range) and 26 refused (non-monotone, or DMSO/MG-132/bortezomib with a single dose)."
+    },
+    {
+      "file": "control_chart.webp",
+      "dataset": {
+        "repo": "einarolafsson/spacr-example-control-chart",
+        "repo_type": "dataset",
+        "files": [
+          "control_chart_wells.csv"
+        ]
+      },
+      "licence": "CC0-1.0",
+      "spacr": [
+        "spacr.qt.screens.control_chart.ControlChartScreen (set_frame, recompute)",
+        "spacr.qt.widgets.control_chart.control_chart (X-bar/S, rules 1,2,5,6)",
+        "spacr.plot.save_figure",
+        "spacr.figures.style._apply_user_style"
+      ],
+      "settings": {
+        "value": "Cells_Number_Object_Number",
+        "plate": "plate",
+        "order": "run_order",
+        "control_column": "well_type",
+        "control_levels": [
+          "negcon"
+        ],
+        "estimator": "subgroup_s",
+        "baseline_plates": 20,
+        "rules": [
+          1,
+          2,
+          5,
+          6
+        ]
+      },
+      "key_numbers": {
+        "plates": 24,
+        "wells": 9131,
+        "negcon_wells": 1522,
+        "centre": 77.07,
+        "sigma": 1.362,
+        "rule_violations": 33,
+        "plates_flagged": 24
+      },
+      "caption": "X-bar/S control chart of DMSO-well median cell count across the 24 CPJUMP1 compound plates; 24 of 24 plates fall outside the limits, following the cell-line, time-point and seeding-density changes between plate groups.",
+      "notes": "All 24 plates mix 7 plate conditions, so the chart shows the design changes as shifts (as the dataset card says). spaCR's report states the baseline itself is out of control."
+    },
+    {
+      "file": "hit_volcano.webp",
+      "dataset": {
+        "repo": "einarolafsson/spacr-example-hit",
+        "repo_type": "dataset",
+        "files": [
+          "spacr-example-hit.tar: plate1_dv.csv, plate_1_unique_combinations.csv, settings/regression.json"
+        ]
+      },
+      "licence": "CC-BY-4.0",
+      "spacr": [
+        "spacr.ml.perform_regression (OLS, well level, shipped settings)",
+        "spacr.qt.screens.volcano.load_results",
+        "spacr.volcano_style.render_volcano",
+        "spacr.plot.save_figure",
+        "spacr.figures.style._apply_user_style"
+      ],
+      "settings": {
+        "regression_type": "ols",
+        "dependent_variable": "pred",
+        "fraction_threshold": 0.02,
+        "multiple_testing": "fdr_bh",
+        "alpha": 0.05,
+        "level": "gene"
+      },
+      "key_numbers": {
+        "wells": 30,
+        "gene_coefficients": 13,
+        "called_q_lt_0.05": [
+          {
+            "gene": 233460,
+            "name": "SAG1",
+            "control": "nc",
+            "effect": -0.708,
+            "p": 0.000477,
+            "q": 0.00619,
+            "wells": 23
+          },
+          {
+            "gene": 239740,
+            "name": "GRA14",
+            "control": "pc",
+            "effect": 0.482,
+            "p": 0.00617,
+            "q": 0.0401,
+            "wells": 16
+          }
+        ]
+      },
+      "caption": "Gene-level OLS regression of a GRA14-knockout-like score on guide fraction across 30 wells of the TSG101 recruitment screen; GRA14 (effect 0.482, q 0.040) and SAG1 (effect -0.708, q 0.006), the positive and negative controls, pass q < 0.05.",
+      "notes": "Re-run reproduces the dataset card's GRA14 numbers (effect 0.482, p 0.00617, adjusted 0.0401). Demonstration cut of one plate; the hit is the screen's built-in positive control."
+    }
+  ],
+  "not_produced": [
+    {
+      "item": "tracked time-lapse loop (MP4/WebM/WebP poster)",
+      "reason": "No time-lapse example exists in spaCR's public data: none of the einarolafsson spacr-example-* datasets, spacr-tutorials, or tests/data holds a multi-frame movie (spacr-example-import's leica_lasx_series_time variant is a single t000 naming test). Not produced; no other project's data used."
+    }
+  ]
+}

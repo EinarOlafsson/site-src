@@ -376,6 +376,79 @@
     reveals.forEach(function (el) { io.observe(el); });
   }
 
+  var tablist = document.querySelector('[role="tablist"]');
+  if (tablist) {
+    var tabs = [].slice.call(tablist.querySelectorAll('[role="tab"]'));
+    var panels = tabs.map(function (t) { return document.getElementById(t.getAttribute("aria-controls")); });
+    root.classList.add("tabs-on");
+    var panelFor = function (id) {
+      if (!id) return null;
+      var el = document.getElementById(id);
+      if (!el) return null;
+      for (var i = 0; i < panels.length; i++) if (panels[i] === el || panels[i].contains(el)) return { index: i, target: el };
+      return null;
+    };
+    var select = function (i, opts) {
+      opts = opts || {};
+      tabs.forEach(function (t, j) {
+        var on = j === i;
+        t.setAttribute("aria-selected", on ? "true" : "false");
+        t.tabIndex = on ? 0 : -1;
+        panels[j].hidden = !on;
+      });
+      root.classList.toggle("tab-inner", i !== 0);
+      if (opts.focusTab) tabs[i].focus();
+      if (tabs[i].scrollIntoView && tablist.scrollWidth > tablist.clientWidth) {
+        tablist.scrollLeft = Math.max(0, tabs[i].offsetLeft - tablist.clientWidth / 2 + tabs[i].offsetWidth / 2);
+      }
+      if (opts.push) {
+        var id = panels[i].id;
+        if (location.hash !== "#" + id) history.pushState(null, "", "#" + id);
+      }
+      if (opts.scrollTo) {
+        var bar = document.querySelector(".tabbar");
+        var top = opts.scrollTo === "panel" ? 0 : opts.scrollTo.getBoundingClientRect().top + window.scrollY - (bar ? bar.offsetHeight + 72 : 0);
+        window.scrollTo(0, Math.max(0, top));
+      }
+      [].forEach.call(panels[i].querySelectorAll(".reveal"), function (el) { el.classList.add("in"); });
+    };
+    var fromHash = function (scroll) {
+      var id = decodeURIComponent(location.hash.slice(1));
+      var hit = panelFor(id) || { index: 0, target: null };
+      var deep = hit.target && panels.indexOf(hit.target) < 0;
+      select(hit.index, { scrollTo: scroll ? (deep ? hit.target : "panel") : null });
+    };
+    tabs.forEach(function (t, i) {
+      t.addEventListener("click", function (e) {
+        e.preventDefault();
+        select(i, { push: true, scrollTo: "panel" });
+      });
+      t.addEventListener("keydown", function (e) {
+        var k = e.key, n = tabs.length, j = null;
+        if (k === "ArrowRight") j = (i + 1) % n;
+        else if (k === "ArrowLeft") j = (i - 1 + n) % n;
+        else if (k === "Home") j = 0;
+        else if (k === "End") j = n - 1;
+        if (j !== null) { e.preventDefault(); select(j, { push: true, focusTab: true }); }
+      });
+    });
+    document.addEventListener("click", function (e) {
+      var a = e.target.closest && e.target.closest('a[href^="#"]');
+      if (!a || a.getAttribute("role") === "tab") return;
+      var id = a.getAttribute("href").slice(1);
+      var hit = panelFor(id);
+      if (!hit) return;
+      e.preventDefault();
+      history.pushState(null, "", "#" + id);
+      var deep = panels.indexOf(hit.target) < 0;
+      select(hit.index, { scrollTo: deep ? hit.target : "panel" });
+      if (!deep) panels[hit.index].focus({ preventScroll: true });
+    });
+    window.addEventListener("popstate", function () { fromHash(true); });
+    window.addEventListener("hashchange", function () { fromHash(true); });
+    fromHash(!!location.hash && location.hash !== "#overview");
+  }
+
   [].forEach.call(document.querySelectorAll(".viewer"), function (box) {
     var range = box.querySelector("input[type=range]");
     if (!range) return;
@@ -407,8 +480,11 @@
     v.addEventListener("click", load);
     if ("IntersectionObserver" in window) {
       new IntersectionObserver(function (es) {
-        es.forEach(function (en) { visible = en.isIntersecting; c.update(); });
-      }, { threshold: 0.35 }).observe(v);
+        es.forEach(function (en) {
+          if (en.isIntersecting && !v.poster && v.getAttribute("data-poster")) v.poster = v.getAttribute("data-poster");
+          visible = en.isIntersecting; c.update();
+        });
+      }, { threshold: 0.35, rootMargin: "200px 0px" }).observe(v);
     }
     v.preload = "none";
     c.update();

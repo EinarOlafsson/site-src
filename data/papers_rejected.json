@@ -83,5 +83,11 @@
   "title": "Spatial phenotype analysis of CRISPR-Cas9 screens (BioImage Archive S-BIAD2135)",
   "openalex_id": "W4412032757",
   "reason": "Not a paper: spaCR's own image dataset deposit; listed under spacr_works instead."
+ },
+ {
+  "doi": "10.48550/arXiv.2507.01163",
+  "title": "cp_measure: API-first feature extraction for image-based profiling workflows",
+  "reason": "Cites spaCR but does not use it: names SpaCR once as an alternative tool ('such as scikit-image, ScaleFex, or SpaCR') in the introduction and lists it in the references; the methods use cp_measure, not spaCR. Removed 2026-10-10 at the maintainer's request: the list is papers that USE spaCR.",
+  "checked": "2026-10-10"
  }
 ]

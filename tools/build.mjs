@@ -131,14 +131,20 @@ function pythonRange(spec) {
 
 function spacrVars(m) {
   const installers = [
-    [/Windows.*\.exe$/i, "Windows 10/11"],
-    [/macOS.*\.pkg$/i, "macOS 11+ (Intel and Apple silicon)"],
-    [/Linux.*\.run$/i, "Linux x86-64"]
+    [/Windows.*\.exe$/i, "Windows 10 and 11", "windows"],
+    [/macOS.*\.pkg$/i, "macOS 11 or later, Intel and Apple silicon", "macos"],
+    [/Linux.*\.run$/i, "Linux x86-64", "linux"]
   ];
   const links = [];
-  for (const [re, label] of installers) {
+  for (const [re, label, os] of installers) {
     const a = m.assets.find((x) => re.test(x.name));
-    if (a) links.push(`            <li><a href="${esc(a.url)}"><span>${esc(label)}<br><span class="small muted">${esc(a.name)}</span></span><span class="sz">${fmtSize(a.size)}</span></a></li>`);
+    if (a) links.push([
+      `            <li class="os">`,
+      `              <img src="/assets/img/os/${os}.webp" width="64" height="75" alt="" loading="lazy" decoding="async">`,
+      `              <span class="os-name">${esc(label)}</span>`,
+      `              <span class="os-file">${esc(a.name)}</span>`,
+      `              <a class="btn" href="${esc(a.url)}">Download <span class="sz">${fmtSize(a.size)}</span></a>`,
+      `            </li>`].join("\n"));
   }
   if (!links.length) throw new Error("no installers found in the latest release");
   const sha = m.assets.find((x) => /SHA256SUMS/i.test(x.name));
@@ -222,18 +228,40 @@ function showcaseVars() {
   return { SHOWCASE_HTML: figs.join("\n"), SHOWCASE_SPACR: esc(sc.spacr_version) };
 }
 
-const RELATION = { "spacr-paper": "Describes spaCR", uses: "Uses spaCR", cites: "Cites spaCR" };
+const RELATION = { "spacr-paper": "The spaCR paper", uses: "Uses spaCR" };
+
+function shorten(q, n = 260) {
+  const t = String(q).split(" [...] ")[0];
+  return t.length <= n ? t : t.slice(0, t.lastIndexOf(" ", n)) + " …";
+}
 
 function papersVars() {
+  if (readJSON(path.join(DATA, "papers.json")).papers.some((p) => !["spacr-paper", "uses"].includes(p.relation))) {
+    throw new Error("papers.json lists a paper that does not use spaCR; cite-only papers belong in papers_rejected.json");
+  }
   const pj = readJSON(path.join(DATA, "papers.json"));
   const order = { "spacr-paper": 0, uses: 1, cites: 2 };
   const papers = [...pj.papers].sort((a, b) => (order[a.relation] - order[b.relation]) || (b.year - a.year) || a.title.localeCompare(b.title));
-  const items = papers.map((p) => [
-    `        <li>`,
-    `          <a class="title" href="https://doi.org/${esc(p.doi)}">${esc(p.title)}</a>`,
-    `          <span class="cite">${esc(p.authors_short)} ${esc(p.venue)}, ${esc(p.year)}${p.type === "preprint" ? " (preprint)" : ""}. doi:${esc(p.doi)}</span>`,
-    `          <span class="note">${esc(RELATION[p.relation] || p.relation)}${p.preprint ? `. Preprint: <a href="https://doi.org/${esc(p.preprint.doi)}">${esc(p.preprint.venue)} ${esc(p.preprint.year)}</a>` : ""}</span>`,
-    `        </li>`].join("\n"));
+  let thumbs = [];
+  try { thumbs = readJSON(path.join(DATA, "paper_thumbs.json")); } catch (e) { /* badges only */ }
+  const thumbFor = (doi) => thumbs.find((t) => t.doi === doi && t.file && t.reusable);
+  const items = papers.map((p) => {
+    const t = thumbFor(p.doi);
+    const venue = String(p.venue).split(" ")[0] === "Cell" ? "Cell Reports" : String(p.venue).replace(/\s+\d.*$/, "");
+    const visual = t
+      ? `          <img src="/assets/img/papers/${esc(t.file)}" width="480" height="320" alt="${esc(t.figure.number + ": " + t.figure.title)}" loading="lazy" decoding="async">`
+      : `          <div class="badge" aria-hidden="true"><span>${esc(venue)}</span><b>${esc(p.year)}</b></div>`;
+    return [
+      `        <li class="paper">`,
+      `          <a class="title-wrap row" href="https://doi.org/${esc(p.doi)}">`,
+      visual,
+      `          <span class="title">${esc(p.title)}</span>`,
+      `          </a>`,
+      `          <span class="cite">${esc(p.authors_short)} ${esc(venue)}, ${esc(p.year)}${p.type === "preprint" ? ", preprint" : ""}. <span class="rel">${esc(RELATION[p.relation] || p.relation)}</span>${p.preprint ? `. Preprint: <a href="https://doi.org/${esc(p.preprint.doi)}">${esc(p.preprint.venue)} ${esc(p.preprint.year)}</a>` : ""}</span>`,
+      p.relation === "uses" && p.evidence && p.evidence[0] ? `          <blockquote class="evidence"><q>${esc(shorten(p.evidence[0].quote, 200))}</q><span class="where">${esc(p.evidence[0].location.split(" (")[0].split(". ")[0])}</span></blockquote>` : "",
+      t ? `          <span class="credit">Image: ${esc(t.attribution)}</span>` : "",
+      `        </li>`].filter(Boolean).join("\n");
+  });
   return { PAPERS_HTML: `        <ul class="papers">\n${items.join("\n")}\n        </ul>`, PAPERS_CHECKED: esc(pj.checked) };
 }
 
@@ -294,6 +322,27 @@ function sealAssets(html, baseDir, name) {
   return { html: out, sealed };
 }
 
+async function statsVars(papersCount) {
+  const out = { models: "16", languages: "10", lessons: "84", tests: "83,739" };
+  const tryText = async (url) => { try { return await getText(url); } catch (e) { log("stats:", url, e.message); return ""; } };
+  if (!OFFLINE) {
+    const zoo = await tryText("https://raw.githubusercontent.com/EinarOlafsson/spacr/main/spacr/model_zoo.py");
+    const block = (zoo.split(/^BUNDLED_REMOTE_MODELS[^\n]*=\s*\(\s*$/m)[1] || "").split(/^\)\s*$/m)[0];
+    const n = (block.match(/["']key["']\s*:\s*["']/g) || []).length;
+    if (n) out.models = String(n);
+    const i18n = await tryText("https://raw.githubusercontent.com/EinarOlafsson/spacr/main/spacr/qt/i18n.py");
+    const langs = ((i18n.split(/^LANGUAGES = \(/m)[1] || "").split(/^\)/m)[0].match(/Language\(/g) || []).length;
+    if (langs) out.languages = String(langs);
+    const portal = await tryText("https://einarolafsson.github.io/spacr/tutorials/");
+    const les = portal.match(/of (\d+) complete/);
+    if (les) out.lessons = les[1];
+    const tc = await tryText("https://raw.githubusercontent.com/EinarOlafsson/spacr/nightly/docs/source/_static/test-counts.json");
+    try { const j = JSON.parse(tc); if (j.total) out.tests = Number(j.total).toLocaleString("en-US"); } catch (e) { /* keep default */ }
+  }
+  log(`stats: ${out.models} models, ${out.languages} languages, ${out.lessons} lessons, ${out.tests} tests, ${papersCount} papers`);
+  return { STAT_MODELS: out.models, STAT_LANGUAGES: out.languages, STAT_LESSONS: out.lessons, STAT_TESTS: out.tests, STAT_PAPERS: String(papersCount) };
+}
+
 function walk(dir, out = []) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
     const p = path.join(dir, e.name);
@@ -316,7 +365,7 @@ function copyPublic() {
 
 function assetVersion() {
   const h = createHash("sha256");
-  for (const f of ["assets/css/site.css", "assets/js/fx.js", "assets/fonts/open-sans-300.woff2", "assets/fonts/open-sans-400.woff2"]) h.update(fs.readFileSync(path.join(SRC, f)));
+  for (const f of ["assets/css/site.css", "assets/js/fx.js", "assets/fonts/open-sans-300.woff2", "assets/fonts/open-sans-400.woff2", "assets/fonts/open-sans-italic-300.woff2", "assets/fonts/open-sans-italic-400.woff2"]) h.update(fs.readFileSync(path.join(SRC, f)));
   return h.digest("hex").slice(0, 10);
 }
 
@@ -388,6 +437,7 @@ async function main() {
     ...spacrVars(meta),
     ...showcaseVars(),
     ...papersVars(),
+    ...(await statsVars(readJSON(path.join(DATA, "papers.json")).papers.length)),
     ASSET_VERSION: assetVersion()
   };
   await refreshPaperCandidates();
