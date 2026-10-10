@@ -22,6 +22,10 @@
     set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) { /* storage blocked */ } }
   };
 
+  var ui = {};
+  try { ui = JSON.parse(document.getElementById("i18n-ui").textContent) || {}; } catch (e) { /* English page */ }
+  function T(k, en) { return typeof ui[k] === "string" ? ui[k] : en; }
+
   var reduceQuery = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
   var state = {
     reduced: !!(reduceQuery && reduceQuery.matches),
@@ -43,7 +47,7 @@
     root.setAttribute("data-theme", t);
     if (themeBtn) {
       themeBtn.setAttribute("aria-pressed", t === "light" ? "true" : "false");
-      var label = t === "light" ? "Switch to dark theme" : "Switch to light theme";
+      var label = t === "light" ? T("ui.theme_dark", "Switch to dark theme") : T("ui.theme_light", "Switch to light theme");
       themeBtn.setAttribute("aria-label", label);
       themeBtn.title = label;
     }
@@ -61,12 +65,12 @@
   function syncPauseBtn() {
     if (!pauseBtn) return;
     pauseBtn.setAttribute("aria-pressed", state.paused ? "true" : "false");
-    var label = state.paused ? "Resume background animation" : "Pause background animation";
-    if (state.reduced) label = "Background animation is off: your system asks for reduced motion";
+    var label = state.paused ? T("ui.fx_resume", "Resume background animation") : T("ui.fx_pause", "Pause background animation");
+    if (state.reduced) label = T("ui.fx_reduced", "Background animation is off: your system asks for reduced motion");
     pauseBtn.setAttribute("aria-label", label);
     pauseBtn.title = label;
     var text = pauseBtn.querySelector(".label");
-    if (text) text.textContent = state.paused ? "Resume" : "Pause";
+    if (text) text.textContent = state.paused ? T("ui.resume", "Resume") : T("ui.pause", "Pause");
   }
   if (pauseBtn) {
     pauseBtn.addEventListener("click", function () {
@@ -495,10 +499,41 @@
     btn.addEventListener("click", function () {
       var src = document.getElementById(btn.getAttribute("data-copy"));
       var text = src ? src.innerText : "";
-      var done = function () { var o = btn.textContent; btn.textContent = "Copied"; setTimeout(function () { btn.textContent = o; }, 1400); };
+      var done = function () { var o = btn.textContent; btn.textContent = T("ui.copied", "Copied"); setTimeout(function () { btn.textContent = o; }, 1400); };
       if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function () {});
     });
   });
+
+  var menu = document.querySelector("[data-lang-menu]");
+  if (menu) {
+    var summary = menu.querySelector("summary");
+    [].forEach.call(menu.querySelectorAll("a[data-lang]"), function (a) {
+      a.addEventListener("click", function () {
+        store.set("lang", a.getAttribute("data-lang"));
+        if (location.hash) a.setAttribute("href", a.getAttribute("href").split("#")[0] + location.hash);
+      });
+    });
+    menu.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && menu.open) { menu.open = false; summary.focus(); }
+    });
+    document.addEventListener("click", function (e) {
+      if (menu.open && !menu.contains(e.target)) menu.open = false;
+    });
+    menu.addEventListener("focusout", function (e) {
+      if (menu.open && e.relatedTarget && !menu.contains(e.relatedTarget)) menu.open = false;
+    });
+  }
+  var spacrLink = document.querySelector("a[data-langs]");
+  var pref = store.get("lang");
+  if (spacrLink && pref && pref !== "en") {
+    var tag = pref.replace("_", "-");
+    if ((" " + spacrLink.getAttribute("data-langs") + " ").indexOf(" " + tag + " ") >= 0) {
+      [].forEach.call(document.querySelectorAll('a[href="/projects/spacr/"], a[href^="/projects/spacr/#"]'), function (a) {
+        if (a.hasAttribute("data-lang")) return;
+        a.setAttribute("href", "/projects/spacr/" + tag + "/" + a.getAttribute("href").slice(16));
+      });
+    }
+  }
 
   applyTheme(currentTheme());
   syncPauseBtn();

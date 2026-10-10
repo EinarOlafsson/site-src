@@ -18,11 +18,14 @@
 //    Nothing from protected/ is ever written to dist/ in plaintext.
 // 5. Fails the build if any distinctive word from a protected page appears
 //    anywhere in dist/.
+// 6. Pages with an i18n/ folder (see tools/i18n.mjs) are also built once per
+//    i18n/<lang>.json at <page>/<lang>/index.html, from the same template.
 import { createCipheriv, createHash, createHmac } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { apply as applyI18n, dataKey, englishFor, esc as escI18n, loadLanguages, readPartials, referenceJSON, sameSignature, slug, strip as stripI18n, translator, UI_KEYS } from "./i18n.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SRC = path.join(ROOT, "src");
@@ -31,6 +34,7 @@ const DIST = path.join(ROOT, process.env.SITE_DIST || "dist");
 const PARTIALS = path.join(SRC, "_partials");
 const DATA = path.join(ROOT, "data");
 const OFFLINE = process.env.SITE_OFFLINE_META;
+const SITE_URL = "https://einarolafsson.github.io";
 
 const PASSWORD = process.env.SITE_PASSWORD || "";
 if (PASSWORD.length < 16) {
@@ -129,11 +133,11 @@ function pythonRange(spec) {
   return spec || "see PyPI";
 }
 
-function spacrVars(m) {
+function spacrVars(m, tr) {
   const installers = [
-    [/Windows.*\.exe$/i, "Windows 10 and 11", "windows"],
-    [/macOS.*\.pkg$/i, "macOS 11 or later, Intel and Apple silicon", "macos"],
-    [/Linux.*\.run$/i, "Linux x86-64", "linux"]
+    [/Windows.*\.exe$/i, tr("install.os.windows"), "windows"],
+    [/macOS.*\.pkg$/i, tr("install.os.macos"), "macos"],
+    [/Linux.*\.run$/i, tr("install.os.linux"), "linux"]
   ];
   const links = [];
   for (const [re, label, os] of installers) {
@@ -143,7 +147,7 @@ function spacrVars(m) {
       `              <img src="/assets/img/os/${os}.webp" width="64" height="75" alt="" loading="lazy" decoding="async">`,
       `              <span class="os-name">${esc(label)}</span>`,
       `              <span class="os-file">${esc(a.name)}</span>`,
-      `              <a class="btn" href="${esc(a.url)}">Download <span class="sz">${fmtSize(a.size)}</span></a>`,
+      `              <a class="btn" href="${esc(a.url)}">${esc(tr("install.download"))} <span class="sz">${fmtSize(a.size)}</span></a>`,
       `            </li>`].join("\n"));
   }
   if (!links.length) throw new Error("no installers found in the latest release");
@@ -164,9 +168,6 @@ function spacrVars(m) {
     `  url       = {https://doi.org/${m.versionDoi}}`,
     `}`
   ].join("\n");
-  if (m.versionDoiVersion && m.versionDoiVersion !== m.version) {
-    log(`note: Zenodo latest is ${m.versionDoiVersion}, PyPI is ${m.version}`);
-  }
   return {
     SPACR_VERSION: esc(m.version),
     PYTHON_RANGE: esc(pythonRange(m.requiresPython)),
@@ -187,7 +188,7 @@ function spacrVars(m) {
 
 function readJSON(p) { return JSON.parse(fs.readFileSync(p, "utf8")); }
 
-function showcaseVars() {
+function showcaseVars(tr) {
   const sc = readJSON(path.join(DATA, "showcase.json"));
   const figs = sc.figures.map((f) => {
     const id = f.id;
@@ -195,27 +196,30 @@ function showcaseVars() {
       `            <img id="${id}-l${i}" src="/assets/img/models/${esc(c.layer)}" width="${f.width}" height="${f.height}" alt="" loading="lazy" decoding="async">`).join("\n");
     const rows = f.classes.map((c, i) => [
       `          <li><label>`,
-      `            <input type="checkbox" checked data-layer="${id}-l${i}" aria-label="Show ${esc(c.name)} outlines">`,
-      `            <span class="cls"><span class="swatch" style="background:${esc(c.color)}" aria-hidden="true"></span>${esc(c.name)}</span>`,
+      `            <input type="checkbox" checked data-layer="${id}-l${i}" aria-label="${esc(tr("models.show").replace("{name}", tr(`showcase.class.${slug(c.name)}`)))}">`,
+      `            <span class="cls"><span class="swatch" style="background:${esc(c.color)}" aria-hidden="true"></span>${esc(tr(`showcase.class.${slug(c.name)}`))}</span>`,
       `            <span class="count">${Number(c.count).toLocaleString("en-US")}</span>`,
-      `            <span class="src">${c.model.url ? `<a href="${esc(c.model.url)}">${esc(c.model.display)}</a>` : esc(c.model.display)}${c.model.note ? ". " + esc(c.model.note) : ""}</span>`,
+      `            <span class="src">${c.model.url ? `<a href="${esc(c.model.url)}">${esc(c.model.display)}</a>` : esc(c.model.display)}${c.model.note ? ". " + esc(tr(dataKey("showcase.note", c.model.note))) : ""}</span>`,
       `          </label></li>`].join("\n")).join("\n");
     const dl = f.facts.map(([k, v, href]) =>
-      `          <dt>${esc(k)}</dt><dd>${href ? `<a href="${esc(href)}">${esc(v)}</a>` : esc(v)}</dd>`).join("\n");
+      {
+      const tv = tr(dataKey("showcase.value", v));
+      return `          <dt>${esc(tr(`showcase.fact.${slug(k)}`))}</dt><dd>${href ? `<a href="${esc(href)}">${esc(tv)}</a>` : esc(tv)}</dd>`;
+    }).join("\n");
     return [
       `        <figure class="model-fig" aria-labelledby="${id}-h">`,
       `          <div class="viewer" style="aspect-ratio:${f.width}/${f.height}">`,
-      `            <img class="base" src="/assets/img/models/${esc(f.base)}" width="${f.width}" height="${f.height}" alt="${esc(f.alt)}" loading="lazy" decoding="async">`,
+      `            <img class="base" src="/assets/img/models/${esc(f.base)}" width="${f.width}" height="${f.height}" alt="${esc(tr(dataKey(`showcase.${id}.alt`, f.alt)))}" loading="lazy" decoding="async">`,
       `            <div class="layers">`,
       layers,
       `            </div>`,
-      `            <span class="lbl l">${esc(f.input_label)}</span><span class="lbl r">Objects</span>`,
-      `            <input type="range" min="0" max="100" value="50" aria-label="Divider: left of it the input image, right of it the detected objects">`,
+      `            <span class="lbl l">${esc(tr(`showcase.label.${slug(f.input_label)}`))}</span><span class="lbl r">${esc(tr("models.objects"))}</span>`,
+      `            <input type="range" min="0" max="100" value="50" aria-label="${esc(tr("models.divider"))}">`,
       `            <span class="handle" aria-hidden="true"></span>`,
       `          </div>`,
       `          <figcaption>`,
-      `          <h3 id="${id}-h">${esc(f.title)}</h3>`,
-      f.text ? `          <p class="small">${esc(f.text)}</p>` : "",
+      `          <h3 id="${id}-h">${esc(tr(dataKey(`showcase.${id}.title`, f.title)))}</h3>`,
+      f.text ? `          <p class="small">${esc(tr(dataKey(`showcase.${id}.text`, f.text)))}</p>` : "",
       `          <ul class="classes">`,
       rows,
       `          </ul>`,
@@ -225,17 +229,15 @@ function showcaseVars() {
       `          </figcaption>`,
       `        </figure>`].filter(Boolean).join("\n");
   });
-  return { SHOWCASE_HTML: figs.join("\n"), SHOWCASE_SPACR: esc(sc.spacr_version) };
+  return { SHOWCASE_HTML: figs.join("\n"), SHOWCASE_SPACR: esc(tr(dataKey("models.note", sc.spacr_version))) };
 }
-
-const RELATION = { "spacr-paper": "The spaCR paper", uses: "Uses spaCR" };
 
 function shorten(q, n = 260) {
   const t = String(q).split(" [...] ")[0];
   return t.length <= n ? t : t.slice(0, t.lastIndexOf(" ", n)) + " …";
 }
 
-function papersVars() {
+function papersVars(tr) {
   if (readJSON(path.join(DATA, "papers.json")).papers.some((p) => !["spacr-paper", "uses"].includes(p.relation))) {
     throw new Error("papers.json lists a paper that does not use spaCR; cite-only papers belong in papers_rejected.json");
   }
@@ -257,9 +259,9 @@ function papersVars() {
       visual,
       `          <span class="title">${esc(p.title)}</span>`,
       `          </a>`,
-      `          <span class="cite">${esc(p.authors_short)} ${esc(venue)}, ${esc(p.year)}${p.type === "preprint" ? ", preprint" : ""}. <span class="rel">${esc(RELATION[p.relation] || p.relation)}</span>${p.preprint ? `. Preprint: <a href="https://doi.org/${esc(p.preprint.doi)}">${esc(p.preprint.venue)} ${esc(p.preprint.year)}</a>` : ""}</span>`,
+      `          <span class="cite">${esc(p.authors_short)} ${esc(venue)}, ${esc(p.year)}${p.type === "preprint" ? ", " + esc(tr("papers.preprint_tag")) : ""}. <span class="rel">${esc(tr("papers.rel." + p.relation))}</span>${p.preprint ? `. ${esc(tr("papers.preprint"))}: <a href="https://doi.org/${esc(p.preprint.doi)}">${esc(p.preprint.venue)} ${esc(p.preprint.year)}</a>` : ""}</span>`,
       p.relation === "uses" && p.evidence && p.evidence[0] ? `          <blockquote class="evidence"><q>${esc(shorten(p.evidence[0].quote, 200))}</q><span class="where">${esc(p.evidence[0].location.split(" (")[0].split(". ")[0])}</span></blockquote>` : "",
-      t ? `          <span class="credit">Image: ${esc(t.attribution)}</span>` : "",
+      t ? `          <span class="credit">${esc(tr("papers.image"))}: ${esc(t.attribution)}</span>` : "",
       `        </li>`].filter(Boolean).join("\n");
   });
   return { PAPERS_HTML: `        <ul class="papers">\n${items.join("\n")}\n        </ul>`, PAPERS_CHECKED: esc(pj.checked) };
@@ -356,7 +358,7 @@ function copyPublic() {
   fs.mkdirSync(DIST, { recursive: true });
   for (const f of walk(SRC)) {
     const rel = path.relative(SRC, f);
-    if (rel.startsWith("_partials")) continue;
+    if (rel.startsWith("_partials") || rel.split(path.sep).includes("i18n")) continue;
     const dst = path.join(DIST, rel);
     fs.mkdirSync(path.dirname(dst), { recursive: true });
     fs.copyFileSync(f, dst);
@@ -369,18 +371,46 @@ function assetVersion() {
   return h.digest("hex").slice(0, 10);
 }
 
-function render(html, page, vars) {
-  const part = (n) => fs.readFileSync(path.join(PARTIALS, n), "utf8");
-  let out = html
-    .replace("{{HEAD}}", part("head.html"))
-    .replace("{{HEADER}}", part("header.html"))
-    .replace("{{FOOTER}}", part("footer.html"));
+// lang: null for the English template, or { lang, english, home, warn } for a translation.
+function render(html, page, vars, lang = null) {
+  let out = readPartials(PARTIALS, html);
+  if (lang) {
+    out = applyI18n(out, lang.lang.dict, lang.english, lang.warn)
+      .replace(/<html lang="en">/, `<html lang="${lang.lang.tag}">`)
+      .replace(/href="\/projects\/([a-z-]+)\/"/g, (m, p) => (`/projects/${p}/` === lang.home ? `href="${lang.home}${lang.lang.tag}/"` : m));
+  }
   if (page) out = out.replace(`data-nav="${page}"`, `data-nav="${page}" aria-current="page"`);
   out = out.replace(/\{\{([A-Z_]+)\}\}/g, (m, k) => {
     if (!(k in vars)) throw new Error(`unfilled placeholder ${m}`);
     return vars[k];
   });
-  return out;
+  return stripI18n(out);
+}
+
+const NO_LANG = { LANG_HEAD: "", LANG_MENU: "", LANG_FOOT: "" };
+
+// Head links, header menu and footer note for one language version of a page.
+function langVars(home, langs, current, tr) {
+  const all = [{ code: "en", tag: "en", name: "English", status: "" }, ...langs];
+  const url = (l) => (l.code === "en" ? home : `${home}${l.tag}/`);
+  const head = all.map((l) => `<link rel="alternate" hreflang="${l.tag}" href="${SITE_URL}${url(l)}">`);
+  head.push(`<link rel="alternate" hreflang="x-default" href="${SITE_URL}${home}">`);
+  if (current.status) head.push(`<meta name="robots" content="noindex">`);
+  if (current.code !== "en") {
+    const ui = Object.fromEntries(UI_KEYS.map((k) => [k, tr(k)]));
+    head.push(`<script type="application/json" id="i18n-ui">${JSON.stringify(ui).replace(/</g, "\\u003c")}</script>`);
+  }
+  const label = escI18n(tr("site.language"));
+  const items = all.map((l) => `          <li><a href="${url(l)}" hreflang="${l.tag}" lang="${l.tag}" data-lang="${l.code}"${l.code === current.code ? ' aria-current="true"' : ""}>${escI18n(l.name)}</a></li>`);
+  const menu = [
+    `      <details class="lang" data-lang-menu>`,
+    `        <summary title="${label}"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="8" cy="8" r="6.4"/><path d="M1.6 8h12.8M8 1.6c1.8 1.9 2.6 4 2.6 6.4S9.8 12.5 8 14.4M8 1.6C6.2 3.5 5.4 5.6 5.4 8s.8 4.5 2.6 6.4"/></svg><span class="vh">${label}: </span><span class="lang-cur">${escI18n(current.name)}</span></summary>`,
+    `        <ul aria-label="${label}">`,
+    ...items,
+    `        </ul>`,
+    `      </details>`].join("\n");
+  const foot = current.status ? `<p class="i18n-status" lang="en">${escI18n(current.name)}: ${escI18n(current.status)}</p>` : "";
+  return { LANG_HEAD: head.join("\n"), LANG_MENU: menu, LANG_FOOT: foot };
 }
 
 function inlineAssets(html, baseDir) {
@@ -433,22 +463,50 @@ function sentinelWords(plainHtml, publicText) {
 async function main() {
   const meta = await spacrMeta();
   log(`spaCR ${meta.version} (PyPI), release ${meta.releaseTag}, version DOI ${meta.versionDoi} (${meta.versionDoiVersion}), concept DOI ${meta.conceptDoi}`);
-  const vars = {
-    ...spacrVars(meta),
-    ...showcaseVars(),
-    ...papersVars(),
-    ...(await statsVars(readJSON(path.join(DATA, "papers.json")).papers.length)),
-    ASSET_VERSION: assetVersion()
-  };
+  if (meta.versionDoiVersion && meta.versionDoiVersion !== meta.version) {
+    log(`note: Zenodo latest is ${meta.versionDoiVersion}, PyPI is ${meta.version}`);
+  }
+  const stats = await statsVars(readJSON(path.join(DATA, "papers.json")).papers.length);
+  const ASSET_VERSION = assetVersion();
+  const varsFor = (tr) => ({ ...spacrVars(meta, tr), ...showcaseVars(tr), ...papersVars(tr), ...stats, ASSET_VERSION });
   await refreshPaperCandidates();
+
+  const i18nPages = new Map();
+  for (const f of walk(SRC).filter((f) => f.endsWith("index.html") && fs.existsSync(path.join(path.dirname(f), "i18n")))) {
+    const dir = path.relative(SRC, path.dirname(f));
+    const warn = (m) => log(`i18n ${dir}: ${m}`);
+    const english = englishFor(readPartials(PARTIALS, fs.readFileSync(f, "utf8")), DATA);
+    const enJson = path.join(path.dirname(f), "i18n", "en.json");
+    if (!fs.existsSync(enJson) || fs.readFileSync(enJson, "utf8") !== referenceJSON(english)) warn("i18n/en.json is out of date; run node tools/check_i18n.mjs --write-en");
+    i18nPages.set(dir, { home: `/${dir.split(path.sep).join("/")}/`, english, warn, langs: loadLanguages(path.join(path.dirname(f), "i18n"), warn) });
+  }
+  const spacrI18n = i18nPages.get(path.join("projects", "spacr"));
+  const enTr = translator(null, englishFor(readPartials(PARTIALS, fs.readFileSync(path.join(SRC, "projects", "spacr", "index.html"), "utf8")), DATA));
+  const enVars = { ...varsFor(enTr), ...NO_LANG, SPACR_LANGS: spacrI18n ? spacrI18n.langs.map((l) => l.tag).join(" ") : "" };
 
   copyPublic();
   let publicText = "";
   for (const f of walk(DIST).filter((f) => f.endsWith(".html"))) {
-    const page = path.relative(DIST, path.dirname(f)).split(path.sep).pop() || "";
-    const out = render(fs.readFileSync(f, "utf8"), page, vars);
+    const dir = path.relative(DIST, path.dirname(f));
+    const page = dir.split(path.sep).pop() || "";
+    const tpl = fs.readFileSync(f, "utf8");
+    const site = i18nPages.get(dir);
+    const multi = site && site.langs.length ? site : null;
+    const en = { code: "en", tag: "en", name: "English", status: "" };
+    const out = render(tpl, page, multi ? { ...enVars, ...langVars(multi.home, multi.langs, en, enTr) } : enVars);
     fs.writeFileSync(f, out);
     publicText += out;
+    if (!multi) continue;
+    for (const lang of multi.langs) {
+      const tr = translator(lang.dict, multi.english, multi.warn);
+      const known = [...multi.english].filter(([k, en]) => typeof lang.dict[k] === "string" && lang.dict[k].trim() && sameSignature(lang.dict[k], en) && (!/<[^>]*>/.test(lang.dict[k]) || /<[^>]*>/.test(en))).length;
+      const vars = { ...varsFor(tr), ...langVars(multi.home, multi.langs, lang, tr), SPACR_LANGS: enVars.SPACR_LANGS };
+      const html = render(tpl, page, vars, { lang, english: multi.english, home: multi.home, warn: multi.warn });
+      fs.mkdirSync(path.join(path.dirname(f), lang.tag), { recursive: true });
+      fs.writeFileSync(path.join(path.dirname(f), lang.tag, "index.html"), html);
+      publicText += html;
+      log(`i18n ${dir}/${lang.tag}/: ${known} of ${multi.english.size} strings translated${lang.status ? `, status "${lang.status}"` : ""}`);
+    }
   }
   for (const f of walk(DIST).filter((f) => /\.(css|js|svg|txt)$/.test(f))) publicText += fs.readFileSync(f, "utf8");
 
@@ -464,7 +522,7 @@ async function main() {
       const dir = path.join(PROTECTED, name);
       const src = path.join(dir, "index.html");
       if (!fs.existsSync(src)) continue;
-      const { html: rendered, sealed } = sealAssets(render(fs.readFileSync(src, "utf8"), name, vars), dir, name);
+      const { html: rendered, sealed } = sealAssets(render(fs.readFileSync(src, "utf8"), name, enVars), dir, name);
       const plain = inlineAssets(rendered, dir);
       digest.update(name + "\0" + plain + "\0");
       sentinelWords(plain, publicText).forEach((w) => sentinels.add(w));
