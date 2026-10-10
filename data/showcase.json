@@ -1,0 +1,193 @@
+{
+ "generated": "2026-10-10",
+ "note": "Weights resolved through spaCR's model zoo (nightly, 2026-10-10) and run with Cellpose 4.2.1.1 on CPU",
+ "spacr_version": "Weights resolved through spaCR's model zoo (nightly, 2026-10-10) and run with Cellpose 4.2.1.1 on CPU",
+ "figures": [
+  {
+   "id": "hoechst",
+   "title": "Hoechst image: nuclei, host cells and Toxoplasma",
+   "input_label": "Hoechst",
+   "text": "One Hoechst image of HeLa cells infected with Toxoplasma gondii. Host cells and parasite vacuoles are predicted from the Hoechst channel alone by two spaCR cross-channel models. Nuclei come from stock Cellpose-SAM on the same channel.",
+   "base": "hoechst-raw.webp",
+   "alt": "Hoechst fluorescence image of HeLa cells with bright nuclei and faint cytoplasm",
+   "width": 1024,
+   "height": 1024,
+   "classes": [
+    {
+     "name": "Nuclei",
+     "color": "#3B82F6",
+     "count": 53,
+     "layer": "hoechst-nuclei.webp",
+     "model": {
+      "display": "Stock Cellpose-SAM (cpsam_v2), same channel",
+      "url": "https://github.com/MouseLand/cellpose",
+      "note": "Pixels below 500 set to 0, diameter 90 px"
+     }
+    },
+    {
+     "name": "Host cells",
+     "color": "#00CEC8",
+     "count": 61,
+     "layer": "hoechst-cell.webp",
+     "model": {
+      "display": "cell_from_hoechst_v1",
+      "url": "https://huggingface.co/einarolafsson/cross-channel-cell-from-hoechst-cpsam",
+      "note": "Test F1 0.870 on 451 fields"
+     }
+    },
+    {
+     "name": "Toxoplasma vacuoles",
+     "color": "#FF00FF",
+     "count": 63,
+     "layer": "hoechst-toxoplasma.webp",
+     "model": {
+      "display": "toxoplasma_from_hoechst_v1",
+      "url": "https://huggingface.co/einarolafsson/toxoplasma-from-hoechst-cpsam",
+      "note": "Test F1 0.569 on 463 fields"
+     }
+    }
+   ],
+   "facts": [
+    [
+     "Input",
+     "Hoechst (nuclear stain)"
+    ],
+    [
+     "Image",
+     "HeLa field, plate 1 well L08 field 12, test split (held out by well)",
+     "https://huggingface.co/datasets/einarolafsson/cross-channel-cell-from-hoechst"
+    ],
+    [
+     "Licence",
+     "CC BY 4.0"
+    ],
+    [
+     "Size",
+     "2000 × 2000 px, shown at 1024 px"
+    ],
+    [
+     "Figure",
+     "With caption and checksums",
+     "/assets/img/models/hoechst-figure.webp"
+    ]
+   ]
+  },
+  {
+   "id": "cellmask",
+   "title": "Cell-mask image: Toxoplasma, nuclei and host cells",
+   "input_label": "Cell mask",
+   "text": "The same field imaged with a whole-cell stain. Parasite vacuoles and nuclei are predicted from this channel alone by two spaCR cross-channel models, so no nuclear or parasite stain is needed. Host cells come from stock Cellpose-SAM on the same channel.",
+   "base": "cellmask-raw.webp",
+   "alt": "Whole-cell stain fluorescence image of the same HeLa field",
+   "width": 1024,
+   "height": 1024,
+   "classes": [
+    {
+     "name": "Toxoplasma vacuoles",
+     "color": "#FF00FF",
+     "count": 43,
+     "layer": "cellmask-toxoplasma.webp",
+     "model": {
+      "display": "toxoplasma_from_cellmask_v1",
+      "url": "https://huggingface.co/einarolafsson/toxoplasma-from-cellmask-cpsam",
+      "note": "Test F1 0.606 on 463 fields"
+     }
+    },
+    {
+     "name": "Nuclei",
+     "color": "#3B82F6",
+     "count": 56,
+     "layer": "cellmask-nuclei.webp",
+     "model": {
+      "display": "nuclei_from_cellmask_v1",
+      "url": "https://huggingface.co/einarolafsson/cross-channel-nuclei-from-cellmask-cpsam",
+      "note": "Test F1 0.888 on 453 fields"
+     }
+    },
+    {
+     "name": "Host cells",
+     "color": "#00CEC8",
+     "count": 80,
+     "layer": "cellmask-cell.webp",
+     "model": {
+      "display": "Stock Cellpose-SAM (cpsam_v2), same channel",
+      "url": "https://github.com/MouseLand/cellpose",
+      "note": "Default settings"
+     }
+    }
+   ],
+   "facts": [
+    [
+     "Input",
+     "Cell mask (whole-cell stain)"
+    ],
+    [
+     "Image",
+     "HeLa field, plate 1 well L08 field 12, test split (held out by well)",
+     "https://huggingface.co/datasets/einarolafsson/cross-channel-toxoplasma-from-cellmask"
+    ],
+    [
+     "Licence",
+     "CC BY 4.0"
+    ],
+    [
+     "Size",
+     "2000 × 2000 px, shown at 1024 px"
+    ],
+    [
+     "Figure",
+     "With caption and checksums",
+     "/assets/img/models/cellmask-figure.webp"
+    ]
+   ]
+  },
+  {
+   "id": "plaque",
+   "title": "Plaque assay: Toxoplasma plaques",
+   "input_label": "Well",
+   "text": "A crystal-violet plaque-assay well from a published figure. Plaques are segmented by spaCR's plaque model. This well was not used to train the model.",
+   "base": "plaque-raw.webp",
+   "alt": "Greyscale image of a crystal-violet stained well with pale plaques in a dark monolayer",
+   "width": 1024,
+   "height": 1011,
+   "classes": [
+    {
+     "name": "Plaques",
+     "color": "#FF00FF",
+     "count": 99,
+     "layer": "plaque-plaque.webp",
+     "model": {
+      "display": "toxoplasma_plaque_v3",
+      "url": "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam-r5-geldoc",
+      "note": "Candidate model, not yet the default. 98 plaques in the hand-drawn mask; F1 0.964 at IoU 0.5 on this well"
+     }
+    }
+   ],
+   "facts": [
+    [
+     "Input",
+     "Crystal violet, greyscale"
+    ],
+    [
+     "Image",
+     "Cabral G, et al. Microbiol Spectrum 2024, Fig. 2",
+     "https://doi.org/10.1128/spectrum.01229-24"
+    ],
+    [
+     "Dataset",
+     "toxoplasma-plaque-dataset (held out from v3 training)",
+     "https://huggingface.co/datasets/einarolafsson/toxoplasma-plaque-dataset"
+    ],
+    [
+     "Licence",
+     "CC BY 4.0"
+    ],
+    [
+     "Figure",
+     "With caption and checksums",
+     "/assets/img/models/plaque-figure.webp"
+    ]
+   ]
+  }
+ ]
+}

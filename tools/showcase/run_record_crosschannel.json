@@ -1,0 +1,357 @@
+{
+ "generated": "2026-10-10",
+ "item": "N687",
+ "device": "CPU (CUDA_VISIBLE_DEVICES='')",
+ "cellpose": "4.2.1.1",
+ "inputs": {
+  "hoechst": {
+   "source": {
+    "dataset_repo": "einarolafsson/cross-channel-cell-from-hoechst",
+    "file_path": "images/MTOC_Screen__mtocScreen_20250530_111302__plate1_L08_12_1.tif",
+    "split": "test (well-grouped held-out split, split_by_well.csv)",
+    "host_cell_line": "HeLa",
+    "licence": "CC BY 4.0 (dataset card)",
+    "channel": "Hoechst (nuclear stain)",
+    "also_in": "einarolafsson/cross-channel-nuclei-from-cellmask (test), einarolafsson/cross-channel-toxoplasma-from-cellmask (test)",
+    "screen": "MTOC_Screen / mtocScreen_20250530_111302 / plate1 well L08, field 12"
+   },
+   "channel": "Hoechst (nuclear stain)",
+   "native_size_px": [
+    2000,
+    2000
+   ],
+   "image_size_px": [
+    1024,
+    1024
+   ],
+   "scale": 0.512,
+   "scale_note": "output px = native px x 0.512",
+   "raw_stretch": "1st-99.8th percentile, grayscale",
+   "classes": [
+    {
+     "class": "nuclei",
+     "count": 53,
+     "colour": "#3B82F6",
+     "model_key": null,
+     "display_name": "stock Cellpose-SAM (cpsam_v2, env default), same channel",
+     "repo_id": "cellpose built-in model cpsam_v2 (cellpose 4.2.1.1 default; ~/.cellpose/models/cpsam_v2)",
+     "hf_url": "https://github.com/MouseLand/cellpose",
+     "weights_file": "cpsam_v2",
+     "sha256_12": "0f1cc3f7ecdd",
+     "sha256": "0f1cc3f7ecdd8a037a57c6c48d9d8921391be4cbce3fa9f13c3e3a2e1253c667",
+     "zoo_sha256_match": null,
+     "settings": {
+      "diameter": 90.0,
+      "normalize": true,
+      "flow_threshold": 0.4,
+      "cellprob_threshold": 0.0,
+      "background": 500,
+      "background_note": "spaCR nucleus_background-style removal: pixels < background set to 0 before cellpose normalisation; 500 lies between cytoplasmic Hoechst p95 (406) and nuclear p5 (623). diameter 90 px = median GT nuclear diameter of this field.",
+      "channels": "single grayscale channel, 2-D input",
+      "input_dtype": "float32 of raw uint16/uint8 values; cellpose percentile normalisation"
+     },
+     "runtime_s": 83.0,
+     "device": "cpu, 16 torch threads",
+     "kind": "stock Cellpose-SAM",
+     "zoo_metric": null,
+     "this_field_vs_reference": {
+      "reference_masks": "einarolafsson/cross-channel-nuclei-from-cellmask masks/MTOC_Screen__mtocScreen_20250530_111302__plate1_L08_12_1.tif",
+      "reference_count": 63,
+      "tp": 53,
+      "fp": 0,
+      "fn": 10,
+      "f1_at_iou_0_5": 0.914,
+      "note": "single-field sanity check against the dataset's reference masks, not a benchmark"
+     }
+    },
+    {
+     "class": "cell",
+     "count": 61,
+     "colour": "#00CEC8",
+     "model_key": "cell_from_hoechst_v1",
+     "display_name": "Cross-channel cell-from-hoechst",
+     "repo_id": "einarolafsson/cross-channel-cell-from-hoechst-cpsam",
+     "hf_url": "https://huggingface.co/einarolafsson/cross-channel-cell-from-hoechst-cpsam",
+     "weights_file": "cell_from_hoechst_best",
+     "sha256_12": "d1992433b4f2",
+     "sha256": "d1992433b4f2f291f73738830bb953198165fdc10719e54dae9b8c2bd430e0eb",
+     "zoo_sha256_match": true,
+     "settings": {
+      "diameter": null,
+      "normalize": true,
+      "flow_threshold": 0.4,
+      "cellprob_threshold": 0.0,
+      "channels": "single grayscale channel, 2-D input",
+      "input_dtype": "float32 of raw uint16/uint8 values; cellpose percentile normalisation"
+     },
+     "runtime_s": 413.5,
+     "device": "cpu, 16 torch threads",
+     "kind": "spaCR cross-channel",
+     "zoo_metric": {
+      "f1": "0.8697",
+      "test_set": "451 fields",
+      "holdout": null,
+      "versus_stock": "F1 0.870 against stock cpsam_v2's 0.301 on 451 held-out fields at IoU 0.5 -- a delta of 0.569",
+      "note": null
+     },
+     "this_field_vs_reference": {
+      "reference_masks": "einarolafsson/cross-channel-cell-from-hoechst masks/MTOC_Screen__mtocScreen_20250530_111302__plate1_L08_12_1.tif",
+      "reference_count": 70,
+      "tp": 56,
+      "fp": 5,
+      "fn": 14,
+      "f1_at_iou_0_5": 0.855,
+      "note": "single-field sanity check against the dataset's reference masks, not a benchmark"
+     }
+    },
+    {
+     "class": "toxoplasma",
+     "count": 63,
+     "colour": "#FF00FF",
+     "model_key": "toxoplasma_from_hoechst_v1",
+     "display_name": "Toxoplasma from Hoechst (cross-channel)",
+     "repo_id": "einarolafsson/toxoplasma-from-hoechst-cpsam",
+     "hf_url": "https://huggingface.co/einarolafsson/toxoplasma-from-hoechst-cpsam",
+     "weights_file": "toxoplasma_from_hoechst_pv",
+     "sha256_12": "8dc05ebced35",
+     "sha256": "8dc05ebced3550d1a418c13d24d319e0482c742988df29a525520026cb2f0d96",
+     "zoo_sha256_match": true,
+     "settings": {
+      "diameter": null,
+      "normalize": true,
+      "flow_threshold": 0.4,
+      "cellprob_threshold": 0.0,
+      "channels": "single grayscale channel, 2-D input",
+      "input_dtype": "float32 of raw uint16/uint8 values; cellpose percentile normalisation"
+     },
+     "runtime_s": 299.8,
+     "device": "cpu, 16 torch threads",
+     "kind": "spaCR cross-channel",
+     "zoo_metric": {
+      "f1": null,
+      "test_set": null,
+      "holdout": null,
+      "versus_stock": "F1 0.569 against 0.002 for stock cpsam_v2 on 463 well-grouped held-out fields, at IoU 0.5",
+      "note": "model_zoo.py carries no metrics dict for this entry; F1 is in versus_stock"
+     },
+     "this_field_vs_reference": {
+      "reference_masks": "einarolafsson/cross-channel-toxoplasma-from-cellmask masks_pv/MTOC_Screen__mtocScreen_20250530_111302__plate1_L08_12_1.tif",
+      "reference_count": 56,
+      "tp": 45,
+      "fp": 18,
+      "fn": 11,
+      "f1_at_iou_0_5": 0.756,
+      "note": "single-field sanity check against the dataset's reference masks, not a benchmark"
+     }
+    }
+   ]
+  },
+  "cellmask": {
+   "source": {
+    "dataset_repo": "einarolafsson/cross-channel-toxoplasma-from-cellmask",
+    "file_path": "images/MTOC_Screen__mtocScreen_20250530_111302__plate1_L08_12_1.tif",
+    "split": "test (well-grouped held-out split, split_by_well.csv)",
+    "host_cell_line": "HeLa",
+    "licence": "CC BY 4.0 (dataset card)",
+    "channel": "cell mask (whole-cell stain)",
+    "also_in": "einarolafsson/cross-channel-nuclei-from-cellmask images/ (byte-identical array)",
+    "screen": "MTOC_Screen / mtocScreen_20250530_111302 / plate1 well L08, field 12"
+   },
+   "channel": "cell mask (whole-cell stain)",
+   "native_size_px": [
+    2000,
+    2000
+   ],
+   "image_size_px": [
+    1024,
+    1024
+   ],
+   "scale": 0.512,
+   "scale_note": "output px = native px x 0.512",
+   "raw_stretch": "1st-99.8th percentile, grayscale",
+   "classes": [
+    {
+     "class": "toxoplasma",
+     "count": 43,
+     "colour": "#FF00FF",
+     "model_key": "toxoplasma_from_cellmask_v1",
+     "display_name": "Toxoplasma from Cell Mask (cross-channel)",
+     "repo_id": "einarolafsson/toxoplasma-from-cellmask-cpsam",
+     "hf_url": "https://huggingface.co/einarolafsson/toxoplasma-from-cellmask-cpsam",
+     "weights_file": "toxoplasma_from_cellmask_pv",
+     "sha256_12": "481dfccc1a68",
+     "sha256": "481dfccc1a68cc594aafcb71088efc25b5f5c6a6240e52902c0089759b3149ab",
+     "zoo_sha256_match": true,
+     "settings": {
+      "diameter": null,
+      "normalize": true,
+      "flow_threshold": 0.4,
+      "cellprob_threshold": 0.0,
+      "channels": "single grayscale channel, 2-D input",
+      "input_dtype": "float32 of raw uint16/uint8 values; cellpose percentile normalisation"
+     },
+     "runtime_s": 425.6,
+     "device": "cpu, 16 torch threads",
+     "kind": "spaCR cross-channel",
+     "zoo_metric": {
+      "f1": "0.6058",
+      "test_set": "463",
+      "holdout": null,
+      "versus_stock": "F1 0.606 against 0.021 for stock cpsam_v2 on 463 well-grouped held-out fields, at IoU 0.5",
+      "note": null
+     },
+     "this_field_vs_reference": {
+      "reference_masks": "einarolafsson/cross-channel-toxoplasma-from-cellmask masks_pv/MTOC_Screen__mtocScreen_20250530_111302__plate1_L08_12_1.tif",
+      "reference_count": 56,
+      "tp": 39,
+      "fp": 4,
+      "fn": 17,
+      "f1_at_iou_0_5": 0.788,
+      "note": "single-field sanity check against the dataset's reference masks, not a benchmark"
+     }
+    },
+    {
+     "class": "nuclei",
+     "count": 56,
+     "colour": "#3B82F6",
+     "model_key": "nuclei_from_cellmask_v1",
+     "display_name": "Cross-channel nuclei-from-cellmask",
+     "repo_id": "einarolafsson/cross-channel-nuclei-from-cellmask-cpsam",
+     "hf_url": "https://huggingface.co/einarolafsson/cross-channel-nuclei-from-cellmask-cpsam",
+     "weights_file": "nuclei_from_cellmask_best",
+     "sha256_12": "2675553a46e9",
+     "sha256": "2675553a46e97a7bc4bd2bfe3e954954194fe71ca4e94261e752a02bf0b6eb47",
+     "zoo_sha256_match": true,
+     "settings": {
+      "diameter": null,
+      "normalize": true,
+      "flow_threshold": 0.4,
+      "cellprob_threshold": 0.0,
+      "channels": "single grayscale channel, 2-D input",
+      "input_dtype": "float32 of raw uint16/uint8 values; cellpose percentile normalisation"
+     },
+     "runtime_s": 322.1,
+     "device": "cpu, 16 torch threads",
+     "kind": "spaCR cross-channel",
+     "zoo_metric": {
+      "f1": "0.8881",
+      "test_set": "453",
+      "holdout": null,
+      "versus_stock": "F1 0.888 against 0.201 for stock cpsam_v2 on 453 well-grouped held-out fields, at IoU 0.5",
+      "note": null
+     },
+     "this_field_vs_reference": {
+      "reference_masks": "einarolafsson/cross-channel-nuclei-from-cellmask masks/MTOC_Screen__mtocScreen_20250530_111302__plate1_L08_12_1.tif",
+      "reference_count": 63,
+      "tp": 53,
+      "fp": 3,
+      "fn": 10,
+      "f1_at_iou_0_5": 0.891,
+      "note": "single-field sanity check against the dataset's reference masks, not a benchmark"
+     }
+    },
+    {
+     "class": "cell",
+     "count": 80,
+     "colour": "#00CEC8",
+     "model_key": null,
+     "display_name": "stock Cellpose-SAM (cpsam_v2, env default), same channel",
+     "repo_id": "cellpose built-in model cpsam_v2 (cellpose 4.2.1.1 default; ~/.cellpose/models/cpsam_v2)",
+     "hf_url": "https://github.com/MouseLand/cellpose",
+     "weights_file": "cpsam_v2",
+     "sha256_12": "0f1cc3f7ecdd",
+     "sha256": "0f1cc3f7ecdd8a037a57c6c48d9d8921391be4cbce3fa9f13c3e3a2e1253c667",
+     "zoo_sha256_match": null,
+     "settings": {
+      "diameter": null,
+      "normalize": true,
+      "flow_threshold": 0.4,
+      "cellprob_threshold": 0.0,
+      "channels": "single grayscale channel, 2-D input",
+      "input_dtype": "float32 of raw uint16/uint8 values; cellpose percentile normalisation"
+     },
+     "runtime_s": 528.8,
+     "device": "cpu, 16 torch threads",
+     "kind": "stock Cellpose-SAM",
+     "zoo_metric": null,
+     "this_field_vs_reference": {
+      "reference_masks": "einarolafsson/cross-channel-cell-from-hoechst masks/MTOC_Screen__mtocScreen_20250530_111302__plate1_L08_12_1.tif",
+      "reference_count": 70,
+      "tp": 51,
+      "fp": 29,
+      "fn": 19,
+      "f1_at_iou_0_5": 0.68,
+      "note": "single-field sanity check against the dataset's reference masks, not a benchmark"
+     }
+    }
+   ]
+  },
+  "plaque": {
+   "source": {
+    "dataset_repo": "none -- not published on Hugging Face (the model card states the raw training/evaluation images are not published)",
+    "file_path": "/mnt/wd4tb/af3/projects/automated_plaque_assay/curation/gel_doc_2026-10-05/gel__GRA8__ReimagedPlate1__w00.png",
+    "split": "Gel Doc held-out group GRA8__Plate1 (geldoc_heldout_min_size_0, version 20261007T205603)",
+    "host_cell_line": "not recorded with the image (crystal-violet Toxoplasma plaque assay on a host monolayer)",
+    "licence": "unpublished in-house data (maintainer's lab); no public licence -- confirm before web use",
+    "channel": "crystal violet, Bio-Rad Gel Doc greyscale",
+    "screen": "GRA8 ReimagedPlate1 well w00"
+   },
+   "channel": "crystal violet, Bio-Rad Gel Doc greyscale",
+   "native_size_px": [
+    465,
+    447
+   ],
+   "image_size_px": [
+    465,
+    447
+   ],
+   "scale": 1.0,
+   "scale_note": "output px = native px x 1.0",
+   "raw_stretch": "1st-99.8th percentile, grayscale",
+   "classes": [
+    {
+     "class": "plaque",
+     "count": 49,
+     "colour": "#FF00FF",
+     "model_key": "toxoplasma_plaque_v3",
+     "display_name": "Toxoplasma Plaque v3 (Gel Doc r5 candidate)",
+     "repo_id": "einarolafsson/toxoplasma-plaque-segmentation-cpsam-r5-geldoc",
+     "hf_url": "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam-r5-geldoc",
+     "weights_file": "cpsam_plaque_r5_geldoc",
+     "sha256_12": "8f59850dbe09",
+     "sha256": "8f59850dbe09c3a252728b0a7ca38ae5b52a28f2dbaa7a068174b4b7bfac768c",
+     "zoo_sha256_match": true,
+     "settings": {
+      "diameter": null,
+      "normalize": true,
+      "flow_threshold": 0.4,
+      "cellprob_threshold": 0.0,
+      "min_size": 0,
+      "max_size_fraction": 0.95,
+      "channels": "single grayscale channel, 2-D input",
+      "input_dtype": "float32 of raw uint16/uint8 values; cellpose percentile normalisation"
+     },
+     "runtime_s": 33.9,
+     "device": "cpu, 16 torch threads",
+     "kind": "spaCR plaque",
+     "zoo_metric": {
+      "f1": 0.6418703506907545,
+      "test_set": "18 Gel Doc wells, 3 plate groups",
+      "holdout": "geldoc_heldout_min_size_0",
+      "versus_stock": "Stock was not evaluated in this run; see the named incumbent comparison on the model card.",
+      "note": null
+     },
+     "this_field_vs_reference": {
+      "reference_masks": "curated Gel Doc mask gel__GRA8__ReimagedPlate1__w00_seg.npy",
+      "reference_count": 48,
+      "tp": 41,
+      "fp": 8,
+      "fn": 7,
+      "f1_at_iou_0_5": 0.845,
+      "note": "single-field sanity check against the dataset's reference masks, not a benchmark"
+     }
+    }
+   ]
+  }
+ }
+}

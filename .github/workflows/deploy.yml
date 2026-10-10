@@ -1,12 +1,24 @@
 name: Build and deploy
 
+# Triggers:
+#   push to main           site source changed
+#   workflow_dispatch      manual run (force=true rebuilds even if nothing changed)
+#   repository_dispatch    event type "spacr-release", optional, sent by spaCR's release workflow
+#   schedule "23 * * * *"  hourly release check: rebuild only if PyPI or GitHub has a new spaCR version
+#   schedule "17 6 * * *"  daily full rebuild: Zenodo DOI and the papers check
 on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      force:
+        description: "Rebuild even if the spaCR version is unchanged"
+        type: boolean
+        default: true
   repository_dispatch:
     types: [spacr-release]
   schedule:
+    - cron: "23 * * * *"
     - cron: "17 6 * * *"
 
 permissions:
@@ -17,7 +29,47 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      build: ${{ steps.cmp.outputs.build }}
+    steps:
+      - name: Compare published spaCR version with the deployed site
+        id: cmp
+        env:
+          EVENT: ${{ github.event_name }}
+          SCHEDULE: ${{ github.event.schedule }}
+          FORCE: ${{ github.event.inputs.force }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT" != "schedule" ] && [ "$EVENT" != "workflow_dispatch" ]; then
+            echo "build=true" >> "$GITHUB_OUTPUT"; echo "Event $EVENT always builds."; exit 0
+          fi
+          if [ "$EVENT" = "schedule" ] && [ "$SCHEDULE" = "17 6 * * *" ]; then
+            echo "build=true" >> "$GITHUB_OUTPUT"; echo "Daily rebuild."; exit 0
+          fi
+          if [ "$EVENT" = "workflow_dispatch" ] && [ "$FORCE" = "true" ]; then
+            echo "build=true" >> "$GITHUB_OUTPUT"; echo "Forced manual rebuild."; exit 0
+          fi
+          pypi=$(curl -fsS --retry 3 https://pypi.org/pypi/spacr/json | jq -r .info.version)
+          tag=$(curl -fsS --retry 3 -H "Authorization: Bearer $GH_TOKEN" https://api.github.com/repos/EinarOlafsson/spacr/releases/latest | jq -r .tag_name)
+          live=$(curl -fsS --retry 3 "https://einarolafsson.github.io/build.json?t=$(date +%s)" || echo '{}')
+          live_v=$(echo "$live" | jq -r '.spacr.version // ""')
+          live_tag=$(echo "$live" | jq -r '.spacr.release // ""')
+          echo "PyPI $pypi, GitHub release $tag; site shows $live_v / $live_tag"
+          if [ "$pypi" != "$live_v" ] || [ "$tag" != "$live_tag" ]; then
+            echo "build=true" >> "$GITHUB_OUTPUT"
+            echo "### spaCR changed: PyPI $pypi, release $tag (site had $live_v, $live_tag)" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "build=false" >> "$GITHUB_OUTPUT"
+            echo "No new spaCR version; nothing to do." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
   deploy:
+    needs: check
+    if: needs.check.outputs.build == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

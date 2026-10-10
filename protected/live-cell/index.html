@@ -10,26 +10,26 @@
 <main id="main">
   <section class="hero">
     <div class="wrap">
-      <p class="eyebrow">Private preview</p>
-      <h1>live_cell <span class="grad">&amp; cellposeTIME</span></h1>
-      <p class="lede">Cellpose-SAM models for transmitted-light microscopy, and a temporal extension of Cellpose that learns where each cell goes next.</p>
-      <div class="placeholder" role="note"><strong>Placeholder:</strong> project summary and authorship in the maintainer's words.</div>
+      <p class="kicker">Draft, not public</p>
+      <h1>live_cell and cellposeTIME</h1>
+      <p class="lede">Cellpose-SAM models for transmitted-light microscopy, and an extension of Cellpose that predicts where each cell was in the previous frame and will be in the next.</p>
+      <p class="pending">Project summary and authors: text pending from the author.</p>
     </div>
   </section>
 
   <section aria-labelledby="v1-h">
     <div class="wrap">
-      <h2 id="v1-h" class="reveal">live_cell_v1: segmentation for phase, brightfield and DIC</h2>
-      <div class="grid-2">
-        <div class="reveal">
-          <p>A <code>cpsam_v2</code> fine-tune on transmitted-light microscopy (phase contrast, brightfield, DIC and quantitative phase) from 14 public datasets, built for spaCR, where it is available as the zoo model <code>live_cell_v1</code>. Published at epoch 37.</p>
-          <p><b>It does not beat stock <code>cpsam_v2</code> overall, and it missed the promotion bar fixed before it was scored.</b> It is better on the datasets stock Cellpose-SAM never trained on, and worse on LIVECell-style Incucyte phase contrast, which stock was trained on and which dominates the pooled test set.</p>
+      <div class="section-head"><h2 id="v1-h">live_cell_v1: segmentation for phase contrast, brightfield and DIC</h2></div>
+      <div class="grid two">
+        <div>
+          <p><code>cpsam_v2</code> fine-tuned on transmitted-light images (phase contrast, brightfield, DIC and quantitative phase) from 14 public datasets. In spaCR it is the model-zoo entry <code>live_cell_v1</code>. The published weights are from epoch 37.</p>
+          <p>Over the whole test set it scores below stock <code>cpsam_v2</code> and did not reach the promotion threshold set before scoring. It scores higher on the datasets that stock Cellpose-SAM was not trained on, and lower on LIVECell-style Incucyte phase contrast, which stock was trained on and which makes up most of the pooled test set.</p>
           <div class="btns">
             <a class="btn" href="https://huggingface.co/einarolafsson/live-cell-segmentation-cpsam">Model on Hugging Face</a>
             <a class="btn" href="https://huggingface.co/datasets/einarolafsson/live-cell-segmentation-dataset">Dataset (11,007 fields)</a>
           </div>
         </div>
-        <div class="panel reveal">
+        <div>
           <h3>Test F1 at IoU 0.5</h3>
           <div class="table-scroll">
           <table>
@@ -43,22 +43,22 @@
             </tbody>
           </table>
           </div>
-          <p class="small muted">From the published model card. The split is by acquisition: no well, dish or time-lapse spans two sets.</p>
+          <p class="note">From the published model card. The split is by acquisition: no well, dish or time-lapse is in two sets.</p>
         </div>
       </div>
-      <p class="reveal small muted">A second version (v2) on a larger training set was stopped after one epoch on 2026-09-25 to free the GPU; those weights have not been scored.</p>
+      <p class="note">A second version (v2) on a larger training set was stopped after one epoch on 2026-09-25 to free the GPU; those weights have not been scored.</p>
     </div>
   </section>
 
   <section aria-labelledby="time-h">
     <div class="wrap">
-      <h2 id="time-h" class="reveal">cellposeTIME: temporal flows</h2>
-      <div class="grid-2">
-        <div class="reveal">
-          <p>Cellpose represents each cell as a flow field in which every pixel points to the cell's centre. cellposeTIME extends that representation in time: for a window of three frames it predicts, for every pixel of the centre frame, where the same cell was in the previous frame and where it will be in the next one, plus a division channel that links a mother to her two daughters.</p>
+      <div class="section-head"><h2 id="time-h">cellposeTIME: flows in time</h2></div>
+      <div class="grid two">
+        <div>
+          <p>Cellpose represents each cell as a flow field in which every pixel points to the cell's centre. cellposeTIME extends that representation in time: for a window of three frames it predicts, for every pixel of the centre frame, where the same cell was in the previous frame and where it will be in the next one, plus a division channel that links a mother cell to its two daughter cells.</p>
           <p>Each frame passes through the same pretrained Cellpose-SAM encoder; the three feature maps are fused by a 1×1 convolution initialised to pass the centre frame through unchanged, and the new temporal and division output channels start at zero. Links between frames are decided by the predicted displacement, not by mask overlap, and lineages come out of the same decoding step as the tracks.</p>
         </div>
-        <div class="panel reveal">
+        <div>
           <h3>One flag, off by default</h3>
           <p class="small">cellposeTIME is a superset of Cellpose gated by a single <code>--time</code> flag. Without it, nothing temporal is built: three output channels, Cellpose's own loss, and a checkpoint that loads in stock Cellpose.</p>
 <pre><code># plain Cellpose training, Cellpose checkpoint
@@ -70,11 +70,11 @@ cellposeTIME --time --manifest datasets.json \
   --out-dir runs/temporal</code></pre>
         </div>
       </div>
-      <div class="grid-3 reveal" style="margin-top:24px">
-        <div class="panel"><h3>Status</h3><p class="small">As of 2026-10-09 the temporal model is still training, and the benchmark against overlap, centroid, classic and learned trackers is being scored.</p></div>
-        <div class="panel"><h3>Results</h3><div class="placeholder small"><strong>Placeholder:</strong> headline tracking result (TRA/CHOTA) against the best baseline, once the benchmark is final.</div></div>
-        <div class="panel"><h3>Code and paper</h3><div class="placeholder small"><strong>Placeholder:</strong> repository and preprint links, when they are public.</div></div>
-      </div>
+      <ul class="steps" style="margin-top:48px">
+        <li><b>Status</b><span>On 2026-10-09 the temporal model was still training, and the benchmark against overlap, centroid, classic and learned trackers was being scored.</span></li>
+        <li><b>Results</b><span class="pending" style="margin:0">Tracking result (TRA, CHOTA) against the best baseline: pending until the benchmark is final.</span></li>
+        <li><b>Code and paper</b><span class="pending" style="margin:0">Repository and preprint links: pending until they are public.</span></li>
+      </ul>
     </div>
   </section>
 </main>

@@ -1,0 +1,35 @@
+{
+ "name": "literature__PMC11448412__spectrum.01229-24.f002.jpg__p19__w00",
+ "dataset_repo": "einarolafsson/toxoplasma-plaque-dataset",
+ "file": "images/literature__PMC11448412__spectrum.01229-24.f002.jpg__p19__w00.tif",
+ "licence": "CC BY 4.0 (dataset card); crop of a figure from an open-access article",
+ "v3_split": "eval (not in training; training/fields.csv of the v3 model repo)",
+ "shape": [
+  1200,
+  1215
+ ],
+ "dtype": "uint8",
+ "size": [
+  1024,
+  1011
+ ],
+ "scale": 0.842798353909465,
+ "count": 99,
+ "reference_count": 98,
+ "tp": 95,
+ "fp": 4,
+ "fn": 3,
+ "f1_at_iou_0_5": 0.964,
+ "model_key": "toxoplasma_plaque_v3",
+ "weights": "/home/olafsson/.cache/huggingface/hub/models--einarolafsson--toxoplasma-plaque-segmentation-cpsam-r5-geldoc/snapshots/4af2d3d346d260500a370b5ee708e685babf76a9/weights/cpsam_plaque_r5_geldoc",
+ "sha256": "8f59850dbe09c3a252728b0a7ca38ae5b52a28f2dbaa7a068174b4b7bfac768c",
+ "settings": {
+  "normalize": true,
+  "flow_threshold": 0.4,
+  "cellprob_threshold": 0.0,
+  "min_size": 0,
+  "max_size_fraction": 0.95
+ },
+ "seconds": 164.7,
+ "device": "cpu fp32, 16 threads"
+}

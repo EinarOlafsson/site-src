@@ -7,12 +7,18 @@
 //    Python range from PyPI, installers from the latest GitHub release,
 //    authors and concept DOI from CITATION.cff on spaCR's main branch, and
 //    the latest version DOI from Zenodo.
-// 3. Renders protected/ pages with their images and 3D model inlined, then
-//    encrypts each one with StatiCrypt (AES-256, PBKDF2) using SITE_PASSWORD.
+// 3. Renders the model showcase from data/showcase.json and the paper list
+//    from data/papers.json. Only papers in that hand-checked list are shown;
+//    new citing works found on OpenAlex and Semantic Scholar are only logged.
+// 4. Renders protected/ pages and encrypts each one with StatiCrypt (AES-256,
+//    PBKDF2) using SITE_PASSWORD. Large assets of a protected page are not
+//    inlined: each is sealed with AES-256-GCM under a key derived from
+//    SITE_PASSWORD and the file's content, and that key is written only into
+//    the encrypted page, which fetches and decrypts the file after unlock.
 //    Nothing from protected/ is ever written to dist/ in plaintext.
-// 4. Fails the build if any distinctive word from a protected page appears
+// 5. Fails the build if any distinctive word from a protected page appears
 //    anywhere in dist/.
-import { createHash, createHmac } from "node:crypto";
+import { createCipheriv, createHash, createHmac } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
@@ -23,6 +29,7 @@ const SRC = path.join(ROOT, "src");
 const PROTECTED = path.join(ROOT, "protected");
 const DIST = path.join(ROOT, process.env.SITE_DIST || "dist");
 const PARTIALS = path.join(SRC, "_partials");
+const DATA = path.join(ROOT, "data");
 const OFFLINE = process.env.SITE_OFFLINE_META;
 
 const PASSWORD = process.env.SITE_PASSWORD || "";
@@ -172,6 +179,121 @@ function spacrVars(m) {
   };
 }
 
+function readJSON(p) { return JSON.parse(fs.readFileSync(p, "utf8")); }
+
+function showcaseVars() {
+  const sc = readJSON(path.join(DATA, "showcase.json"));
+  const figs = sc.figures.map((f) => {
+    const id = f.id;
+    const layers = f.classes.map((c, i) =>
+      `            <img id="${id}-l${i}" src="/assets/img/models/${esc(c.layer)}" width="${f.width}" height="${f.height}" alt="" loading="lazy" decoding="async">`).join("\n");
+    const rows = f.classes.map((c, i) => [
+      `          <li><label>`,
+      `            <input type="checkbox" checked data-layer="${id}-l${i}" aria-label="Show ${esc(c.name)} outlines">`,
+      `            <span class="cls"><span class="swatch" style="background:${esc(c.color)}" aria-hidden="true"></span>${esc(c.name)}</span>`,
+      `            <span class="count">${Number(c.count).toLocaleString("en-US")}</span>`,
+      `            <span class="src">${c.model.url ? `<a href="${esc(c.model.url)}">${esc(c.model.display)}</a>` : esc(c.model.display)}${c.model.note ? ". " + esc(c.model.note) : ""}</span>`,
+      `          </label></li>`].join("\n")).join("\n");
+    const dl = f.facts.map(([k, v, href]) =>
+      `          <dt>${esc(k)}</dt><dd>${href ? `<a href="${esc(href)}">${esc(v)}</a>` : esc(v)}</dd>`).join("\n");
+    return [
+      `        <figure class="model-fig" aria-labelledby="${id}-h">`,
+      `          <div class="viewer" style="aspect-ratio:${f.width}/${f.height}">`,
+      `            <img class="base" src="/assets/img/models/${esc(f.base)}" width="${f.width}" height="${f.height}" alt="${esc(f.alt)}" loading="lazy" decoding="async">`,
+      `            <div class="layers">`,
+      layers,
+      `            </div>`,
+      `            <span class="lbl l">${esc(f.input_label)}</span><span class="lbl r">Objects</span>`,
+      `            <input type="range" min="0" max="100" value="50" aria-label="Divider: left of it the input image, right of it the detected objects">`,
+      `            <span class="handle" aria-hidden="true"></span>`,
+      `          </div>`,
+      `          <figcaption>`,
+      `          <h3 id="${id}-h">${esc(f.title)}</h3>`,
+      f.text ? `          <p class="small">${esc(f.text)}</p>` : "",
+      `          <ul class="classes">`,
+      rows,
+      `          </ul>`,
+      `          <dl>`,
+      dl,
+      `          </dl>`,
+      `          </figcaption>`,
+      `        </figure>`].filter(Boolean).join("\n");
+  });
+  return { SHOWCASE_HTML: figs.join("\n"), SHOWCASE_SPACR: esc(sc.spacr_version) };
+}
+
+const RELATION = { "spacr-paper": "Describes spaCR", uses: "Uses spaCR", cites: "Cites spaCR" };
+
+function papersVars() {
+  const pj = readJSON(path.join(DATA, "papers.json"));
+  const order = { "spacr-paper": 0, uses: 1, cites: 2 };
+  const papers = [...pj.papers].sort((a, b) => (order[a.relation] - order[b.relation]) || (b.year - a.year) || a.title.localeCompare(b.title));
+  const items = papers.map((p) => [
+    `        <li>`,
+    `          <a class="title" href="https://doi.org/${esc(p.doi)}">${esc(p.title)}</a>`,
+    `          <span class="cite">${esc(p.authors_short)} ${esc(p.venue)}, ${esc(p.year)}${p.type === "preprint" ? " (preprint)" : ""}. doi:${esc(p.doi)}</span>`,
+    `          <span class="note">${esc(RELATION[p.relation] || p.relation)}${p.preprint ? `. Preprint: <a href="https://doi.org/${esc(p.preprint.doi)}">${esc(p.preprint.venue)} ${esc(p.preprint.year)}</a>` : ""}</span>`,
+    `        </li>`].join("\n"));
+  return { PAPERS_HTML: `        <ul class="papers">\n${items.join("\n")}\n        </ul>`, PAPERS_CHECKED: esc(pj.checked) };
+}
+
+async function refreshPaperCandidates() {
+  if (OFFLINE) return;
+  const pj = readJSON(path.join(DATA, "papers.json"));
+  let rejected = [];
+  try { rejected = readJSON(path.join(DATA, "papers_rejected.json")); } catch (e) { /* none yet */ }
+  const known = new Set([...pj.papers, ...(pj.also_known || []), ...rejected].map((p) => String(p.doi || "").toLowerCase()).filter(Boolean));
+  const found = new Map();
+  const add = (doi, title, via) => {
+    if (!doi) return;
+    const d = doi.replace(/^https?:\/\/doi\.org\//i, "").toLowerCase();
+    if (!known.has(d) && !found.has(d)) found.set(d, `${title || "(no title)"} [${via}]`);
+  };
+  for (const w of pj.spacr_works || []) {
+    if (w.openalex) {
+      try {
+        const r = await getJSON(`https://api.openalex.org/works?filter=cites:${w.openalex}&per-page=200&select=doi,title`);
+        for (const x of r.results || []) add(x.doi, x.title, "OpenAlex cites " + w.openalex);
+      } catch (e) { log("OpenAlex lookup failed:", e.message); }
+    }
+    if (w.doi) {
+      try {
+        const r = await getJSON(`https://api.semanticscholar.org/graph/v1/paper/DOI:${w.doi}/citations?fields=title,externalIds&limit=500`);
+        for (const x of r.data || []) add(x.citingPaper && x.citingPaper.externalIds && x.citingPaper.externalIds.DOI, x.citingPaper && x.citingPaper.title, "Semantic Scholar " + w.doi);
+      } catch (e) { log(`Semantic Scholar: ${w.doi} ${/HTTP 404/.test(e.message) ? "is not indexed" : "lookup failed: " + e.message}`); }
+    }
+  }
+  try {
+    const q = encodeURIComponent('"github.com/EinarOlafsson/spacr" OR "github.com/EinarOlafsson/spaCR" OR "10.5281/zenodo.21343316" OR "rs-7368254"');
+    const r = await getJSON(`https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${q}&format=json&pageSize=200&resultType=lite`);
+    for (const x of (r.resultList && r.resultList.result) || []) add(x.doi, x.title, "Europe PMC full text");
+  } catch (e) { log("Europe PMC lookup failed:", e.message); }
+  if (!found.size) { log("papers: no new citing works outside the checked list"); return; }
+  const lines = [...found].map(([d, t]) => `- ${d}: ${t}`);
+  log(`papers: ${found.size} new candidate(s) need checking before they are listed:\n  ` + lines.join("\n  "));
+  if (process.env.GITHUB_STEP_SUMMARY) {
+    fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, "### Papers to check\n\nNot shown on the site until added to data/papers.json.\n\n" + lines.join("\n") + "\n");
+  }
+}
+
+function sealAssets(html, baseDir, name) {
+  const sealed = [];
+  const out = html.replace(/\{\{SEALED:([^}]+)\}\}/g, (_, rel) => {
+    const p = path.join(baseDir, rel);
+    const body = fs.readFileSync(p);
+    const sum = createHash("sha256").update(body).digest();
+    const key = createHmac("sha256", PASSWORD).update("sealed-asset-key\\0" + name + "\\0").update(sum).digest();
+    const iv = createHmac("sha256", PASSWORD).update("sealed-asset-iv\\0" + name + "\\0").update(sum).digest().subarray(0, 12);
+    const c = createCipheriv("aes-256-gcm", key, iv);
+    const enc = Buffer.concat([c.update(body), c.final(), c.getAuthTag()]);
+    const file = createHash("sha256").update(enc).digest("hex").slice(0, 16) + ".bin";
+    sealed.push({ file, enc });
+    const mime = { ".webp": "image/webp", ".png": "image/png", ".jpg": "image/jpeg", ".glb": "model/gltf-binary" }[path.extname(p)] || "application/octet-stream";
+    return `/projects/${name}/${file}#${key.toString("hex")}.${iv.toString("hex")}.${mime}`;
+  });
+  return { html: out, sealed };
+}
+
 function walk(dir, out = []) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
     const p = path.join(dir, e.name);
@@ -194,7 +316,7 @@ function copyPublic() {
 
 function assetVersion() {
   const h = createHash("sha256");
-  for (const f of ["assets/css/site.css", "assets/js/fx.js"]) h.update(fs.readFileSync(path.join(SRC, f)));
+  for (const f of ["assets/css/site.css", "assets/js/fx.js", "assets/fonts/open-sans-300.woff2", "assets/fonts/open-sans-400.woff2"]) h.update(fs.readFileSync(path.join(SRC, f)));
   return h.digest("hex").slice(0, 10);
 }
 
@@ -234,13 +356,13 @@ const ENCRYPT_FLAGS = [
   "--remember", "30",
   "--template", "tools/password_template.html",
   "--template-title", "Password required",
-  "--template-instructions", "This project page is not public yet. Enter the password to read it.",
+  "--template-instructions", "This page is a draft and is not public yet. Enter the password to read it.",
   "--template-placeholder", "Password",
   "--template-button", "Unlock",
   "--template-remember", "Remember me on this device for 30 days",
   "--template-error", "Wrong password",
   "--template-color-primary", "#1F5FD1",
-  "--template-color-secondary", "#0e1015"
+  "--template-color-secondary", "#0f1115"
 ];
 
 function encrypt(plainFile, outDir) {
@@ -264,8 +386,11 @@ async function main() {
   log(`spaCR ${meta.version} (PyPI), release ${meta.releaseTag}, version DOI ${meta.versionDoi} (${meta.versionDoiVersion}), concept DOI ${meta.conceptDoi}`);
   const vars = {
     ...spacrVars(meta),
+    ...showcaseVars(),
+    ...papersVars(),
     ASSET_VERSION: assetVersion()
   };
+  await refreshPaperCandidates();
 
   copyPublic();
   let publicText = "";
@@ -289,7 +414,8 @@ async function main() {
       const dir = path.join(PROTECTED, name);
       const src = path.join(dir, "index.html");
       if (!fs.existsSync(src)) continue;
-      const plain = inlineAssets(render(fs.readFileSync(src, "utf8"), name, vars), dir);
+      const { html: rendered, sealed } = sealAssets(render(fs.readFileSync(src, "utf8"), name, vars), dir, name);
+      const plain = inlineAssets(rendered, dir);
       digest.update(name + "\0" + plain + "\0");
       sentinelWords(plain, publicText).forEach((w) => sentinels.add(w));
       const stage = path.join(tmp, name);
@@ -297,6 +423,7 @@ async function main() {
       fs.writeFileSync(path.join(stage, "index.html"), plain);
       const outDir = path.join(DIST, "projects", name);
       fs.mkdirSync(outDir, { recursive: true });
+      for (const a of sealed) fs.writeFileSync(path.join(outDir, a.file), a.enc);
       encrypt(path.join(stage, "index.html"), outDir);
       log(`encrypted projects/${name}/index.html (${fs.statSync(path.join(outDir, "index.html")).size} bytes)`);
     }

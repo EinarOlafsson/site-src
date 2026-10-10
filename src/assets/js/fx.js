@@ -1,12 +1,17 @@
 /*
- * Site effects: a WebGL field that ports spaCR's ambient "blobs" and "ripple"
- * backgrounds (spacr/qt/widgets/ambient.py: BlobsEngine, RippleEngine, the
- * "spacr" palette and their timing constants), warped by a curl-noise flow
- * field that the pointer stirs. Plus scroll reveals, parallax, the
- * before/after mask slider, lazy muted clips, theme and pause toggles.
+ * Site scripts.
  *
- * Reduced motion: one static frame, no loops, clips do not autoplay.
- * No WebGL: the CSS gradient fallback in site.css stays visible.
+ * Background: a WebGL port of spaCR's "spaCR advection" theme
+ * (spacr/qt/widgets/ambient.py, _DataArtEngine._frame_genetic_advection).
+ * Each grain has a fixed (u, v, depth). Its position at time t is a closed
+ * form: travel along x, a sum of three sines in y, then three wrapping
+ * vortices that rotate grains near their centres. A trail is extrapolated
+ * from the last three samples with clamped curvature, and grains within the
+ * pointer radius are pulled towards the pointer, as in the app. The vertex
+ * shader evaluates all of it, so the CPU only uploads the time.
+ *
+ * Reduced motion: one still frame, no loop. Pause: the same, until resumed.
+ * No WebGL: the CSS gradient in site.css stays visible.
  */
 (function () {
   "use strict";
@@ -23,22 +28,24 @@
     paused: store.get("fx-paused") === "1"
   };
   function motionAllowed() { return !state.reduced && !state.paused; }
-
   function syncClasses() {
     root.classList.toggle("no-motion", state.reduced);
     root.classList.toggle("fx-paused", state.paused);
-    root.classList.toggle("fx-css-anim", motionAllowed());
   }
   syncClasses();
 
-  /* ---------- theme ---------- */
+  var field = null;
+  var clips = [];
+
   var themeBtn = document.getElementById("theme-toggle");
   function currentTheme() { return root.getAttribute("data-theme") || "dark"; }
   function applyTheme(t) {
     root.setAttribute("data-theme", t);
     if (themeBtn) {
       themeBtn.setAttribute("aria-pressed", t === "light" ? "true" : "false");
-      themeBtn.setAttribute("aria-label", t === "light" ? "Switch to dark theme" : "Switch to light theme");
+      var label = t === "light" ? "Switch to dark theme" : "Switch to light theme";
+      themeBtn.setAttribute("aria-label", label);
+      themeBtn.title = label;
     }
     if (field) field.restyle();
   }
@@ -50,16 +57,16 @@
     });
   }
 
-  /* ---------- pause toggle ---------- */
   var pauseBtn = document.getElementById("fx-toggle");
   function syncPauseBtn() {
     if (!pauseBtn) return;
     pauseBtn.setAttribute("aria-pressed", state.paused ? "true" : "false");
-    var long = pauseBtn.querySelector(".label-long");
-    var short = pauseBtn.querySelector(".label-short");
-    if (long) long.textContent = state.paused ? "Resume effects" : "Pause effects";
-    if (short) short.textContent = state.paused ? "Resume" : "Pause";
-    if (state.reduced) pauseBtn.title = "Your system asks for reduced motion, so effects stay still.";
+    var label = state.paused ? "Resume background animation" : "Pause background animation";
+    if (state.reduced) label = "Background animation is off: your system asks for reduced motion";
+    pauseBtn.setAttribute("aria-label", label);
+    pauseBtn.title = label;
+    var text = pauseBtn.querySelector(".label");
+    if (text) text.textContent = state.paused ? "Resume" : "Pause";
   }
   if (pauseBtn) {
     pauseBtn.addEventListener("click", function () {
@@ -81,9 +88,91 @@
     if (!motionAllowed()) revealAll();
   }
 
-  /* ---------- WebGL field ---------- */
-  var field = null;
+  var PALETTE = ["#3B82F6", "#FF00FF", "#00CEC8"];
+  var BG = { dark: "#0f1115", light: "#fafaf9" };
 
+  var VERT = [
+    "precision highp float;",
+    "attribute vec4 a;",
+    "attribute float c;",
+    "uniform float t;",
+    "uniform vec2 res;",
+    "uniform vec2 ptr;",
+    "uniform float pull;",
+    "uniform float radius;",
+    "uniform float phase;",
+    "uniform float trailScale;",
+    "uniform float trails;",
+    "uniform float psize;",
+    "uniform vec3 vort[3];",
+    "uniform vec3 col[3];",
+    "uniform float gain;",
+    "varying vec4 vc;",
+    "const float TAU = 6.2831853;",
+    "float wrapd(float d) { return d - floor(d + 0.5); }",
+    "vec2 sampleAt(float s, float u, float v, float d) {",
+    "  float travel = t * (0.013 + 0.009 * d) + 0.046 * (sin(t * 0.23 + 4.0 * d + phase) - sin(4.0 * d + phase));",
+    "  float x = fract(u + travel - s * (0.0015 + 0.0012 * d));",
+    "  float br = t * 0.11;",
+    "  float y = v + (0.10 + 0.045 * sin(br)) * sin(TAU * x + 7.0 * v + phase + br)",
+    "    + 0.07 * sin(2.0 * TAU * x - 5.0 * v + phase * 0.7 - br * 0.83)",
+    "    + 0.035 * sin(5.0 * TAU * x + 11.0 * v + br * 1.31);",
+    "  y = fract(y);",
+    "  for (int i = 0; i < 3; i++) {",
+    "    vec3 A = vort[i];",
+    "    float cx = A.x + 0.12 * sin(t * 0.071 + A.z * TAU);",
+    "    float cy = A.y + 0.12 * cos(t * 0.063 + A.z * TAU);",
+    "    float dx = wrapd(x - cx);",
+    "    float dy = wrapd(y - cy);",
+    "    float reach = 0.15 + 0.025 * sin(t * 0.14 + float(i));",
+    "    float w = max(0.0, 1.0 - (dx * dx + dy * dy) / (reach * reach));",
+    "    w *= w;",
+    "    float sgn = i == 1 ? 1.0 : -1.0;",
+    "    float rot = w * (2.7 + 1.4 * sin(t * 0.19 + A.z * TAU)) * sgn;",
+    "    float cs = cos(rot);",
+    "    float sn = sin(rot);",
+    "    x = fract(cx + dx * cs - dy * sn);",
+    "    y = fract(cy + dx * sn + dy * cs);",
+    "  }",
+    "  return vec2(x, y);",
+    "}",
+    "void main() {",
+    "  float u = a.x; float v = a.y; float d = a.z; float k = a.w * trailScale;",
+    "  vec2 p0 = sampleAt(0.0, u, v, d);",
+    "  vec2 p1 = sampleAt(1.0, u, v, d);",
+    "  vec2 p2 = sampleAt(2.0, u, v, d);",
+    "  vec2 tg = vec2(wrapd(p0.x - p1.x), wrapd(p0.y - p1.y));",
+    "  vec2 pv = vec2(wrapd(p1.x - p2.x), wrapd(p1.y - p2.y));",
+    "  vec2 cv = clamp(tg - pv, -0.0003, 0.0003);",
+    "  vec2 p = fract(p0 - k * tg + 0.5 * k * (k - 1.0) * cv);",
+    "  float sh = min(res.x, res.y);",
+    "  vec2 dm = (p - ptr) * res / sh;",
+    "  float sq = dot(dm, dm);",
+    "  float w = max(0.0, 1.0 - sq / (radius * radius));",
+    "  w = w * w * w;",
+    "  p -= dm * (0.72 * w * pull) * sh / res;",
+    "  float fade = pow((trails - a.w) / trails, 1.3);",
+    "  float I = clamp((0.25 + 0.60 * d) * fade * gain, 0.0, 1.0);",
+    "  vec3 k3 = c < 0.5 ? col[0] : (c < 1.5 ? col[1] : col[2]);",
+    "  vc = vec4(k3 * I, I);",
+    "  gl_PointSize = psize;",
+    "  gl_Position = vec4(p.x * 2.0 - 1.0, 1.0 - p.y * 2.0, 0.0, 1.0);",
+    "}"
+  ].join("\n");
+  var FRAG = [
+    "precision mediump float;",
+    "varying vec4 vc;",
+    "void main() {",
+    "  vec2 q = gl_PointCoord - 0.5;",
+    "  float m = smoothstep(0.5, 0.2, length(q));",
+    "  gl_FragColor = vc * m;",
+    "}"
+  ].join("\n");
+
+  function hexToRgb(hex) {
+    var v = parseInt(hex.slice(1), 16);
+    return [(v >> 16 & 255) / 255, (v >> 8 & 255) / 255, (v & 255) / 255];
+  }
   function mulberry32(a) {
     return function () {
       a |= 0; a = a + 0x6D2B79F5 | 0;
@@ -91,61 +180,6 @@
       t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
       return ((t ^ t >>> 14) >>> 0) / 4294967296;
     };
-  }
-
-  var VERT = "attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}";
-  var FRAG = [
-    "precision mediump float;",
-    "#define NB 9",
-    "uniform vec2 uRes;uniform float uTime;uniform vec2 uMouse;uniform float uPull;",
-    "uniform vec3 uBg;uniform vec3 uCol[3];uniform float uBlobAlpha;uniform float uRingAlpha;",
-    "uniform vec4 uA[NB];uniform vec4 uB[NB];uniform vec4 uC[NB];",
-    "uniform vec4 uSrc[3];uniform vec4 uTap[4];",
-    "float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}",
-    "float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);",
-    " return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}",
-    "vec2 curl(vec2 p){float e=.12;",
-    " float a=n(p+vec2(0,e)),b=n(p-vec2(0,e)),c=n(p+vec2(e,0)),d=n(p-vec2(e,0));",
-    " return vec2(a-b,-(c-d))/(2.*e);}",
-    "float falloff(float r){",
-    " if(r<.35)return mix(1.,.6,r/.35);",
-    " if(r<.7)return mix(.6,.18,(r-.35)/.35);",
-    " if(r<1.)return mix(.18,0.,(r-.7)/.3);return 0.;}",
-    "void main(){",
-    " vec2 px=gl_FragCoord.xy;px.y=uRes.y-px.y;",
-    " float s=min(uRes.x,uRes.y);vec2 uv=px/uRes;",
-    " vec2 m=uMouse;vec2 dm=(uv-m)*uRes/s;float md=dot(dm,dm);",
-    " vec2 swirl=vec2(-dm.y,dm.x)*exp(-md*9.)*.10*uPull;",
-    " vec2 w=uv+curl(uv*vec2(2.2,1.6)+uTime*.035)*.035+swirl;",
-    " vec3 col=uBg;",
-    " for(int i=0;i<NB;i++){",
-    "  vec4 A=uA[i],B=uB[i],C=uC[i];",
-    "  vec2 c=vec2(A.x+A.z*sin(B.x*uTime+B.z),A.y+A.w*sin(B.y*uTime+B.w));",
-    "  vec2 toM=m-c;c+=toM*.18*uPull*exp(-dot(toM,toM)*4.);",
-    "  float r=C.x*s*(1.+C.y*sin(C.z*uTime+C.w));",
-    "  float d=length((w-c)*uRes)/max(r,1.);",
-    "  int ci=int(mod(float(i),3.));vec3 k=ci==0?uCol[0]:(ci==1?uCol[1]:uCol[2]);",
-    "  col=mix(col,k,uBlobAlpha*falloff(d));",
-    " }",
-    " float hd=.5*length(uRes);",
-    " for(int j=0;j<3;j++){vec4 S=uSrc[j];vec2 c=S.xy*uRes;float reach=S.w*hd;",
-    "  vec3 k=j==0?uCol[0]:(j==1?uCol[1]:uCol[2]);",
-    "  for(int q=0;q<4;q++){float u=fract(uTime/S.z+fract(S.x*7.31)+float(q)*.25);",
-    "   float R=max(u*reach,1.);float d=length(w*uRes-c)/R;",
-    "   float band=smoothstep(.28,.64,d)*smoothstep(1.,.64,d);",
-    "   col=mix(col,k,uRingAlpha*sin(3.14159*u)*band);}}",
-    " for(int t=0;t<4;t++){vec4 T=uTap[t];float age=uTime-T.z;",
-    "  if(T.w>0.&&age>=0.&&age<2.6){float u=age/2.6;float R=max(u*.55*hd,1.);",
-    "   float d=length(w*uRes-T.xy*uRes)/R;float band=smoothstep(.55,.85,d)*smoothstep(1.,.85,d);",
-    "   col=mix(col,uCol[t==0?1:(t==1?2:0)],.45*sin(3.14159*u)*band);}}",
-    " col+=(h(px+fract(uTime))-.5)/255.;",
-    " gl_FragColor=vec4(col,1.);",
-    "}"
-  ].join("\n");
-
-  function hexToRgb(hex) {
-    var v = parseInt(hex.slice(1), 16);
-    return [(v >> 16 & 255) / 255, (v >> 8 & 255) / 255, (v & 255) / 255];
   }
 
   function makeField(canvas) {
@@ -169,78 +203,83 @@
       gl.linkProgram(prog);
       if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
     } catch (e) {
-      if (window.console) console.warn("fx: shader failed, using CSS fallback", e);
+      if (window.console) console.warn("fx: shader failed, using the CSS fallback", e);
       return null;
     }
     gl.useProgram(prog);
-    var buf = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-    var loc = gl.getAttribLocation(prog, "p");
-    gl.enableVertexAttribArray(loc);
-    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
     function U(name) { return gl.getUniformLocation(prog, name); }
     var u = {
-      res: U("uRes"), time: U("uTime"), mouse: U("uMouse"), pull: U("uPull"), bg: U("uBg"),
-      col: U("uCol"), ba: U("uBlobAlpha"), ra: U("uRingAlpha"), A: U("uA"), B: U("uB"), C: U("uC"),
-      src: U("uSrc"), tap: U("uTap")
+      t: U("t"), res: U("res"), ptr: U("ptr"), pull: U("pull"), radius: U("radius"), phase: U("phase"),
+      trailScale: U("trailScale"), trails: U("trails"), psize: U("psize"), vort: U("vort"), col: U("col"), gain: U("gain")
     };
 
-    /* BlobsEngine._configure, constants from ambient.py */
+    var small = Math.min(window.innerWidth, window.innerHeight) < 600 || (navigator.hardwareConcurrency || 4) <= 4;
+    var GRAINS = small ? 4000 : 12000;
+    var TRAILS = small ? 6 : 9;
     var rng = mulberry32(20261010);
-    var cols = 5, rows = 3, cells = [];
-    for (var i = 0; i < cols * rows; i++) cells.push(i);
-    for (i = cells.length - 1; i > 0; i--) { var j = Math.floor(rng() * (i + 1)); var t = cells[i]; cells[i] = cells[j]; cells[j] = t; }
-    function uni(a, b) { return a + (b - a) * rng(); }
-    var A = [], B = [], C = [];
-    for (i = 0; i < 9; i++) {
-      var cell = cells[i % cells.length], col = cell % cols, row = Math.floor(cell / cols);
-      var small = i % 3 === 0;
-      A.push((col + 0.15 + 0.7 * rng()) / cols, (row + 0.15 + 0.7 * rng()) / rows, uni(0.04, 0.12), uni(0.04, 0.12));
-      B.push(2 * Math.PI / uni(24, 70), 2 * Math.PI / uni(24, 70), uni(0, 2 * Math.PI), uni(0, 2 * Math.PI));
-      C.push(small ? uni(0.07, 0.16) : uni(0.22, 0.46), uni(0.12, 0.35), 2 * Math.PI / uni(7, 19), uni(0, 2 * Math.PI));
+    var data = new Float32Array(GRAINS * TRAILS * 5);
+    var o = 0;
+    for (var g = 0; g < GRAINS; g++) {
+      var gu = rng(), gv = rng(), gd = rng();
+      var pick = rng();
+      var ci = pick < 0.7 ? 0 : (pick < 0.85 ? 2 : 1);
+      for (var k = 0; k < TRAILS; k++) {
+        data[o++] = gu; data[o++] = gv; data[o++] = gd; data[o++] = k; data[o++] = ci;
+      }
     }
-    gl.uniform4fv(u.A, new Float32Array(A));
-    gl.uniform4fv(u.B, new Float32Array(B));
-    gl.uniform4fv(u.C, new Float32Array(C));
-    /* RippleEngine._configure: three anchors, period 14-26 s, reach 0.55-0.95 */
-    var anchors = [[0.24, 0.28], [0.76, 0.22], [0.5, 0.82]], S = [];
-    for (i = 0; i < 3; i++) S.push(anchors[i][0] + uni(-0.08, 0.08), anchors[i][1] + uni(-0.08, 0.08), uni(14, 26), uni(0.55, 0.95));
-    gl.uniform4fv(u.src, new Float32Array(S));
+    var buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+    var la = gl.getAttribLocation(prog, "a"), lc = gl.getAttribLocation(prog, "c");
+    gl.enableVertexAttribArray(la);
+    gl.vertexAttribPointer(la, 4, gl.FLOAT, false, 20, 0);
+    gl.enableVertexAttribArray(lc);
+    gl.vertexAttribPointer(lc, 1, gl.FLOAT, false, 20, 16);
 
-    var taps = new Float32Array(16), tapIdx = 0;
-    var mouse = [0.5, 0.45], target = [0.5, 0.45], pull = 0, pullTarget = 0;
-    var time = 0, last = 0, running = false, raf = 0, lastMove = 0;
-    var SCALE = 0.5;
+    var anchors = [];
+    for (var i = 0; i < 5; i++) anchors.push([rng(), rng(), rng()]);
+    gl.uniform1f(u.phase, anchors[0][0] * Math.PI * 2);
+    gl.uniform3fv(u.vort, new Float32Array([].concat(anchors[2], anchors[3], anchors[4])));
+    gl.uniform1f(u.trails, TRAILS);
+    gl.uniform1f(u.trailScale, 11 / (TRAILS - 1));
+    gl.uniform1f(u.radius, 0.22);
+    gl.enable(gl.BLEND);
+
+    var count = GRAINS * TRAILS;
+    var ptr = [0.5, 0.5], pull = 0, pullTarget = 0, lastMove = 0;
+    var time = 40, last = 0, running = false, raf = 0;
+    var slow = 0, frames = 0;
+    var dark = true;
 
     function resize() {
-      var w = Math.max(1, Math.round(window.innerWidth * SCALE));
-      var hgt = Math.max(1, Math.round(window.innerHeight * SCALE));
-      if (w > 960) { hgt = Math.round(hgt * 960 / w); w = 960; }
-      if (canvas.width !== w || canvas.height !== hgt) { canvas.width = w; canvas.height = hgt; }
-      gl.viewport(0, 0, w, hgt);
-      gl.uniform2f(u.res, w, hgt);
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      var w = Math.max(1, Math.round(window.innerWidth * dpr));
+      var h = Math.max(1, Math.round(window.innerHeight * dpr));
+      if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+      gl.viewport(0, 0, w, h);
+      gl.uniform2f(u.res, w, h);
+      gl.uniform1f(u.psize, Math.max(1.5, 1.6 * dpr));
     }
     function restyle() {
-      var light = root.getAttribute("data-theme") === "light";
-      var bg = light ? hexToRgb("#f5f6fa") : hexToRgb("#0e1015");
-      gl.uniform3fv(u.bg, new Float32Array(bg));
-      var pal = ["#3B82F6", "#FF00FF", "#00CEC8"].map(hexToRgb);
-      gl.uniform3fv(u.col, new Float32Array([].concat(pal[0], pal[1], pal[2])));
-      gl.uniform1f(u.ba, light ? 0.30 : 0.30);
-      gl.uniform1f(u.ra, light ? 0.22 : 0.20);
+      dark = currentTheme() !== "light";
+      var cols = PALETTE.map(hexToRgb);
+      if (!dark) cols = cols.map(function (c) { return c.map(function (x) { return x * 0.82; }); });
+      gl.uniform3fv(u.col, new Float32Array([].concat(cols[0], cols[1], cols[2])));
+      gl.uniform1f(u.gain, dark ? 0.62 : 0.55);
+      if (dark) gl.blendFunc(gl.ONE, gl.ONE);
+      else gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
       if (!running) draw();
     }
     function draw() {
-      mouse[0] += (target[0] - mouse[0]) * 0.08;
-      mouse[1] += (target[1] - mouse[1]) * 0.08;
-      pull += (pullTarget - pull) * 0.05;
-      if (performance.now() - lastMove > 1800) pullTarget = 0;
-      gl.uniform1f(u.time, time);
-      gl.uniform2f(u.mouse, mouse[0], mouse[1]);
+      pull += (pullTarget - pull) * 0.06;
+      if (performance.now() - lastMove > 2500) pullTarget = 0;
+      var bg = hexToRgb(dark ? BG.dark : BG.light);
+      gl.clearColor(bg[0], bg[1], bg[2], 1);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.uniform1f(u.t, time);
+      gl.uniform2f(u.ptr, ptr[0], ptr[1]);
       gl.uniform1f(u.pull, pull);
-      gl.uniform4fv(u.tap, taps);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      gl.drawArrays(gl.POINTS, 0, count);
     }
     function frame(now) {
       raf = 0;
@@ -248,6 +287,11 @@
       var dt = last ? Math.min(0.1, (now - last) / 1000) : 0;
       last = now;
       time += dt;
+      if (dt > 0.034) slow++;
+      if (++frames % 90 === 0) {
+        if (slow > 45 && count > TRAILS * 1500) count = Math.max(TRAILS * 1500, Math.floor(count * 0.6 / TRAILS) * TRAILS);
+        slow = 0;
+      }
       draw();
       raf = requestAnimationFrame(frame);
     }
@@ -262,33 +306,25 @@
       raf = 0;
     }
     window.addEventListener("pointermove", function (e) {
-      target[0] = e.clientX / window.innerWidth;
-      target[1] = e.clientY / window.innerHeight;
+      if (e.pointerType === "touch") return;
+      ptr[0] = e.clientX / window.innerWidth;
+      ptr[1] = e.clientY / window.innerHeight;
       pullTarget = 1; lastMove = performance.now();
-    }, { passive: true });
-    window.addEventListener("pointerdown", function (e) {
-      if (!running) return;
-      var k = tapIdx++ % 4;
-      taps[k * 4] = e.clientX / window.innerWidth;
-      taps[k * 4 + 1] = e.clientY / window.innerHeight;
-      taps[k * 4 + 2] = time;
-      taps[k * 4 + 3] = 1;
     }, { passive: true });
     window.addEventListener("resize", function () { resize(); if (!running) draw(); }, { passive: true });
     document.addEventListener("visibilitychange", function () {
-      if (document.hidden) stop(); else if (motionAllowed()) start();
+      if (document.hidden) stop(); else if (motionAllowed() && awake) start();
     });
     canvas.addEventListener("webglcontextlost", function (e) {
       e.preventDefault(); stop(); root.classList.remove("has-webgl");
     });
 
-    time = 6.0;
     resize();
     restyle();
     draw();
     return {
       restyle: restyle,
-      motion: function (on) { if (on) start(); else { stop(); draw(); } },
+      motion: function (on) { if (on && awake) start(); else { stop(); draw(); } },
       start: start
     };
   }
@@ -299,10 +335,29 @@
     field = makeField(canvas);
     if (!field) { canvas.remove(); return; }
     root.classList.add("has-webgl");
-    if (motionAllowed()) field.start();
+    var events = ["pointermove", "pointerdown", "scroll", "keydown", "touchstart", "wheel"];
+    var woke = false;
+    function wake() {
+      if (woke) return;
+      woke = true;
+      events.forEach(function (n) { window.removeEventListener(n, wake, { passive: true }); });
+      awake = true;
+      if (motionAllowed()) field.start();
+    }
+    events.forEach(function (n) { window.addEventListener(n, wake, { passive: true }); });
   }
+  var awake = false;
 
-  /* ---------- scroll reveals and parallax ---------- */
+  var scrolledQueued = false;
+  function syncScrolled() {
+    scrolledQueued = false;
+    root.classList.toggle("scrolled", window.scrollY > window.innerHeight * 0.5);
+  }
+  window.addEventListener("scroll", function () {
+    if (!scrolledQueued) { scrolledQueued = true; requestAnimationFrame(syncScrolled); }
+  }, { passive: true });
+  syncScrolled();
+
   var reveals = [].slice.call(document.querySelectorAll(".reveal"));
   function revealAll() { reveals.forEach(function (el) { el.classList.add("in"); }); }
   if (!("IntersectionObserver" in window) || !motionAllowed()) {
@@ -314,101 +369,52 @@
           var el = en.target;
           el.classList.add("in");
           io.unobserve(el);
-          setTimeout(function () { el.classList.remove("reveal", "in"); }, 900);
+          setTimeout(function () { el.classList.remove("reveal", "in"); }, 700);
         }
       });
-    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
+    }, { rootMargin: "0px 0px -6% 0px", threshold: 0.05 });
     reveals.forEach(function (el) { io.observe(el); });
   }
 
-  var plx = [].slice.call(document.querySelectorAll("[data-parallax]"));
-  var plxQueued = false;
-  function parallax() {
-    plxQueued = false;
-    var vh = window.innerHeight;
-    plx.forEach(function (el) {
-      if (!motionAllowed()) { el.style.transform = ""; return; }
-      var r = el.getBoundingClientRect();
-      var k = parseFloat(el.getAttribute("data-parallax")) || 0.08;
-      var off = (r.top + r.height / 2 - vh / 2) * -k;
-      el.style.transform = "translate3d(0," + off.toFixed(1) + "px,0)";
-    });
-  }
-  if (plx.length) {
-    window.addEventListener("scroll", function () {
-      if (!plxQueued) { plxQueued = true; requestAnimationFrame(parallax); }
-    }, { passive: true });
-    parallax();
-  }
-
-  /* ---------- card glow follows the pointer ---------- */
-  [].forEach.call(document.querySelectorAll(".card"), function (card) {
-    card.addEventListener("pointermove", function (e) {
-      var r = card.getBoundingClientRect();
-      card.style.setProperty("--mx", (e.clientX - r.left) + "px");
-      card.style.setProperty("--my", (e.clientY - r.top) + "px");
-    }, { passive: true });
-  });
-
-  /* ---------- before/after slider ---------- */
-  [].forEach.call(document.querySelectorAll(".compare"), function (box) {
+  [].forEach.call(document.querySelectorAll(".viewer"), function (box) {
     var range = box.querySelector("input[type=range]");
+    if (!range) return;
     function set() { box.style.setProperty("--pos", range.value + "%"); }
     range.addEventListener("input", set);
     set();
   });
-  [].forEach.call(document.querySelectorAll("[data-seg-tabs]"), function (tabs) {
-    var target = document.getElementById(tabs.getAttribute("data-seg-tabs"));
-    var top = target.querySelector("img.top");
-    var label = target.querySelector(".lbl.r");
-    [].forEach.call(tabs.querySelectorAll("button"), function (b) {
-      b.addEventListener("click", function () {
-        [].forEach.call(tabs.querySelectorAll("button"), function (o) { o.setAttribute("aria-pressed", o === b ? "true" : "false"); });
-        top.src = b.getAttribute("data-src");
-        top.alt = b.getAttribute("data-alt");
-        label.textContent = b.textContent;
-      });
-    });
+  [].forEach.call(document.querySelectorAll("[data-layer]"), function (cb) {
+    var img = document.getElementById(cb.getAttribute("data-layer"));
+    if (!img) return;
+    cb.addEventListener("change", function () { img.hidden = !cb.checked; });
   });
 
-  /* ---------- muted clips: load and play only when visible ---------- */
-  var clips = [];
   [].forEach.call(document.querySelectorAll("video[data-src]"), function (v) {
     var visible = false, loaded = false;
+    function load() { if (!loaded) { v.src = v.getAttribute("data-src"); loaded = true; } }
     var c = {
       update: function () {
-        if (!motionAllowed()) {
-          v.pause();
-          v.controls = true;
-          return;
-        }
+        if (!motionAllowed()) { v.pause(); v.controls = true; return; }
         v.controls = false;
         if (visible) {
-          if (!loaded) { v.src = v.getAttribute("data-src"); loaded = true; }
+          load();
           var p = v.play(); if (p && p.catch) p.catch(function () { v.controls = true; });
         } else if (loaded) {
           v.pause();
         }
       }
     };
-    v.addEventListener("play", function () {
-      if (!loaded) { loaded = true; }
-    });
-    v.addEventListener("click", function () {
-      if (!loaded) { v.src = v.getAttribute("data-src"); loaded = true; }
-    });
+    v.addEventListener("click", load);
     if ("IntersectionObserver" in window) {
       new IntersectionObserver(function (es) {
         es.forEach(function (en) { visible = en.isIntersecting; c.update(); });
       }, { threshold: 0.35 }).observe(v);
     }
     v.preload = "none";
-    if (!motionAllowed()) { v.src = v.getAttribute("data-src"); loaded = true; }
     c.update();
     clips.push(c);
   });
 
-  /* ---------- copy buttons ---------- */
   [].forEach.call(document.querySelectorAll("[data-copy]"), function (btn) {
     btn.addEventListener("click", function () {
       var src = document.getElementById(btn.getAttribute("data-copy"));
@@ -422,8 +428,8 @@
   syncPauseBtn();
 
   var boot = function () {
-    if ("requestIdleCallback" in window) requestIdleCallback(bootField, { timeout: 1200 });
-    else setTimeout(bootField, 200);
+    if ("requestIdleCallback" in window) requestIdleCallback(bootField, { timeout: 1500 });
+    else setTimeout(bootField, 300);
   };
   if (document.readyState === "complete") boot();
   else window.addEventListener("load", boot);

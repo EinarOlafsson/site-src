@@ -1,0 +1,143 @@
+{
+ "checked": "2026-10-10",
+ "note": "Hand-checked list. Only these papers are shown. Evidence is quoted from each paper.",
+ "spacr_works": [
+  {
+   "openalex": "W4413311054",
+   "doi": "10.21203/rs.3.rs-7368254/v1",
+   "what": "Research Square preprint v1 (2025-08-19)"
+  },
+  {
+   "openalex": "W7167793437",
+   "doi": "10.64898/2026.07.08.737057",
+   "what": "bioRxiv preprint, EAF1 screen (2026-07-09), PMID 42465465"
+  },
+  {
+   "openalex": "W7221121394",
+   "doi": "10.5281/zenodo.23266544",
+   "what": "Zenodo software record v1.5.1.4 (only Zenodo version with its own OpenAlex work)"
+  },
+  {
+   "openalex": "W4411306136",
+   "doi": null,
+   "what": "BioImage Archive dataset S-BIAD2076 'spaCR: ...'. NOTE: OpenAlex resolves the concept DOI 10.5281/zenodo.21343316 and the other 14 Zenodo version DOIs to this work (mis-merge)"
+  },
+  {
+   "openalex": "W4412032757",
+   "doi": null,
+   "what": "BioImage Archive dataset S-BIAD2135 'Spatial phenotype analysis of CRISPR-Cas9 screens'"
+  },
+  {
+   "openalex": null,
+   "doi": "10.5281/zenodo.21343316",
+   "what": "Zenodo concept DOI"
+  }
+ ],
+ "papers": [
+  {
+   "doi": "10.64898/2026.07.08.737057",
+   "title": "A pooled image-based CRISPR screen identifies EAF1 as a T. gondii modulator of ESCRT subversion",
+   "authors_short": "Olafsson EB, et al.",
+   "venue": "bioRxiv",
+   "year": 2026,
+   "type": "preprint",
+   "relation": "spacr-paper",
+   "evidence": "Abstract: 'we developed spaCR (spatial phenotype analysis of CRISPR-Cas9 screens), a pooled image-based screening framework'; Data and Code Availability: 'spaCR (v1.3.4) is available at https://github.com/EinarOlafsson/spaCR' and PyPI. Posted 2026-07-09; also PMID 42465465 / PMC13370926 (preprint record).",
+   "checked_via": "bioRxiv full text (WebFetch), bioRxiv API, OpenAlex, Europe PMC PPR1275982"
+  },
+  {
+   "doi": "10.21203/rs.3.rs-7368254/v1",
+   "title": "spaCR: Spatial phenotype analysis of CRISPR-Cas9 screens",
+   "authors_short": "Olafsson EB, et al.",
+   "venue": "Research Square",
+   "year": 2025,
+   "type": "preprint",
+   "relation": "spacr-paper",
+   "evidence": "The software paper itself (preprint v1, posted 2025-08-19; Crossref type posted-content, DOI confirmed). Introduces spaCR and spaCRPower; proof of concept on a pooled Toxoplasma library.",
+   "checked_via": "Crossref, OpenAlex, Europe PMC PPR1070285, Research Square page"
+  },
+  {
+   "doi": "10.1128/msphere.01011-24",
+   "title": "Metabolic adaptability and nutrient scavenging in Toxoplasma gondii: insights from ingestion pathway-deficient mutants",
+   "authors_short": "Rimple PA, et al.",
+   "venue": "mSphere 10:e01011-24",
+   "year": 2025,
+   "type": "article",
+   "relation": "uses",
+   "evidence": "Methods (plaque assay): 'Plaques were detected and quantified using the plaque assay module in SpaCR (v. 0.3.62, https://github.com/EinarOlafsson/spacr and https://pypi.org/project/spacr/). First, plaques were manually annotated using the SpaCR module spacr.make_masks ... fine-tuned ... with the spacr.train module'. Peer-reviewed. (Cited by URL only, not as a reference entry.)",
+   "checked_via": "Europe PMC full text PMC12039266",
+   "preprint": {
+    "doi": "10.1101/2024.11.27.625683",
+    "venue": "bioRxiv",
+    "year": 2024
+   }
+  },
+  {
+   "doi": "10.1016/j.celrep.2025.115694",
+   "title": "IRE1α promotes phagosomal calcium flux to enhance macrophage fungicidal activity",
+   "authors_short": "McFadden MJ, et al.",
+   "venue": "Cell Reports 44(5):115694",
+   "year": 2025,
+   "type": "article",
+   "relation": "uses",
+   "evidence": "Methods: 'For analysis of cellular calcium flux, the Python package spacr (https://github.com/EinarOlafsson/spacr) was used to segment and track cells over time and quantify single cell calcium oscillations.' Key resources table lists spacr; Code availability: 'Software for cellular calcium flux analysis are available from GitHub (https://github.com/EinarOlafsson/spacr)'. Peer-reviewed; PII S2211-1247(25)00465-6.",
+   "checked_via": "Europe PMC full text PMC12166542, Crossref (alt-id S2211124725004656)",
+   "preprint": {
+    "doi": "10.1101/2023.10.02.560560",
+    "venue": "bioRxiv",
+    "year": 2023
+   }
+  },
+  {
+   "doi": "10.64898/2026.07.20.739547",
+   "title": "Toxoplasma GRA8 engages the host ESCRT accessory protein ALG-2 and is necessary for parasite metabolic integrity",
+   "authors_short": "Kaur H, et al.",
+   "venue": "bioRxiv",
+   "year": 2026,
+   "type": "preprint",
+   "relation": "uses",
+   "evidence": "Reference 33: 'Olafsson E, Arnold CS, Rimple P, ... spaCR: Spatial phenotype analysis of CRISPR-Cas9 screens. In Review; 2025 ... doi:10.21203/rs.3.rs-7368254/v1' (also in Crossref reference metadata). Methods (ESCRT protein recruitment): 'All quantitative image analysis was performed as described in (33) in detail.' Software not named in the text; classed 'uses' because the image analysis follows the spaCR method; 'cites' at minimum. Posted 2026-07-23.",
+   "checked_via": "Crossref reference list, bioRxiv full text (WebFetch), bioRxiv API, OpenAlex"
+  },
+  {
+   "doi": "10.48550/arXiv.2507.01163",
+   "title": "cp_measure: API-first feature extraction for image-based profiling workflows",
+   "authors_short": "Muñoz AF, et al.",
+   "venue": "arXiv",
+   "year": 2025,
+   "type": "preprint",
+   "relation": "cites",
+   "evidence": "Introduction: 'Alternative tools can extract features for image-based profiles, such as scikit-image (van der Walt et al., 2014), ScaleFex, or SpaCR (Comolet et al., 2024; Olafsson, 2025)'. Reference: 'Olafsson, E. et al. SpaCr: Spatial phenotype analysis of CRISPR-Cas9 screens. Manuscript in preparation, April 2025.' Independent group (Broad Institute).",
+   "checked_via": "arXiv HTML full text v1, arXiv API, OpenAlex"
+  }
+ ],
+ "also_known": [
+  {
+   "doi": "10.1101/2024.11.27.625683",
+   "note": "preprint of 10.1128/msphere.01011-24"
+  },
+  {
+   "doi": "10.1101/2023.10.02.560560",
+   "note": "preprint of 10.1016/j.celrep.2025.115694"
+  }
+ ],
+ "queries": [
+  "GET https://zenodo.org/api/records?q=conceptrecid:21343316&all_versions=true&size=25&page={1..4}",
+  "GET https://api.openalex.org/works/doi:<doi>?mailto=<email>  (concept DOI, all 15 Zenodo version DOIs, bioRxiv 10.64898/2026.07.08.737057, Research Square 10.21203/rs.3.rs-7368254/v1, citing-paper DOIs)",
+  "GET https://api.openalex.org/works?filter=cites:W4411306136|W7221121394|W4413311054|W7167793437|W4412032757 (each separately; all returned 0)",
+  "GET https://api.openalex.org/works?search=spaCR&per-page=50",
+  "GET https://api.openalex.org/works?search=%22spacr%22%20image&per-page=50",
+  "GET https://api.openalex.org/works?filter=title.search:cp_measure",
+  "GET https://api.crossref.org/works?query=spaCR+CRISPR&rows=20",
+  "GET https://api.crossref.org/works?query.author=Olafsson+Einar&rows=40",
+  "GET https://api.crossref.org/works/<doi> (reference lists of 10.1016/j.celrep.2025.115694, 10.1128/msphere.01011-24, 10.64898/2026.07.20.739547, 10.64898/2026.07.08.737057, 10.1016/j.cell.2026.04.049, 10.1101/2025.09.14.675819; grep spacr|olafsson|rs-7368254|zenodo)",
+  "GET https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=\"spaCR\" AND (CRISPR OR Toxoplasma OR segmentation)&pageSize=100",
+  "GET https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=\"spacr\"&pageSize=100",
+  "GET https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=\"zenodo.21343316\" | \"rs-7368254\" | \"EinarOlafsson/spacr\" | \"github.com/EinarOlafsson\"",
+  "GET https://www.ebi.ac.uk/europepmc/webservices/rest/<PMCID>/fullTextXML (PMC12166542, PMC12039266, PMC11623567, PMC10592910, PMC13144522, PMC13575134, PMC11997057, PMC12732860, PMC12743158, PMC13266834)",
+  "GET https://api.biorxiv.org/details/biorxiv/<doi> (10.64898/2026.07.08.737057, 10.64898/2026.07.20.739547, 10.1101/2024.11.27.625683, 10.1101/2023.10.02.560560)",
+  "GET https://api.semanticscholar.org/graph/v1/paper/DOI:<doi>/citations (rs-7368254: not found; 737057: 0 citations; Zenodo DOIs: not found); /paper/search?query=spaCR -> HTTP 429 rate-limited, not completed",
+  "WebFetch https://www.biorxiv.org/content/10.64898/2026.07.20.739547v1.full ; https://www.biorxiv.org/content/10.64898/2026.07.08.737057v1.full ; https://www.researchsquare.com/article/rs-7368254/v1 ; https://arxiv.org/html/2507.01163v1",
+  "WebSearch: \"spaCR\" CRISPR screen image analysis Olafsson; \"github.com/EinarOlafsson/spacr\"; \"spaCR\" Toxoplasma image analysis bioRxiv 2026; \"spacr\" python package cellpose segmentation used in study; \"Spatial phenotype analysis of CRISPR-Cas9 screens\" cited; \"zenodo.21343316\" OR \"rs-7368254\" spaCR; \"cp_measure\" ... journal; McFadden IRE1 phagosomal calcium bioRxiv preprint"
+ ]
+}

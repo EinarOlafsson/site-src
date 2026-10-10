@@ -10,56 +10,56 @@
 {{HEADER}}
 <main id="main">
   <section class="hero">
-    <div class="wrap grid-2">
+    <div class="wrap grid two">
       <div>
-        <p class="eyebrow">Private preview · v0.1</p>
-        <h1>Cellect <span class="grad">phone mount</span></h1>
-        <p class="lede">A 3D-printed mount that holds any phone over any microscope eyepiece, so Cellect can image through the eyepiece with the phone camera.</p>
-        <div class="stat-row">
-          <span class="chip">Phones <b>57–99 mm</b> wide</span>
-          <span class="chip">Eyepieces <b>18–47 mm</b> OD</span>
-          <span class="chip">X/Y <b>±18 mm</b></span>
-        </div>
+        <p class="kicker">Draft, not public · version 0.1</p>
+        <h1>Cellect phone mount</h1>
+        <p class="lede">A 3D-printed mount that holds a phone over a microscope eyepiece, so that Cellect can take images through the eyepiece with the phone camera.</p>
+        <ul class="facts">
+          <li>Phone width <b>57–99 mm</b></li>
+          <li>Eyepiece diameter <b>18–47 mm</b></li>
+          <li>X/Y travel <b>±18 mm</b></li>
+        </ul>
         <div class="btns">
           <a class="btn" href="https://github.com/EinarOlafsson/cellect">Cellect on GitHub</a>
           <a class="btn" href="#print">Print it</a>
         </div>
       </div>
       <figure>
-        <model-viewer id="mount-3d" alt="Interactive 3D model of the assembled mount: blue collar, dark plate, orange jaw and yellow knobs" camera-controls touch-action="pan-y" shadow-intensity="0.8" exposure="1.1" camera-orbit="-35deg 62deg auto" interaction-prompt="auto"></model-viewer>
-        <figcaption>Drag to rotate, pinch or scroll to zoom. Assembled with the plate offset −10 mm in X and Y, as in the design renders.</figcaption>
+        <model-viewer id="mount-3d" data-sealed="{{SEALED:assets/cellect_mount.glb}}" alt="Interactive 3D model of the assembled mount: blue collar, dark plate, orange jaw and yellow knobs" camera-controls touch-action="pan-y" shadow-intensity="0.8" exposure="1.1" camera-orbit="-35deg 62deg auto" interaction-prompt="auto"></model-viewer>
+        <figcaption>Drag to rotate; pinch or scroll to zoom. The plate is offset by −10 mm in X and Y, as in the design renders.</figcaption>
       </figure>
     </div>
   </section>
 
   <section aria-labelledby="how-h">
-    <div class="wrap grid-2">
-      <div class="reveal">
-        <h2 id="how-h">How it works</h2>
-        <ul class="feature-list">
-          <li><b>Collar</b> (blue): a ring with three thumbscrews that grips the eyepiece. How high you clamp it sets the camera-to-eyepiece gap, so there is no separate focus mechanism.</li>
-          <li><b>Plate</b> (dark): the phone lies on it screen-up with its camera over the window. A corner stop means the phone goes in the same place every time.</li>
-          <li><b>Jaw</b> (orange): slides in a slot and pushes the phone into the corner.</li>
-          <li><b>Cross-slots</b>: the plate slides in X and Y on the collar's flange, with two bolts. The plate edges point at X and Y scales engraved on the flange, so each phone and microscope setting can be written down and repeated.</li>
+    <div class="wrap grid two">
+      <div>
+        <h2 id="how-h">Parts</h2>
+        <ul class="steps">
+          <li><b>Collar (blue)</b><span>a ring with three thumbscrews that grips the eyepiece. How high you clamp it sets the camera-to-eyepiece gap, so there is no separate focus mechanism.</span></li>
+          <li><b>Plate (dark)</b><span>the phone lies on it screen-up with its camera over the window. A corner stop means the phone goes in the same place every time.</span></li>
+          <li><b>Jaw (orange)</b><span>slides in a slot and pushes the phone into the corner.</span></li>
+          <li><b>Cross-slots</b><span>the plate slides in X and Y on the collar's flange, with two bolts. The plate edges point at X and Y scales engraved on the flange, so each phone and microscope setting can be written down and repeated.</span></li>
         </ul>
-        <p class="small muted">Phones 57–99 mm wide including the case, with the camera 6–42 mm from the phone's top and side edges.</p>
+        <p class="note" style="margin-top:16px">Phones 57–99 mm wide including the case, with the camera 6–42 mm from the phone's top and side edges.</p>
       </div>
-      <figure class="reveal">
-        <img src="{{INLINE:assets/top_view.webp}}" width="1200" height="1200" alt="Top view: the phone is pushed into the corner stop by the jaw, with the camera lens on the eyepiece axis" loading="lazy" decoding="async" style="border-radius:12px;background:#fff">
-        <figcaption>Top view from the design script: the camera lens sits on the eyepiece axis.</figcaption>
+      <figure>
+        <img data-sealed="{{SEALED:assets/top_view.webp}}" width="1200" height="1200" alt="Top view: the phone is pushed into the corner stop by the jaw, with the camera lens on the eyepiece axis" loading="lazy" decoding="async" style="border-radius:12px;background:#fff">
+        <figcaption>Top view from the design script. The camera lens is on the eyepiece axis.</figcaption>
       </figure>
     </div>
   </section>
 
   <section id="print" aria-labelledby="print-h">
     <div class="wrap">
-      <h2 id="print-h" class="reveal">Print and assemble</h2>
-      <figure class="reveal" style="margin-bottom:24px">
-        <img src="{{INLINE:assets/print_layout.webp}}" width="1200" height="375" alt="The four parts as printed: collar, plate, jaw and knob" loading="lazy" decoding="async" style="border-radius:12px;background:#fff">
-        <figcaption>Parts oriented for printing; no supports needed.</figcaption>
+      <div class="section-head"><h2 id="print-h">Printing and assembly</h2></div>
+      <figure style="margin-bottom:48px">
+        <img data-sealed="{{SEALED:assets/print_layout.webp}}" width="1200" height="375" alt="The four parts as printed: collar, plate, jaw and knob" loading="lazy" decoding="async" style="border-radius:12px;background:#fff">
+        <figcaption>Parts in print orientation. No supports are needed.</figcaption>
       </figure>
-      <div class="grid-2">
-        <div class="panel reveal">
+      <div class="grid two">
+        <div>
           <h3>Print settings</h3>
           <table>
             <tbody>
@@ -71,10 +71,10 @@
               <tr><th>Material use</th><td>about 130 g; largest part (plate) 142 × 118 mm</td></tr>
             </tbody>
           </table>
-          <div class="placeholder small" style="margin-top:14px"><strong>Placeholder:</strong> where to download the STL files (not published on this site).</div>
+          <p class="pending" style="margin-top:16px">Where to get the STL files: pending. They are not published on this site.</p>
         </div>
-        <div class="panel reveal">
-          <h3>Hardware (M4, hex-head)</h3>
+        <div>
+          <h3>Hardware (M4, hex head)</h3>
           <table>
             <thead><tr><th>Item</th><th class="num">Qty</th><th>Where</th></tr></thead>
             <tbody>
@@ -85,16 +85,16 @@
               <tr><td>Rubber or felt pad</td><td class="num">few</td><td>jaw face and collar screw tips</td></tr>
             </tbody>
           </table>
-          <p class="small muted">Hex heads are needed because the knobs press onto the bolt heads.</p>
+          <p class="note">Hex heads are needed because the knobs press onto the bolt heads.</p>
         </div>
       </div>
     </div>
   </section>
 
   <section aria-labelledby="setup-h">
-    <div class="wrap grid-2">
-      <div class="reveal">
-        <h2 id="setup-h">Set up at the microscope</h2>
+    <div class="wrap grid two">
+      <div>
+        <h2 id="setup-h">Setup at the microscope</h2>
         <ol>
           <li>Focus the sample by eye. Fold down or remove the rubber eyecup.</li>
           <li>Slide the collar over the eyepiece and snug the thumbscrews lightly.</li>
@@ -104,15 +104,15 @@
           <li>Write down the X and Y scale readings for this phone and eyepiece. Next time, set the same readings and only fine-tune.</li>
         </ol>
       </div>
-      <div class="panel reveal">
-        <h3>Test plan for v0.1</h3>
+      <div>
+        <h3>Test plan for version 0.1</h3>
         <ol class="small">
           <li>Print one knob and the jaw first to check bolt and nut fits.</li>
           <li>Full print, fit on the lab microscope, record the settings, image a haemocytometer.</li>
           <li>Remove and re-mount the phone 5 times with the same readings; the circle centre should move by less than about 2 % of the frame width.</li>
           <li>Try a second phone and a second microscope.</li>
         </ol>
-        <div class="placeholder small"><strong>Placeholder:</strong> photos and results from the first print, when available.</div>
+        <p class="pending">Photos and results from the first print: pending.</p>
       </div>
     </div>
   </section>
@@ -120,20 +120,29 @@
 {{FOOTER}}
 <script>
 (function () {
-  var b64 = "{{INLINE_B64:assets/cellect_mount.glb}}";
+  function hex(h) { var a = new Uint8Array(h.length / 2); for (var i = 0; i < a.length; i++) a[i] = parseInt(h.substr(i * 2, 2), 16); return a; }
+  function open(ref) {
+    var parts = ref.split("#"), meta = parts[1].split(".");
+    var mime = meta.slice(2).join(".");
+    return fetch(parts[0]).then(function (r) { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
+      .then(function (buf) {
+        return crypto.subtle.importKey("raw", hex(meta[0]), "AES-GCM", false, ["decrypt"])
+          .then(function (k) { return crypto.subtle.decrypt({ name: "AES-GCM", iv: hex(meta[1]) }, k, buf); });
+      })
+      .then(function (plain) { return URL.createObjectURL(new Blob([plain], { type: mime })); });
+  }
+  [].forEach.call(document.querySelectorAll("[data-sealed]"), function (el) {
+    open(el.getAttribute("data-sealed")).then(function (url) { el.src = url; }, function () {
+      el.replaceWith(Object.assign(document.createElement("p"), { className: "pending", textContent: "This file could not be loaded." }));
+    });
+  });
   var mv = document.getElementById("mount-3d");
-  try {
-    var bin = atob(b64), n = bin.length, bytes = new Uint8Array(n);
-    for (var i = 0; i < n; i++) bytes[i] = bin.charCodeAt(i);
-    mv.src = URL.createObjectURL(new Blob([bytes], { type: "model/gltf-binary" }));
-  } catch (e) { mv.outerHTML = "<p class=\"placeholder\">The 3D model could not be loaded in this browser.</p>"; }
-  var rm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var paused = document.documentElement.classList.contains("fx-paused");
-  if (!rm && !paused) mv.setAttribute("auto-rotate", "");
-  new MutationObserver(function () {
-    if (document.documentElement.classList.contains("fx-paused") || document.documentElement.classList.contains("no-motion")) mv.removeAttribute("auto-rotate");
-    else mv.setAttribute("auto-rotate", "");
-  }).observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+  function rotate() {
+    var still = document.documentElement.classList.contains("fx-paused") || document.documentElement.classList.contains("no-motion");
+    if (still) mv.removeAttribute("auto-rotate"); else mv.setAttribute("auto-rotate", "");
+  }
+  rotate();
+  new MutationObserver(rotate).observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
 })();
 </script>
 </body>

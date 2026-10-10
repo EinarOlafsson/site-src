@@ -1,0 +1,87 @@
+[
+ {
+  "doi": "10.1038/s41467-025-56974-9",
+  "title": "PIN1-SUMO2/3 motif suppresses excessive RNF168 chromatin accumulation and ubiquitin signaling",
+  "openalex_id": "W4409408686",
+  "reason": "Name collision: 'SPaCR' = SUMO-PIN1-assisted Chromatin Regulator motif in RNF168 (Europe PMC full text PMC11997057)."
+ },
+ {
+  "doi": "10.1038/s41598-026-53283-z",
+  "title": "The ITM2B-associated retinal dystrophy mutation modifies BRI23 peptide interactions...",
+  "openalex_id": "W7165668270",
+  "reason": "Name collision: SPACR protein (IMPG1 gene product) (full text PMC13575134)."
+ },
+ {
+  "doi": "10.3390/genes16121474",
+  "title": "Expanding the Genetic Spectrum in IMPG1 and IMPG2 Retinopathy",
+  "openalex_id": "W4417159069",
+  "reason": "Name collision: SPACR = sialoprotein associated with cones and rods (full text PMC12732860). Same applies to all other IMPG1/SPACR retina papers in OpenAlex/Europe PMC 'spacr' searches (e.g. 10.3390/genes13091508, 10.1074/jbc.273.47.31599, 10.3390/genes16010043, 10.1523/jneurosci.2994-19.2020)."
+ },
+ {
+  "doi": "10.1177/17448069251405974",
+  "title": "Single cell transcriptomic analysis reveals dynamic cellular composition changes at acupuncture...",
+  "reason": "Gene name 'SPACR' in a figure legend (full text PMC12743158); unrelated."
+ },
+ {
+  "doi": "10.1016/j.kint.2025.05.017",
+  "title": "APOL1 kidney disease: KDIGO conference conclusions",
+  "reason": "'SPACR related modular calcium binding 2' (SMOC2) gene; unrelated (full text PMC13266834)."
+ },
+ {
+  "doi": "10.1038/s41587-025-02894-4",
+  "title": "Fecal exfoliome sequencing captures immune dynamics of the healthy and inflamed gut",
+  "reason": "Europe PMC 'spacr' term hit; no full text retrievable, abstract has no spaCR; gut transcriptomics topic, gene/term collision. Not verified."
+ },
+ {
+  "doi": "10.1113/jp284391",
+  "title": "A multiscale predictive digital twin for neurocardiac modulation",
+  "reason": "Europe PMC 'spacr' term hit; no full text retrievable, abstract has no spaCR; unrelated cardiac modelling."
+ },
+ {
+  "doi": "10.48550/arXiv.2606.10734",
+  "title": "SPACR: Single-Pass Adaptive Training of Uncertainty-Aware Conformal Regressors",
+  "openalex_id": "W7164152549",
+  "reason": "Name collision: unrelated ML method."
+ },
+ {
+  "doi": "10.48550/arXiv.2603.06186",
+  "title": "SpaCRD: Multimodal Deep Fusion of Histology and Spatial Transcriptomics for Cancer Region Detection",
+  "openalex_id": "W7134238943",
+  "reason": "Name collision (SpaCRD), unrelated."
+ },
+ {
+  "doi": "10.1109/dasc.2005.1563330",
+  "title": "A Study of SPACR Ghost Dynamics Applied to RNAV Routes in the Terminal Area",
+  "reason": "Name collision: aviation (SPACR = aircraft merging)."
+ },
+ {
+  "doi": "10.1038/s44320-026-00197-7",
+  "title": "Progress and new challenges in image-based profiling (Mol Syst Biol 2026)",
+  "openalex_id": "W7141130446",
+  "reason": "Surfaced by web search near cp_measure; full text PMC13144522 has no 'spacr' or 'Olafsson'."
+ },
+ {
+  "doi": "10.1016/j.cell.2026.04.049",
+  "title": "Uncovering spatially resolved functional genomics with CRISPR screen sequencing",
+  "openalex_id": "W7162458238",
+  "reason": "Web search hit on 'Spatial phenotype analysis of CRISPR-Cas9 screens'; Crossref reference list (153 refs) has no spaCR/Olafsson entry."
+ },
+ {
+  "doi": "10.1101/2025.09.14.675819",
+  "title": "SPACE: multimodal spatial CRISPR screening ... in 3D models",
+  "openalex_id": "W4414370759",
+  "reason": "Web search hit; Crossref references (25) have no spaCR entry; spatial-transcriptomics CRISPR method, not citing spaCR."
+ },
+ {
+  "doi": "10.6019/s-biad2076",
+  "title": "spaCR: Spatial phenotype analysis of CRISPR-Cas9 screens. (BioImage Archive S-BIAD2076)",
+  "openalex_id": "W4411306136",
+  "reason": "Not a paper: spaCR's own image dataset deposit; listed under spacr_works instead."
+ },
+ {
+  "doi": "10.6019/s-biad2135",
+  "title": "Spatial phenotype analysis of CRISPR-Cas9 screens (BioImage Archive S-BIAD2135)",
+  "openalex_id": "W4412032757",
+  "reason": "Not a paper: spaCR's own image dataset deposit; listed under spacr_works instead."
+ }
+]

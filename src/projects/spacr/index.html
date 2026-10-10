@@ -2,129 +2,103 @@
 <html lang="en">
 <head>
 {{HEAD}}
-<title>spaCR · spatial phenotype analysis of CRISPR screens</title>
-<meta name="description" content="spaCR {{SPACR_VERSION}}: segment and measure single cells, link pooled CRISPR perturbations to spatial phenotypes, and rank the genes behind them. Desktop installers, PyPI, docs, tutorials and citation.">
-<link rel="preload" as="image" href="/assets/img/deck-01.webp" type="image/webp">
+<title>spaCR: spatial phenotype analysis of CRISPR-Cas9 screens</title>
+<meta name="description" content="spaCR {{SPACR_VERSION}}: segmentation, single-cell measurement, classification, barcode mapping and regression for image-based pooled CRISPR screens. Installers, PyPI, models, papers and citation.">
 </head>
 <body data-page="spacr">
 {{HEADER}}
 <main id="main">
   <section class="hero">
-    <div class="wrap grid-2">
-      <div>
-        <p class="eyebrow">Open source · BSD-3-Clause</p>
-        <h1><span class="grad">spaCR</span></h1>
-        <p class="lede">Spatial phenotype analysis of CRISPR screens.</p>
-        <div class="stat-row">
-          <span class="chip">Version <b>{{SPACR_VERSION}}</b></span>
-          <span class="chip">Released <b>{{RELEASE_DATE}}</b></span>
-          <span class="chip">Python <b>{{PYTHON_RANGE}}</b></span>
-        </div>
-        <div class="btns">
-          <a class="btn primary" href="#install">Install</a>
-          <a class="btn" href="https://einarolafsson.github.io/spacr/">Documentation</a>
-          <a class="btn" href="https://einarolafsson.github.io/spacr/tutorials/">Tutorials</a>
-          <a class="btn" href="https://github.com/EinarOlafsson/spacr">GitHub</a>
-        </div>
+    <div class="wrap">
+      <p class="kicker">Python package and desktop application · <span class="nw">BSD-3-Clause</span></p>
+      <h1>spaCR</h1>
+      <p class="lede">Spatial phenotype analysis of CRISPR-Cas9 screens.</p>
+      <ul class="facts">
+        <li>Version <b>{{SPACR_VERSION}}</b></li>
+        <li>Released <b>{{RELEASE_DATE}}</b></li>
+        <li>Python <b>{{PYTHON_RANGE}}</b></li>
+      </ul>
+      <div class="btns">
+        <a class="btn primary" href="#install">Install</a>
+        <a class="btn" href="https://einarolafsson.github.io/spacr/">Documentation</a>
+        <a class="btn" href="https://einarolafsson.github.io/spacr/tutorials/">Tutorials</a>
+        <a class="btn" href="https://github.com/EinarOlafsson/spacr">Source code</a>
       </div>
-      <figure class="parallax" data-parallax="0.06">
-        <img src="/assets/img/deck-01.webp" width="1280" height="720" alt="spaCR overview slide: image every well, sequence every well, link the two" fetchpriority="high">
-      </figure>
     </div>
   </section>
 
   <section aria-labelledby="what-h">
-    <div class="wrap grid-2">
-      <div class="reveal">
-        <h2 id="what-h">What it does</h2>
-        <p>spaCR segments and measures single cells in microscopy images, integrates per-object phenotypes with sequencing-derived guide abundance, and estimates which genes are associated with phenotypic changes. Starting from plate images and FASTQ reads, it produces per-object measurements, trained classifiers, per-guide and per-gene effect estimates, and a ranked hit list.</p>
-        <p>The segmentation, measurement, annotation and classification modules also run without a sequencing arm. Images, masks, crops, measurements, annotations, predictions, barcodes and well identifiers live in one SQLite project. It runs as a desktop application or headlessly on a workstation, server or cluster.</p>
+    <div class="wrap grid side">
+      <div>
+        <h2 id="what-h">Overview</h2>
       </div>
-      <ul class="feature-list reveal" aria-label="Core workflow">
-        <li><b>Mask</b> segments cells, nuclei, pathogens and organelles with Cellpose.</li>
-        <li><b>Measure</b> writes morphology, intensity, texture, spatial and colocalization features, together with object crops, to SQLite.</li>
-        <li><b>Annotate</b> labels crops in a keyboard-driven grid and supports active-learning queues.</li>
-        <li><b>Classify</b> trains image or measurement-based models and records held-out performance with each checkpoint.</li>
-        <li><b>Map Barcodes</b> maps FASTQ reads to wells and gRNAs, with abundance, collision and coverage QC.</li>
-        <li><b>Regression</b> estimates guide, gene, condition and control effects with model families suited to continuous, fractional and count responses.</li>
-      </ul>
+      <div>
+        <div class="prose">
+          <p>spaCR segments cells and their compartments in microscopy images, measures each object, and links the measurements to the guide RNAs sequenced from the same wells. The input is plate images and FASTQ reads. The output is per-object measurements, trained classifiers, per-guide and per-gene effect estimates and a ranked list of genes.</p>
+          <p>The segmentation, measurement, annotation and classification steps can also be used without sequencing data. All results for a project are stored in one SQLite database. spaCR runs as a desktop application or from Python on a workstation, server or cluster.</p>
+        </div>
+        <ul class="steps" aria-label="Modules">
+          <li><b>Mask</b><span>Segments cells, nuclei, pathogens and organelles with Cellpose models.</span></li>
+          <li><b>Measure</b><span>Computes morphology, intensity, texture, spatial and colocalization features and saves object crops.</span></li>
+          <li><b>Annotate</b><span>Labels object crops in a grid with keyboard shortcuts.</span></li>
+          <li><b>Classify</b><span>Trains image or measurement classifiers and stores held-out performance with each checkpoint.</span></li>
+          <li><b>Map barcodes</b><span>Assigns sequencing reads to wells and guide RNAs and reports abundance and coverage.</span></li>
+          <li><b>Regression</b><span>Estimates guide, gene and condition effects with models for continuous, fractional and count responses.</span></li>
+        </ul>
+      </div>
     </div>
   </section>
 
-  <section aria-labelledby="seg-h">
-    <div class="wrap grid-2">
-      <div class="reveal">
-        <h2 id="seg-h">From pixels to objects</h2>
-        <p>Drag the divider to compare the input image with what Cellpose produces inside spaCR: an instance mask with one label per nucleus, and the flow field that the mask is recovered from.</p>
-        <div class="seg-tabs" role="group" aria-label="Overlay to compare" data-seg-tabs="seg-compare">
-          <button type="button" aria-pressed="true" data-src="/assets/img/seg-mask.webp" data-alt="Instance mask, one colour per nucleus">Mask</button>
-          <button type="button" aria-pressed="false" data-src="/assets/img/seg-flow.webp" data-alt="Cellpose flow field, colour encodes flow direction">Flow</button>
-        </div>
-        <p class="small muted">Images from spaCR's mask tutorial notebook (docs/resources/tutorial/1_mask).</p>
+  <section id="models" aria-labelledby="models-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="models-h">Published models</h2>
+        <p>Each figure shows one real image and the objects that spaCR's published models detect in it. Drag the divider to compare the input with the outlines, and use the check boxes to show or hide a class. Counts are objects in the image shown. {{SHOWCASE_SPACR}}.</p>
       </div>
-      <div class="reveal">
-        <div class="compare" id="seg-compare">
-          <img src="/assets/img/seg-raw.webp" width="720" height="720" alt="Fluorescence image of nuclei" loading="lazy" decoding="async">
-          <img class="top" src="/assets/img/seg-mask.webp" width="720" height="720" alt="Instance mask, one colour per nucleus" loading="lazy" decoding="async">
-          <span class="lbl l">Image</span><span class="lbl r">Mask</span>
-          <input type="range" min="0" max="100" value="50" aria-label="Divider position: left shows the image, right shows the overlay">
-          <span class="handle" aria-hidden="true"></span>
-        </div>
+      <div class="showcase">
+{{SHOWCASE_HTML}}
       </div>
     </div>
   </section>
 
   <section aria-labelledby="clips-h">
     <div class="wrap">
-      <h2 id="clips-h" class="reveal">See it run</h2>
-      <p class="reveal muted">Short muted excerpts from the narrated tutorials. The full lessons, with voices in several languages and captions, are in the <a href="https://einarolafsson.github.io/spacr/tutorials/">tutorial portal</a>.</p>
-      <div class="grid-2">
-        <figure class="reveal">
+      <div class="section-head">
+        <h2 id="clips-h">The desktop application</h2>
+        <p>Muted excerpts from the narrated tutorials. The full lessons, with narration and captions in several languages, are in the <a href="https://einarolafsson.github.io/spacr/tutorials/">tutorial portal</a>.</p>
+      </div>
+      <div class="grid two">
+        <figure>
           <div class="clip">
             <video muted loop playsinline preload="none" width="1280" height="720" poster="/assets/media/clip-home.webp" data-src="/assets/media/clip-home.mp4" aria-label="spaCR home screen with its module tiles"></video>
           </div>
-          <figcaption>The home screen: every module is a tile. From tutorial lesson 5.</figcaption>
+          <figcaption>Home screen with one tile per module. Tutorial lesson 5.</figcaption>
         </figure>
-        <figure class="reveal">
+        <figure>
           <div class="clip">
             <video muted loop playsinline preload="none" width="1280" height="720" poster="/assets/media/clip-cellpose.webp" data-src="/assets/media/clip-cellpose.mp4" aria-label="Cellpose Workbench in Make Masks with image, outline and flow previews"></video>
           </div>
-          <figcaption>Cellpose Workbench in Make Masks: image, outlines and flows. From tutorial lesson 20.</figcaption>
+          <figcaption>Cellpose Workbench in Make Masks, showing the image, outlines and flows. Tutorial lesson 20.</figcaption>
         </figure>
-      </div>
-    </div>
-  </section>
-
-  <section aria-labelledby="tour-h">
-    <div class="wrap">
-      <h2 id="tour-h" class="reveal">A tour in slides</h2>
-      <p class="reveal muted">Slides from the <a href="https://einarolafsson.github.io/spacr/_static/deck/">spaCR README deck</a>. Scroll sideways.</p>
-      <div class="gallery reveal" tabindex="0" role="region" aria-label="Slides, scroll horizontally">
-        <figure><img src="/assets/img/deck-04.webp" width="1280" height="720" loading="lazy" decoding="async" alt="Six steps from plate to hit list: Mask, Measure, Annotate, Classify, Map Barcodes, Regression"></figure>
-        <figure><img src="/assets/img/deck-05.webp" width="1280" height="720" loading="lazy" decoding="async" alt="The modules in one desktop app"></figure>
-        <figure><img src="/assets/img/deck-09.webp" width="1280" height="720" loading="lazy" decoding="async" alt="Mask: segmentation"></figure>
-        <figure><img src="/assets/img/deck-10.webp" width="1280" height="720" loading="lazy" decoding="async" alt="Mask: every object class"></figure>
-        <figure><img src="/assets/img/deck-12.webp" width="1280" height="720" loading="lazy" decoding="async" alt="Annotate: label cells by hand"></figure>
-        <figure><img src="/assets/img/deck-13.webp" width="1280" height="720" loading="lazy" decoding="async" alt="Classify: score every cell"></figure>
-        <figure><img src="/assets/img/deck-18.webp" width="1280" height="720" loading="lazy" decoding="async" alt="Regression: choose the model"></figure>
-        <figure><img src="/assets/img/deck-20.webp" width="1280" height="720" loading="lazy" decoding="async" alt="Regression: which assumptions hold"></figure>
       </div>
     </div>
   </section>
 
   <section id="install" aria-labelledby="install-h">
     <div class="wrap">
-      <h2 id="install-h" class="reveal">Install spaCR {{SPACR_VERSION}}</h2>
-      <div class="grid-2">
-        <div class="panel reveal">
+      <div class="section-head">
+        <h2 id="install-h">Install spaCR {{SPACR_VERSION}}</h2>
+      </div>
+      <div class="grid two">
+        <div>
           <h3>Desktop installers</h3>
-          <p class="muted small">They bundle their own Python; Conda is not required. From the <a href="{{RELEASE_URL}}">{{RELEASE_TAG}} release</a>.</p>
+          <p class="note">The installers include their own Python, so Conda is not needed. Files from the <a href="{{RELEASE_URL}}">{{RELEASE_TAG}} release</a>.</p>
           <ul class="dl">
 {{INSTALLER_LINKS}}
           </ul>
-          <p class="small muted">Checksums: <a href="{{SHA_URL}}">SHA256SUMS.txt</a>. Older installers and the troubleshooting guide are in the <a href="https://einarolafsson.github.io/spacr/installers.html">installer docs</a>.</p>
+          <p class="note">Checksums: <a href="{{SHA_URL}}">SHA256SUMS.txt</a>. Older installers and troubleshooting: <a href="https://einarolafsson.github.io/spacr/installers.html">installer documentation</a>.</p>
         </div>
-        <div class="panel reveal">
+        <div>
           <h3>PyPI</h3>
           <div class="code-wrap">
 <pre id="pip-cmd"><code>conda create -n spacr python=3.12 -y
@@ -133,7 +107,7 @@ python -m pip install spacr=={{SPACR_VERSION}}
 spacr</code></pre>
             <button class="copy" type="button" data-copy="pip-cmd">Copy</button>
           </div>
-          <h3 style="margin-top:18px">conda-forge</h3>
+          <h3>conda-forge</h3>
           <div class="code-wrap">
 <pre id="conda-cmd"><code>conda create -n spacr python=3.12 -y
 conda activate spacr
@@ -141,51 +115,59 @@ conda install conda-forge::spacr
 spacr</code></pre>
             <button class="copy" type="button" data-copy="conda-cmd">Copy</button>
           </div>
-          <p class="small muted" style="margin-top:12px"><a href="{{PYPI_URL}}">spaCR on PyPI</a> · <a href="https://anaconda.org/conda-forge/spacr">on conda-forge</a> · Requires Python {{REQUIRES_PYTHON}}</p>
+          <p class="note"><a href="{{PYPI_URL}}">spaCR on PyPI</a> · <a href="https://anaconda.org/conda-forge/spacr">spaCR on conda-forge</a> · Requires Python <code>{{REQUIRES_PYTHON}}</code></p>
         </div>
       </div>
     </div>
   </section>
 
-  <section aria-labelledby="docs-h">
-    <div class="wrap">
-      <h2 id="docs-h" class="reveal">Documentation and tutorials</h2>
-      <div class="cards">
-        <a class="card reveal" href="https://einarolafsson.github.io/spacr/">
-          <span class="tag live">main</span><h3>Docs: release</h3>
-          <p>User guide and API reference for the released version.</p><span class="go">Open →</span>
-        </a>
-        <a class="card reveal" href="https://einarolafsson.github.io/spacr/nightly/">
-          <span class="tag">nightly</span><h3>Docs: nightly</h3>
-          <p>The same docs built from the development branch.</p><span class="go">Open →</span>
-        </a>
-        <a class="card reveal" href="https://einarolafsson.github.io/spacr/tutorials/">
-          <span class="tag">video</span><h3>Tutorials</h3>
-          <p>Narrated, captioned walkthroughs of each module, with example data.</p><span class="go">Open →</span>
-        </a>
+  <section id="papers" aria-labelledby="papers-h">
+    <div class="wrap grid side">
+      <div>
+        <h2 id="papers-h">Papers using spaCR</h2>
+        <p class="note">Found through OpenAlex, Crossref, Semantic Scholar, Europe PMC and web search, and checked by reading each paper. Last checked {{PAPERS_CHECKED}}. To add a paper, <a href="https://github.com/EinarOlafsson/spacr/issues">open an issue</a>.</p>
+      </div>
+      <div>
+{{PAPERS_HTML}}
       </div>
     </div>
   </section>
 
   <section id="cite" aria-labelledby="cite-h">
-    <div class="wrap grid-2">
-      <div class="reveal">
+    <div class="wrap grid two">
+      <div>
         <h2 id="cite-h">Cite spaCR</h2>
         <p>{{CITATION_TEXT}}</p>
-        <ul class="feature-list">
-          <li>All versions (concept DOI): <a href="https://doi.org/{{CONCEPT_DOI}}">{{CONCEPT_DOI}}</a></li>
-          <li>This release, {{VERSION_DOI_VERSION}}: <a href="https://doi.org/{{VERSION_DOI}}">{{VERSION_DOI}}</a></li>
-          <li>Preprint: <a href="https://www.biorxiv.org/content/10.64898/2026.07.08.737057v1">bioRxiv 10.64898/2026.07.08.737057</a></li>
-          <li><a href="https://github.com/EinarOlafsson/spacr/blob/main/CITATION.cff">CITATION.cff</a></li>
-        </ul>
+        <table>
+          <tbody>
+            <tr><th scope="row">All versions (concept DOI)</th><td><a href="https://doi.org/{{CONCEPT_DOI}}">{{CONCEPT_DOI}}</a></td></tr>
+            <tr><th scope="row">Version {{VERSION_DOI_VERSION}}</th><td><a href="https://doi.org/{{VERSION_DOI}}">{{VERSION_DOI}}</a></td></tr>
+            <tr><th scope="row">Preprint</th><td><a href="https://doi.org/10.64898/2026.07.08.737057">10.64898/2026.07.08.737057</a></td></tr>
+            <tr><th scope="row">Metadata</th><td><a href="https://github.com/EinarOlafsson/spacr/blob/main/CITATION.cff">CITATION.cff</a></td></tr>
+          </tbody>
+        </table>
       </div>
-      <div class="panel reveal">
+      <div>
         <h3>BibTeX</h3>
         <div class="code-wrap">
 <pre id="bibtex"><code>{{BIBTEX}}</code></pre>
           <button class="copy" type="button" data-copy="bibtex">Copy</button>
         </div>
       </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="docs-h">
+    <div class="wrap grid side">
+      <div>
+        <h2 id="docs-h">Documentation</h2>
+      </div>
+      <ul class="links">
+        <li><a href="https://einarolafsson.github.io/spacr/"><b>User guide and API</b><span>For the released version.</span></a></li>
+        <li><a href="https://einarolafsson-spacr-docs-nightly.static.hf.space/index.html"><b>Nightly documentation</b><span>Built from the development branch.</span></a></li>
+        <li><a href="https://einarolafsson.github.io/spacr/tutorials/"><b>Tutorials</b><span>Narrated, captioned lessons for each module, with example data.</span></a></li>
+        <li><a href="https://huggingface.co/einarolafsson"><b>Models and datasets</b><span>Model weights, model cards and training data on Hugging Face.</span></a></li>
+      </ul>
     </div>
   </section>
 </main>

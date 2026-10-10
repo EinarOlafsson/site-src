@@ -2,44 +2,47 @@
 <html lang="en">
 <head>
 {{HEAD}}
-<title>Einar B. Olafsson · projects</title>
-<meta name="description" content="Projects by Einar B. Olafsson: spaCR, live-cell segmentation models and the Cellect phone eyepiece mount.">
+<title>Einar B. Olafsson</title>
+<meta name="description" content="Software, models and hardware by Einar B. Olafsson: spaCR, live-cell segmentation models and a phone mount for microscope eyepieces.">
 </head>
 <body data-page="home">
 {{HEADER}}
 <main id="main">
   <section class="hero">
     <div class="wrap">
-      <p class="eyebrow">Projects</p>
-      <h1>Microscopy software,<br><span class="grad">models and hardware.</span></h1>
-      <p class="lede">Tools for image-based screens and cell segmentation, by Einar B. Olafsson.</p>
-      <div class="placeholder" role="note"><strong>Placeholder:</strong> short bio and affiliation, to be written by the maintainer.</div>
+      <p class="kicker">Einar B. Olafsson</p>
+      <h1>Software, models and hardware for microscopy</h1>
+      <p class="lede">The spaCR page is public. The live_cell and Cellect pages are drafts and require a password.</p>
+      <p class="pending">Biography and affiliation: text pending from the author.</p>
     </div>
   </section>
 
   <section aria-labelledby="projects-h">
     <div class="wrap">
-      <h2 id="projects-h" class="reveal">Projects</h2>
-      <div class="cards">
-        <a class="card reveal" href="/projects/spacr/">
-          <span class="tag live">Public · v{{SPACR_VERSION}}</span>
-          <h3>spaCR</h3>
-          <p>Spatial phenotype analysis of CRISPR screens: segment and measure single cells, map guides to wells and rank the genes behind a phenotype.</p>
-          <span class="go">Open the spaCR page →</span>
-        </a>
-        <a class="card reveal" href="/projects/live-cell/">
-          <span class="tag lock"><svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path d="M4 7V5a4 4 0 1 1 8 0v2h1v8H3V7h1zm2 0h4V5a2 2 0 1 0-4 0v2z"/></svg>Password</span>
-          <h3>live_cell</h3>
-          <p>Segmentation models for transmitted-light microscopy.</p>
-          <span class="go">Unlock →</span>
-        </a>
-        <a class="card reveal" href="/projects/cellect/">
-          <span class="tag lock"><svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path d="M4 7V5a4 4 0 1 1 8 0v2h1v8H3V7h1zm2 0h4V5a2 2 0 1 0-4 0v2z"/></svg>Password</span>
-          <h3>Cellect phone mount</h3>
-          <p>A 3D-printed mount for imaging through a microscope eyepiece with a phone.</p>
-          <span class="go">Unlock →</span>
-        </a>
-      </div>
+      <h2 id="projects-h">Projects</h2>
+      <ul class="projects">
+        <li>
+          <a href="/projects/spacr/">
+            <h3>spaCR</h3>
+            <p>A Python package and desktop application for image-based pooled CRISPR screens: segmentation, single-cell measurements, annotation, classification, barcode mapping and regression.</p>
+            <span class="meta">Version {{SPACR_VERSION}}</span>
+          </a>
+        </li>
+        <li>
+          <a href="/projects/live-cell/">
+            <h3>live_cell</h3>
+            <p>Segmentation models for transmitted-light microscopy.</p>
+            <span class="meta"><svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path d="M4 7V5a4 4 0 1 1 8 0v2h1v8H3V7h1zm2 0h4V5a2 2 0 1 0-4 0v2z"/></svg>Password</span>
+          </a>
+        </li>
+        <li>
+          <a href="/projects/cellect/">
+            <h3>Cellect mount</h3>
+            <p>A 3D-printed mount that holds a phone over a microscope eyepiece.</p>
+            <span class="meta"><svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path d="M4 7V5a4 4 0 1 1 8 0v2h1v8H3V7h1zm2 0h4V5a2 2 0 1 0-4 0v2z"/></svg>Password</span>
+          </a>
+        </li>
+      </ul>
     </div>
   </section>
 </main>
