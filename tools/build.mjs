@@ -228,20 +228,24 @@ function staticryptBin() {
   return p;
 }
 
-function encrypt(plainFile, outDir, title) {
-  execFileSync(staticryptBin(), [
-    plainFile, "-d", outDir,
-    "--config", ".staticrypt.json",
-    "--remember", "30",
-    "--template-title", "Password required",
-    "--template-instructions", "This project page is not public yet. Enter the password to read it.",
-    "--template-placeholder", "Password",
-    "--template-button", "Unlock",
-    "--template-remember", "Remember me on this device for 30 days",
-    "--template-error", "Wrong password",
-    "--template-color-primary", "#3B82F6",
-    "--template-color-secondary", "#0e1015"
-  ], { cwd: ROOT, stdio: ["ignore", "inherit", "inherit"], env: { ...process.env, STATICRYPT_PASSWORD: PASSWORD } });
+const TEMPLATE = path.join(ROOT, "tools", "password_template.html");
+const ENCRYPT_FLAGS = [
+  "--config", ".staticrypt.json",
+  "--remember", "30",
+  "--template", "tools/password_template.html",
+  "--template-title", "Password required",
+  "--template-instructions", "This project page is not public yet. Enter the password to read it.",
+  "--template-placeholder", "Password",
+  "--template-button", "Unlock",
+  "--template-remember", "Remember me on this device for 30 days",
+  "--template-error", "Wrong password",
+  "--template-color-primary", "#1F5FD1",
+  "--template-color-secondary", "#0e1015"
+];
+
+function encrypt(plainFile, outDir) {
+  execFileSync(staticryptBin(), [plainFile, "-d", outDir, ...ENCRYPT_FLAGS],
+    { cwd: ROOT, stdio: ["ignore", "inherit", "inherit"], env: { ...process.env, STATICRYPT_PASSWORD: PASSWORD } });
 }
 
 function sentinelWords(plainHtml, publicText) {
@@ -276,9 +280,12 @@ async function main() {
   fs.rmSync(path.join(ROOT, ".stage"), { recursive: true, force: true });
   const tmp = fs.mkdtempSync(path.join(ROOT, ".stage-"));
   const digest = createHmac("sha256", PASSWORD);
+  digest.update(fs.readFileSync(TEMPLATE));
+  digest.update(JSON.stringify(ENCRYPT_FLAGS));
+  digest.update(fs.readFileSync(path.join(ROOT, "package-lock.json")));
   const sentinels = new Set(["cellposetime", "thumbscrew", "haemocytometer", "live_cell_v1"]);
   try {
-    for (const name of fs.readdirSync(PROTECTED)) {
+    for (const name of fs.readdirSync(PROTECTED).sort()) {
       const dir = path.join(PROTECTED, name);
       const src = path.join(dir, "index.html");
       if (!fs.existsSync(src)) continue;
@@ -290,7 +297,7 @@ async function main() {
       fs.writeFileSync(path.join(stage, "index.html"), plain);
       const outDir = path.join(DIST, "projects", name);
       fs.mkdirSync(outDir, { recursive: true });
-      encrypt(path.join(stage, "index.html"), outDir, name);
+      encrypt(path.join(stage, "index.html"), outDir);
       log(`encrypted projects/${name}/index.html (${fs.statSync(path.join(outDir, "index.html")).size} bytes)`);
     }
   } finally {
