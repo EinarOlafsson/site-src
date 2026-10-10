@@ -443,7 +443,9 @@ async function main() {
   log(`leak check passed: ${sentinels.size} protected-only words, none found in ${walk(DIST).length} built files`);
   fs.writeFileSync(path.join(DIST, ".protected-digest"), digest.digest("hex") + "\n");
   fs.writeFileSync(path.join(DIST, "build.json"), JSON.stringify({
-    spacr: { version: meta.version, release: meta.releaseTag, versionDoi: meta.versionDoi, conceptDoi: meta.conceptDoi }
+    spacr: { version: meta.version, release: meta.releaseTag, versionDoi: meta.versionDoi, conceptDoi: meta.conceptDoi },
+    built: new Date().toISOString().replace(/\.\d+Z$/, "Z"),
+    trigger: process.env.GITHUB_EVENT_NAME || "local"
   }, null, 2));
 }
 
