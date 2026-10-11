@@ -621,7 +621,7 @@
   window.addEventListener("scroll", function () {
     if (!scrolledQueued) { scrolledQueued = true; requestAnimationFrame(syncScrolled); }
   }, { passive: true });
-  syncScrolled();
+  requestAnimationFrame(syncScrolled);
 
   var reveals = [].slice.call(document.querySelectorAll(".reveal"));
   function revealAll() { reveals.forEach(function (el) { el.classList.add("in"); }); }
@@ -663,9 +663,11 @@
       });
       root.classList.toggle("tab-inner", i !== 0);
       if (opts.focusTab) tabs[i].focus();
-      if (tabs[i].scrollIntoView && tablist.scrollWidth > tablist.clientWidth) {
-        tablist.scrollLeft = Math.max(0, tabs[i].offsetLeft - tablist.clientWidth / 2 + tabs[i].offsetWidth / 2);
-      }
+      requestAnimationFrame(function () {
+        if (tablist.scrollWidth > tablist.clientWidth) {
+          tablist.scrollLeft = Math.max(0, tabs[i].offsetLeft - tablist.clientWidth / 2 + tabs[i].offsetWidth / 2);
+        }
+      });
       if (opts.push) {
         var id = panels[i].id;
         if (location.hash !== "#" + id) history.pushState(null, "", "#" + id);
