@@ -52,5 +52,33 @@
     },
     "bytes": 19246,
     "size_px": "480x320"
+  },
+  {
+    "doi": "10.64898/2026.07.30.741779",
+    "short": "Diessl J et al., bioRxiv 2026 (H2S and copper)",
+    "file": "diessl2026_biorxiv_illustration.webp",
+    "kind": "illustration",
+    "licence": "Illustration: our own work (spaCR maintainers), from data under CC0 1.0. Paper itself: no reuse licence (bioRxiv cc_no), so no figure from it is used",
+    "paper_licence": "No reuse licence (bioRxiv 'cc_no'; all rights reserved by the authors)",
+    "licence_sources": [
+      "https://api.biorxiv.org/details/biorxiv/10.64898/2026.07.30.741779 (license: cc_no; checked 2026-10-11)",
+      "https://api.crossref.org/works/10.64898/2026.07.30.741779 (license URL: https://www.biorxiv.org/about/FAQ#license)",
+      "https://registry.opendata.aws/cellpainting-gallery/ (data: CC0 1.0 Universal)"
+    ],
+    "reusable": true,
+    "figure": {
+      "number": "Illustration",
+      "panel": null,
+      "title": "U2OS cells with nuclei (blue), ER (green) and a Golgi and membrane stain (magenta), each cell outlined by spaCR and coloured by its Pearson correlation between the ER and Golgi stains; inset: the correlation of every whole cell in the field",
+      "source_url": "https://registry.opendata.aws/cellpainting-gallery/",
+      "note": "Shows the step Diessl et al. used spaCR for (segment cells and nuclei, measure each channel, per-cell Pearson colocalisation with a Golgi marker), not their data: they colocalised ATP7A with giantin in HT-29 cells. Data: JUMP Cell Painting pilot CPJUMP1 (Chandrasekaran SN et al. 2024, Nature Methods, doi:10.1038/s41592-024-02241-6), Cell Painting Gallery cpg0000, CC0 1.0; plate BR00117011 (U2OS), well C03 (DMSO), site 5; ch2 WGA + phalloidin, ch4 concanavalin A, ch5 Hoechst. Cellpose (cpsam) via spacr.utils._choose_model for cells and nuclei, CPU; per-cell Pearson r via spacr.measure._calculate_correlation_object_level; 116 whole cells, median r 0.74. Script: tools/papers/cellpaint_coloc_thumb.py."
+    },
+    "attribution": "Illustration made with spaCR from the JUMP Cell Painting pilot (Chandrasekaran et al. 2024, CC0); not from the paper",
+    "badge": {
+      "journal": "bioRxiv",
+      "year": 2026
+    },
+    "bytes": 35862,
+    "size_px": "480x320"
   }
 ]

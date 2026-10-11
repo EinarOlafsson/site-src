@@ -1,5 +1,5 @@
 {
- "checked": "2026-10-10",
+ "checked": "2026-10-11",
  "note": "Hand-checked list. Only these papers are shown. Evidence is quoted from each paper.",
  "spacr_works": [
   {
@@ -127,6 +127,22 @@
     }
    ],
    "checked_via": "Crossref reference list, bioRxiv full text (WebFetch), bioRxiv API, OpenAlex"
+  },
+  {
+   "doi": "10.64898/2026.07.30.741779",
+   "title": "Hydrogen sulfide dynamically upregulates copper uptake and localization",
+   "authors_short": "Diessl J, et al.",
+   "venue": "bioRxiv",
+   "year": 2026,
+   "type": "preprint",
+   "relation": "uses",
+   "evidence": [
+    {
+     "quote": "For image analysis, the Python package spaCR (v.1.0.0)15 was used to segment cells and nuclei, and capture intensity and morphological measurements from each channel. Co-localization between ATP7A and the Golgi marker Giantin was quantified using Pearson’s correlation coefficient (PCC).",
+     "location": "Supplementary Materials (bioRxiv media-1.pdf), Methods, 'Immunofluorescence and confocal microscopy', PDF pages 11-12. Reference 15 (PDF page 19) is the spaCR EAF1 preprint, Olafsson EB et al. bioRxiv 2026. The main text names spaCR nowhere; its Acknowledgements thank Einar Ólafsson 'for his assistance with microscopy image analysis'. Not in the Crossref reference list, which covers the main text only."
+    }
+   ],
+   "checked_via": "bioRxiv Supplementary Materials PDF (pdftotext), bioRxiv full text (WebFetch), bioRxiv API, Crossref reference list, Europe PMC PPR1290465"
   }
  ],
  "also_known": [
@@ -156,7 +172,8 @@
   "GET https://api.biorxiv.org/details/biorxiv/<doi> (10.64898/2026.07.08.737057, 10.64898/2026.07.20.739547, 10.1101/2024.11.27.625683, 10.1101/2023.10.02.560560)",
   "GET https://api.semanticscholar.org/graph/v1/paper/DOI:<doi>/citations (rs-7368254: not found; 737057: 0 citations; Zenodo DOIs: not found); /paper/search?query=spaCR -> HTTP 429 rate-limited, not completed",
   "WebFetch https://www.biorxiv.org/content/10.64898/2026.07.20.739547v1.full ; https://www.biorxiv.org/content/10.64898/2026.07.08.737057v1.full ; https://www.researchsquare.com/article/rs-7368254/v1 ; https://arxiv.org/html/2507.01163v1",
-  "WebSearch: \"spaCR\" CRISPR screen image analysis Olafsson; \"github.com/EinarOlafsson/spacr\"; \"spaCR\" Toxoplasma image analysis bioRxiv 2026; \"spacr\" python package cellpose segmentation used in study; \"Spatial phenotype analysis of CRISPR-Cas9 screens\" cited; \"zenodo.21343316\" OR \"rs-7368254\" spaCR; \"cp_measure\" ... journal; McFadden IRE1 phagosomal calcium bioRxiv preprint"
+  "WebSearch: \"spaCR\" CRISPR screen image analysis Olafsson; \"github.com/EinarOlafsson/spacr\"; \"spaCR\" Toxoplasma image analysis bioRxiv 2026; \"spacr\" python package cellpose segmentation used in study; \"Spatial phenotype analysis of CRISPR-Cas9 screens\" cited; \"zenodo.21343316\" OR \"rs-7368254\" spaCR; \"cp_measure\" ... journal; McFadden IRE1 phagosomal calcium bioRxiv preprint",
+  "GET https://api.biorxiv.org/details/biorxiv/10.64898/2026.07.30.741779 ; GET https://api.crossref.org/works/10.64898/2026.07.30.741779 (references; no spacr) ; WebFetch https://www.biorxiv.org/content/10.64898/2026.07.30.741779v1.full and .supplementary-material ; https://www.biorxiv.org/content/biorxiv/early/2026/07/31/2026.07.30.741779/DC1/embed/media-1.pdf (2026-10-11)"
  ],
  "rule": "Listed only if the paper's methods (or, for the spaCR papers themselves, the paper) use spaCR. Papers that only cite or mention spaCR go to papers_rejected.json. Each entry quotes the evidence and gives its location (section and, where the PDF was retrievable, page and line)."
 }
