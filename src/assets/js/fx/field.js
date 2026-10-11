@@ -10,7 +10,9 @@
  * small gravity bursts with expanding ripples, and a click sends a strong
  * burst plus a wave. Dots near the lens and on wave fronts brighten. The
  * vertex shader evaluates all of it per dot; the CPU uploads at most 24
- * bursts and 6 waves per frame.
+ * bursts and 6 waves per frame. An overscroll bounce at the top or bottom of
+ * the page sends a wave from that edge up or down through the lattice, shaped
+ * like the app's column waves (eased in and out, no hole at the source).
  */
 (function () {
   "use strict";
@@ -28,6 +30,7 @@
     "uniform float radius;",
     "uniform vec4 imp[" + MAX_IMP + "];",
     "uniform vec3 wave[" + MAX_WAVE + "];",
+    "uniform vec4 edge[2];",
     "uniform float psize;",
     "varying float lit;",
     "void main() {",
@@ -71,6 +74,21 @@
     "    p += e / asp * (0.025 * decay * packet * sin(front * 58.0) / max(dist, 0.055));",
     "    energy += decay * packet * 0.30;",
     "  }",
+    "  for (int k = 0; k < 2; k++) {",
+    "    vec4 E = edge[k];",
+    "    float age = t - E.y;",
+    "    if (E.w == 0.0 || age < 0.0 || age >= 5.0) continue;",
+    "    float off = (a.y - E.x) * asp.y;",
+    "    float dist = abs(off) + 1e-6;",
+    "    float ease = smoothstep(0.0, 0.30, age) * (1.0 - smoothstep(2.25, 5.0, age));",
+    "    float trav = age * 0.26;",
+    "    float gain = E.z * ease / sqrt(1.0 + trav / 0.18);",
+    "    float front = dist - trav;",
+    "    float env2 = gain * exp(-(front / 0.10) * (front / 0.10)) * smoothstep(0.0, 0.10, dist);",
+    "    float ph = front * 44.0;",
+    "    p.y += sign(off) * 0.0045 * 1.6 * env2 * sin(ph) / asp.y;",
+    "    energy += 0.07 * 1.6 * env2 * cos(ph);",
+    "  }",
     "  lit = clamp(0.57 + energy, 0.48, 1.0);",
     "  gl_PointSize = psize;",
     "  gl_Position = vec4(p.x * 2.0 - 1.0, 1.0 - p.y * 2.0, 0.0, 1.0);",
@@ -98,7 +116,7 @@
     function U(n) { return gl.getUniformLocation(prog, n); }
     var u = {
       t: U("t"), asp: U("asp"), lens: U("lens"), ptr: U("ptr"), radius: U("radius"), imp: U("imp"),
-      wave: U("wave"), psize: U("psize"), ink: U("ink"), gain: U("gain"), dark: U("dark"), px: U("px")
+      wave: U("wave"), edge: U("edge"), psize: U("psize"), ink: U("ink"), gain: U("gain"), dark: U("dark"), px: U("px")
     };
     var la = gl.getAttribLocation(prog, "a");
     var buf = env.buffer();
@@ -111,7 +129,7 @@
 
     var imps = [], waves = [];
     var impData = new Float32Array(MAX_IMP * 4), waveData = new Float32Array(MAX_WAVE * 3);
-    var lastImpT = -1e9, lastImpAt = null, seenClick = -1e9;
+    var lastImpT = -1e9, lastImpAt = null, seenClick = -1e9, seenBounce = -1e9, edges = [], edgeData = new Float32Array(8);
 
     function lattice(cssW, cssH) {
       var s = SPACING, xs = [], ys = [], x, y;
@@ -148,6 +166,13 @@
         waves.push([c.x, c.y, c.t]);
         if (waves.length > MAX_WAVE) waves.shift();
       });
+      (inp.bounces || []).forEach(function (b) {
+        if (b.t <= seenBounce) return;
+        seenBounce = b.t;
+        edges.push([b.edge ? 1 : 0, b.t, b.s, 1]);
+        if (edges.length > 2) edges.shift();
+      });
+      edges = edges.filter(function (w) { return t - w[1] < 5 && t >= w[1]; });
       waves = waves.filter(function (w) { return t - w[2] < 5 && t >= w[2]; });
     }
 
@@ -199,6 +224,9 @@
         gl.uniform3f(u.ptr, inp.x, inp.y, inp.pull);
         gl.uniform4fv(u.imp, impData);
         gl.uniform3fv(u.wave, waveData);
+        edgeData.fill(0);
+        edges.forEach(function (w, i) { edgeData.set(w, i * 4); });
+        gl.uniform4fv(u.edge, edgeData);
         gl.drawArrays(gl.POINTS, 0, count);
         gl.blendEquation(gl.FUNC_ADD);
       },

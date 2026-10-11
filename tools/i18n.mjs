@@ -186,7 +186,9 @@ export function showcaseKeys(sc) {
   return out;
 }
 
-export function generatedStrings(dataDir) {
+// withShowcase: only pages that render the model showcase carry its strings.
+export function generatedStrings(dataDir, withShowcase = true) {
+  if (!withShowcase) return Object.entries(FIXED);
   const sc = JSON.parse(fs.readFileSync(path.join(dataDir, "showcase.json"), "utf8"));
   return [...Object.entries(FIXED), ...showcaseKeys(sc)];
 }
@@ -194,7 +196,7 @@ export function generatedStrings(dataDir) {
 // English reference for a page: template keys, then generated keys.
 export function englishFor(templateWithPartials, dataDir) {
   const en = new Map(extract(templateWithPartials));
-  for (const [k, v] of generatedStrings(dataDir)) {
+  for (const [k, v] of generatedStrings(dataDir, templateWithPartials.includes("{{SHOWCASE_HTML}}"))) {
     if (en.has(k) && en.get(k) !== v) throw new Error(`key ${k} is both in the template and generated`);
     en.set(k, v);
   }

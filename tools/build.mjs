@@ -123,6 +123,26 @@ async function spacrMeta() {
   };
 }
 
+// Starplast facts from PyPI at build time: version, release date and Python range.
+async function starplastMeta() {
+  const j = await getJSON("https://pypi.org/pypi/starplast/json");
+  const v = j.info.version;
+  const files = (j.releases && j.releases[v]) || [];
+  const released = files.length ? String(files[0].upload_time_iso_8601 || files[0].upload_time || "").slice(0, 10) : "";
+  return { version: v, requiresPython: j.info.requires_python || "", released, pypiUrl: `https://pypi.org/project/starplast/${v}/` };
+}
+
+function starplastVars(sp) {
+  const py = sp.requiresPython.match(/>=\s*([\d.]+)/);
+  return {
+    STARPLAST_VERSION: esc(sp.version),
+    STARPLAST_RELEASED: esc(sp.released || "see PyPI"),
+    STARPLAST_PYTHON: esc(py && !/</.test(sp.requiresPython) ? `${py[1]} or newer` : pythonRange(sp.requiresPython)),
+    STARPLAST_REQUIRES: esc(sp.requiresPython),
+    STARPLAST_PYPI_URL: esc(sp.pypiUrl)
+  };
+}
+
 function pythonRange(spec) {
   const lo = (spec.match(/>=\s*([\d.]+)/) || [])[1];
   const hi = (spec.match(/<\s*([\d.]+)/) || [])[1];
@@ -513,9 +533,11 @@ async function main() {
   if (meta.versionDoiVersion && meta.versionDoiVersion !== meta.version) {
     log(`note: Zenodo latest is ${meta.versionDoiVersion}, PyPI is ${meta.version}`);
   }
+  const sp = await starplastMeta();
+  log(`Starplast ${sp.version} (PyPI, ${sp.released}), Python ${sp.requiresPython}`);
   const stats = await statsVars(readJSON(path.join(DATA, "papers.json")).papers.length);
   const ASSET_VERSION = assetVersion();
-  const varsFor = (tr) => ({ ...spacrVars(meta, tr), ...showcaseVars(tr), ...papersVars(tr), ...stats, ASSET_VERSION });
+  const varsFor = (tr) => ({ ...spacrVars(meta, tr), ...showcaseVars(tr), ...papersVars(tr), ...stats, ...starplastVars(sp), ASSET_VERSION });
   await refreshPaperCandidates();
 
   const i18nPages = new Map();
@@ -597,6 +619,7 @@ async function main() {
   fs.writeFileSync(path.join(DIST, ".protected-digest"), digest.digest("hex") + "\n");
   fs.writeFileSync(path.join(DIST, "build.json"), JSON.stringify({
     spacr: { version: meta.version, release: meta.releaseTag, versionDoi: meta.versionDoi, conceptDoi: meta.conceptDoi },
+    starplast: { version: sp.version },
     built: new Date().toISOString().replace(/\.\d+Z$/, "Z"),
     trigger: process.env.GITHUB_EVENT_NAME || "local"
   }, null, 2));

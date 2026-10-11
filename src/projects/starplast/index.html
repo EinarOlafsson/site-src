@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+{{HEAD}}
+<title data-i18n="sp.head.title">Starplast: gene evidence for Toxoplasma and Plasmodium</title>
+<meta name="description" data-i18n-content="sp.head.description" content="Starplast {{STARPLAST_VERSION}}: a desktop app for exploring gene evidence in Toxoplasma gondii and Plasmodium falciparum: expression, fitness screens, localization, protein features, interactions and literature annotations.">
+</head>
+<body data-page="starplast">
+{{HEADER}}
+<main id="main">
+  <section class="hero sp-hero">
+    <div class="wrap grid sp-top">
+      <div>
+        <p class="kicker"><span data-i18n="sp.kicker">Desktop application (PyQt6)</span> · <span class="nw">MIT</span></p>
+        <h1>Starplast</h1>
+        <p class="lede" data-i18n="sp.lede">Gene evidence for <i>Toxoplasma gondii</i> and <i>Plasmodium falciparum</i> in one place.</p>
+        <p class="prose" data-i18n="sp.prose">Starplast brings expression, fitness screens, localization, protein features, interactions and literature annotations together. Use it to look up a gene, investigate hits from a screen, compare groups of genes and choose candidates for follow-up experiments. The bundled maps contain 8,140 <i>T. gondii</i> genes and 5,720 <i>P. falciparum</i> genes, viewed separately.</p>
+        <ul class="facts">
+          <li data-i18n="sp.fact.version">Version <b>{{STARPLAST_VERSION}}</b></li>
+          <li data-i18n="sp.fact.released">Released <b>{{STARPLAST_RELEASED}}</b></li>
+          <li data-i18n="sp.fact.python">Python <b>{{STARPLAST_PYTHON}}</b></li>
+        </ul>
+        <div class="btns">
+          <a class="btn primary" href="#install" data-i18n="sp.btn.install">Install</a>
+          <a class="btn" href="https://einarolafsson.github.io/starplast/guide.html" data-i18n="sp.btn.guide">User guide</a>
+          <a class="btn" href="https://github.com/EinarOlafsson/starplast" data-i18n="sp.btn.source">Source code</a>
+          <a class="btn" href="{{STARPLAST_PYPI_URL}}">PyPI</a>
+        </div>
+      </div>
+      <figure class="sp-map">
+        <picture><source data-theme-dark="" media="(prefers-color-scheme: dark)" srcset="/assets/img/starplast/map.dark.webp" width="640" height="480"><img src="/assets/img/starplast/map.light.webp" width="640" height="480" data-i18n-alt="sp.map.alt" alt="Starplast gene map: thousands of points, one per gene, in coloured groups, with lines from one selected gene to related genes" fetchpriority="high"></picture>
+        <figcaption data-i18n="sp.map.caption">The <i>T. gondii</i> gene map in Starplast's dark and light themes; it follows this page's theme. Each point is a gene; lines link the selected gene to related genes. Screenshots from the <a href="https://github.com/EinarOlafsson/starplast">Starplast repository</a> (MIT).</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="sp-sec" aria-labelledby="sp-does-h">
+    <div class="wrap">
+      <h2 id="sp-does-h" data-i18n="sp.does.title">What it does</h2>
+      <ul class="ways sp-tools">
+        <li><b data-i18n="sp.does.explore">Explore a gene</b><span data-i18n="sp.does.explore_text">Searches identifiers, symbols and descriptions, then shows the source evidence.</span></li>
+        <li><b data-i18n="sp.does.predict">Predict a trait</b><span data-i18n="sp.does.predict_text">Compares held-out predictions before making calls for unlabelled genes, keeping related genes in the same evaluation group.</span></li>
+        <li><b data-i18n="sp.does.compare">Compare a screen</b><span data-i18n="sp.does.compare_text">Joins a gene-level CSV or TSV to the existing evidence and keeps unresolved identifiers visible.</span></li>
+        <li><b data-i18n="sp.does.strategies">39 strategies</b><span data-i18n="sp.does.strategies_text">Named ways of turning the combined data into a claim, each with a guide and a self-test against shuffled data.</span></li>
+      </ul>
+      <p class="note sp-note" data-i18n="sp.does.note">Positions on the map come from an embedding of selected features: nearby genes have similar inputs, which alone does not show a shared function or a physical interaction. Search scores help to prioritise candidates; they are not experimental validation. Gene tables and graphs ship with the package and work offline; 130 registered datasets are listed with their sources in the <a href="https://github.com/EinarOlafsson/starplast/blob/main/docs/datasets.md">dataset catalogue</a>.</p>
+    </div>
+  </section>
+
+  <section class="sp-sec" aria-labelledby="sp-screen-h">
+    <div class="wrap">
+      <h2 id="sp-screen-h" data-i18n="sp.screen.title">Explore a screen</h2>
+      <ol class="sp-steps">
+        <li data-i18n="sp.screen.s1">Choose the organism under File → Species.</li>
+        <li data-i18n="sp.screen.s2">Search for a gene ID. For <i>T. gondii</i>, File → Import data adds your screen results.</li>
+        <li data-i18n="sp.screen.s3">Colour and filter the map by the measurements you want to compare.</li>
+        <li data-i18n="sp.screen.s4">Click a gene to read its evidence and inspect each type of relationship separately.</li>
+        <li data-i18n="sp.screen.s5">Select a group with a lasso or brush, then export the gene list for follow-up.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="install" class="sp-sec" aria-labelledby="sp-install-h" tabindex="-1">
+    <div class="wrap">
+      <h2 id="sp-install-h" data-i18n="sp.install.title">Install Starplast {{STARPLAST_VERSION}}</h2>
+      <div class="grid two">
+        <div>
+          <h3>PyPI</h3>
+          <div class="code-wrap">
+<pre id="sp-pip"><code>pip install starplast
+starplast</code></pre>
+            <button class="copy" type="button" data-copy="sp-pip" data-i18n="install.copy">Copy</button>
+          </div>
+          <p class="note" data-i18n="sp.install.pip_note">Requires Python {{STARPLAST_REQUIRES}}, a display and OpenGL. Analyses run on the CPU; <code>pip install "starplast[gpu]"</code> adds NVIDIA GPU support on Linux x86-64 with a CUDA 12 driver.</p>
+        </div>
+        <div>
+          <h3 data-i18n="sp.install.spacr_title">From spaCR</h3>
+          <p data-i18n="sp.install.spacr_text">In the spaCR desktop app, the Starplast tile on the <i>Toxoplasma</i> page installs Starplast in its own Python environment and opens it as a separate application (marked alpha in spaCR). To look at spaCR results in Starplast, export a gene-level table from spaCR and import it with File → Import data.</p>
+          <p class="note"><a href="/projects/spacr/" data-i18n="sp.install.spacr_link">About spaCR</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sp-sec" aria-labelledby="sp-links-h">
+    <div class="wrap">
+      <h2 id="sp-links-h" data-i18n="sp.links.title">Links and licence</h2>
+      <ul class="links">
+        <li><a class="row" href="https://github.com/EinarOlafsson/starplast"><b data-i18n="sp.links.repo">Source code</b><span data-i18n="sp.links.repo_text">GitHub repository, issues and releases.</span></a></li>
+        <li><a class="row" href="{{STARPLAST_PYPI_URL}}"><b>PyPI</b><span data-i18n="sp.links.pypi_text">The starplast package.</span></a></li>
+        <li><a class="row" href="https://einarolafsson.github.io/starplast/"><b data-i18n="sp.links.docs">Documentation</b><span data-i18n="sp.links.docs_text">User guide, Python API and a 40-slide introduction.</span></a></li>
+        <li><a class="row" href="https://github.com/EinarOlafsson/starplast/blob/main/CHANGELOG.md"><b data-i18n="sp.links.changes">Changes</b><span data-i18n="sp.links.changes_text">What each release changed.</span></a></li>
+        <li><a class="row" href="https://github.com/EinarOlafsson/starplast/blob/main/CITATION.cff"><b data-i18n="sp.links.cite">Cite</b><span data-i18n="sp.links.cite_text">Cite Starplast and the original sources of the datasets you use.</span></a></li>
+        <li><a class="row" href="https://github.com/EinarOlafsson/starplast/blob/main/LICENSE"><b data-i18n="sp.links.licence">MIT licence</b><span data-i18n="sp.links.licence_text">For the source code; source datasets and third-party artwork keep their own licences.</span></a></li>
+      </ul>
+    </div>
+  </section>
+</main>
+{{FOOTER}}
+</body>
+</html>

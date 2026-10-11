@@ -11,7 +11,7 @@
  * Theme contract. factory(env) returns
  *   { t0, resize(w, h, dpr), restyle(dark), frame(t, dt, input), degrade(), dispose() }
  * frame draws the whole frame, clear included; dt 0 means "draw the current
- * state without advancing". input = { x, y, pull, clicks: [{ x, y, t }] }
+ * state without advancing". input = { x, y, pull, clicks: [{ x, y, t }], bounces: [{ edge, s, t }] }
  * with x, y in 0..1 from the top left, pull 0..1 (pointer presence,
  * smoothed) and clicks in theme time, newest last, at most 8, under 5 s old.
  * GL objects come from env.program/buffer/texture/framebuffer/renderbuffer;
@@ -60,11 +60,13 @@
   }
   syncClasses();
 
-  var DEFAULT_FX = "advection";
+  var DEFAULT_FX = "field";
+  var INLINE_FX = "advection";
   var fxMenu = document.querySelector("[data-fx-menu]");
   var fxChoices = fxMenu ? [].slice.call(fxMenu.querySelectorAll("[data-fx-theme]")) : [];
   var FX_SLUGS = fxChoices.map(function (b) { return b.getAttribute("data-fx-theme"); });
   if (FX_SLUGS.indexOf(DEFAULT_FX) < 0) FX_SLUGS.unshift(DEFAULT_FX);
+  if (FX_SLUGS.indexOf(INLINE_FX) < 0) FX_SLUGS.unshift(INLINE_FX);
   function validFx(s) { return typeof s === "string" && FX_SLUGS.indexOf(s) >= 0 ? s : DEFAULT_FX; }
   var fxWanted = validFx(store.get("fx-theme"));
   root.setAttribute("data-fx", fxWanted);
@@ -154,7 +156,7 @@
     }
   };
   function loadTheme(slug, cb) {
-    if (slug === DEFAULT_FX) { cb(advection); return; }
+    if (slug === INLINE_FX) { cb(advection); return; }
     var have = registry[slug];
     if (typeof have === "function") { cb(have); return; }
     if (have) { have.push(cb); return; }
@@ -399,7 +401,7 @@
 
     var theme = null, themeSlug = null;
     var ptr = [0.5, 0.5], pull = 0, pullTarget = 0, lastMove = 0;
-    var clicks = [];
+    var clicks = [], bounces = [];
     var time = 0, last = 0, running = false, raf = 0;
     var slow = 0, frames = 0, dpr = 1;
     var drawn = false;
@@ -419,7 +421,7 @@
     function adopt(slug, made) {
       theme = made; themeSlug = slug;
       time = typeof made.t0 === "number" ? made.t0 : 0;
-      clicks = []; slow = 0; frames = 0;
+      clicks = []; bounces = []; slow = 0; frames = 0;
       if (made.resize) made.resize(canvas.width, canvas.height, dpr);
       if (made.restyle) made.restyle(env.dark());
       draw(0);
@@ -435,9 +437,9 @@
           release();
         }
         var made = factory ? build(factory) : null;
-        if (!made && slug !== DEFAULT_FX) {
+        if (!made && slug !== INLINE_FX) {
           made = build(advection);
-          slug = DEFAULT_FX;
+          slug = INLINE_FX;
         }
         if (!made) { stop(); root.classList.remove("has-webgl"); return; }
         adopt(slug, made);
@@ -462,9 +464,10 @@
       pull += (pullTarget - pull) * (dt > 0 ? Math.min(1, dt * 3.6) : 0);
       if (performance.now() - lastMove > 2500) pullTarget = 0;
       while (clicks.length && (time - clicks[0].t > 5 || clicks[0].t > time)) clicks.shift();
+      while (bounces.length && (time - bounces[0].t > 5 || bounces[0].t > time)) bounces.shift();
       gl.viewport(0, 0, canvas.width, canvas.height);
       try {
-        theme.frame(time, dt, { x: ptr[0], y: ptr[1], pull: pull, clicks: clicks });
+        theme.frame(time, dt, { x: ptr[0], y: ptr[1], pull: pull, clicks: clicks, bounces: bounces });
       } catch (e) {
         if (window.console) console.warn("fx: background frame failed", e);
         stop();
@@ -506,6 +509,49 @@
       if (!running || e.button > 0) return;
       clicks.push({ x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight, t: time });
       if (clicks.length > 8) clicks.shift();
+    }, { passive: true });
+    // Overscroll bounce: one wave per gesture from the edge that bounced
+    // (0 top, 1 bottom), strength from the overscroll speed or amount.
+    // Listeners are passive and never cancel scrolling.
+    var bounceArmed = [true, true], wheelIdle = 0, touchY = null, touchEdge = -1, touchFired = false;
+    function atEdge() {
+      var el = document.scrollingElement || document.documentElement;
+      var y = window.scrollY, max = el.scrollHeight - window.innerHeight;
+      return { top: y <= 0, bottom: y >= max - 1, over: y < 0 ? -y : (y > max ? y - max : 0) };
+    }
+    function bounce(edge, strength) {
+      if (!running || !bounceArmed[edge]) return;
+      bounceArmed[edge] = false;
+      bounces.push({ edge: edge, s: Math.max(0.35, Math.min(1.6, strength)), t: time });
+      if (bounces.length > 4) bounces.shift();
+    }
+    window.addEventListener("wheel", function (e) {
+      var dy = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? window.innerHeight : 1);
+      var at = atEdge();
+      clearTimeout(wheelIdle);
+      wheelIdle = setTimeout(function () { bounceArmed = [true, true]; }, 350);
+      if (dy < 0 && at.top) bounce(0, Math.abs(dy) / 100);
+      else if (dy > 0 && at.bottom) bounce(1, Math.abs(dy) / 100);
+    }, { passive: true });
+    window.addEventListener("touchstart", function (e) {
+      var at = atEdge();
+      touchY = e.touches.length ? e.touches[0].clientY : null;
+      touchEdge = at.top ? 0 : at.bottom ? 1 : -1;
+      touchFired = false;
+      bounceArmed = [true, true];
+    }, { passive: true });
+    window.addEventListener("touchmove", function (e) {
+      if (touchY === null || touchFired || touchEdge < 0 || !e.touches.length) return;
+      var pull = e.touches[0].clientY - touchY;
+      if ((touchEdge === 0 && pull > 24) || (touchEdge === 1 && pull < -24)) {
+        touchFired = true;
+        bounce(touchEdge, Math.abs(pull) / 80);
+      }
+    }, { passive: true });
+    window.addEventListener("touchend", function () { touchY = null; }, { passive: true });
+    window.addEventListener("scroll", function () {
+      var at = atEdge();
+      if (at.over > 2) bounce(window.scrollY < 0 ? 0 : 1, at.over / 40);
     }, { passive: true });
     window.addEventListener("resize", function () { resize(); if (!running) draw(0); }, { passive: true });
     document.addEventListener("visibilitychange", function () {

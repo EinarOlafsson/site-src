@@ -615,3 +615,15 @@ picture { display: block; }
 .perm { margin-top: var(--s6); }
 .perm > h3 { margin: 0 0 var(--s1); }
 .perm > .note { max-width: var(--measure); margin: 0 0 var(--s4); }
+.sp-top { align-items: center; }
+@media (min-width: 900px) { .sp-top { grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); } }
+.sp-map img { width: 100%; height: auto; border-radius: var(--radius); border: 1px solid var(--line); }
+.sp-map figcaption { margin-top: var(--s1); }
+.sp-sec { padding: var(--s6) 0 0; }
+.sp-sec:last-of-type { padding-bottom: var(--s7); }
+.sp-sec h2 { margin: 0 0 var(--s3); }
+.sp-sec:focus { outline: none; }
+@media (min-width: 1000px) { .ways.sp-tools { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.sp-note { max-width: var(--measure); margin-top: var(--s3); }
+.sp-steps { margin: 0; padding-left: 1.4em; max-width: var(--measure); display: grid; gap: var(--s1); }
+.sp-steps li { padding-left: 4px; }

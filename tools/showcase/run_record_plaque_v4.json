@@ -1,0 +1,167 @@
+{
+ "name": "literature__PMC11448412__spectrum.01229-24.f002.jpg__p19__w00",
+ "dataset_repo": "einarolafsson/toxoplasma-plaque-dataset",
+ "dataset_revision": "7af596eae241d1ffa427243fa5343fd5b33fd42a",
+ "file": "images/literature__PMC11448412__spectrum.01229-24.f002.jpg__p19__w00.tif",
+ "image_sha256": "a0b4e869e66e4e4fe647047ae474eba4e10471680059a14bd059b2e6e3cfeb0f",
+ "reference_mask": "masks/literature__PMC11448412__spectrum.01229-24.f002.jpg__p19__w00.tif",
+ "reference_mask_sha256": "4c5d613d39b41556be6698e0d00fcac64638d33878d18d994fa3d68e9564d79a",
+ "licence": "CC BY 4.0 (dataset card); crop of a figure from an open-access article",
+ "source": "Cabral G et al. 2024, Microbiol Spectrum, doi:10.1128/spectrum.01229-24, Fig. 2",
+ "v4_split": "test (training/fields.csv of the v4 model repo: split=test, n_objects=98)",
+ "shape": [
+  1200,
+  1215
+ ],
+ "dtype": "uint8",
+ "reference_count": 98,
+ "model_key": "toxoplasma_plaque_v4",
+ "model_name": "cpsam_plaque_r6",
+ "display_name": "Toxoplasma Plaque v4 (round 6, cpsam_v2, alternative)",
+ "repo_id": "einarolafsson/toxoplasma-plaque-segmentation-cpsam-r6",
+ "repo_revision": "c6aca2b05cd09699fa0da36c48f2b4c3a09093ce",
+ "weights": "/home/olafsson/.cache/huggingface/hub/models--einarolafsson--toxoplasma-plaque-segmentation-cpsam-r6/snapshots/c6aca2b05cd09699fa0da36c48f2b4c3a09093ce/weights/cpsam_plaque_r6",
+ "sha256": "744aee3f71efa68f6a369a6f91fe5850dc61e35f3dc20d53dda2c04fce17b35f",
+ "zoo_sha256": "744aee3f71efa68f6a369a6f91fe5850dc61e35f3dc20d53dda2c04fce17b35f",
+ "zoo_default_plaque_model": "toxoplasma_plaque_v3 (spacr.submodules.DEFAULT_PLAQUE_MODEL at spaCR nightly f302d2ef2); v4 is registered as 'alternative, not the default'",
+ "comparison_v3": {
+  "model_key": "toxoplasma_plaque_v3",
+  "weights": "/home/olafsson/.cache/huggingface/hub/models--einarolafsson--toxoplasma-plaque-segmentation-cpsam-r5-geldoc/snapshots/17171f0c33afbce1facbe04b0b120d8fdf3e8e46/weights/cpsam_plaque_r5_geldoc",
+  "sha256": "8f59850dbe09c3a252728b0a7ca38ae5b52a28f2dbaa7a068174b4b7bfac768c"
+ },
+ "spacr_nightly": "f302d2ef2eecfdb1afe4d42228f889362494c8dd",
+ "cellpose": "4.2.1.1",
+ "torch": "2.13.0+cu130",
+ "device": "cpu fp32 (use_bfloat16=False), 16 threads, CUDA_VISIBLE_DEVICES=''",
+ "card_test_metric": {
+  "fields": 263,
+  "f1": 0.815,
+  "precision": 0.825,
+  "recall": 0.806,
+  "v3_f1_same_fields": 0.844,
+  "scorer": "spacr.plaque.segment_plaque_image, diameter 30, flow 0.4, CP_prob 0, IoU 0.5"
+ },
+ "scorer": "cellpose.metrics.average_precision at IoU 0.5 (Hungarian matching), as render.py / run_plaque_public.py",
+ "runs": {
+  "v4_documented": {
+   "settings": {
+    "call": "spacr.plaque.segment_plaque_image",
+    "diameter": 30,
+    "flow_threshold": 0.4,
+    "CP_prob": 0
+   },
+   "seconds": 221.8,
+   "count": 100,
+   "tp": 95,
+   "fp": 5,
+   "fn": 3,
+   "precision": 0.95,
+   "recall": 0.969,
+   "f1_at_iou_0_5": 0.96,
+   "ap_at_iou_0_5": 0.922
+  },
+  "v4_prev_showcase_settings": {
+   "settings": {
+    "call": "CellposeModel.eval (as run_plaque_public.py)",
+    "normalize": true,
+    "flow_threshold": 0.4,
+    "cellprob_threshold": 0.0,
+    "min_size": 0,
+    "max_size_fraction": 0.95
+   },
+   "seconds": 191.5,
+   "count": 100,
+   "tp": 95,
+   "fp": 5,
+   "fn": 3,
+   "precision": 0.95,
+   "recall": 0.969,
+   "f1_at_iou_0_5": 0.96,
+   "ap_at_iou_0_5": 0.922
+  },
+  "v3_documented": {
+   "settings": {
+    "call": "spacr.plaque.segment_plaque_image",
+    "diameter": 30,
+    "flow_threshold": 0.4,
+    "CP_prob": 0
+   },
+   "seconds": 194.9,
+   "count": 99,
+   "tp": 95,
+   "fp": 4,
+   "fn": 3,
+   "precision": 0.96,
+   "recall": 0.969,
+   "f1_at_iou_0_5": 0.964,
+   "ap_at_iou_0_5": 0.931
+  }
+ },
+ "mask": "/mnt/wd4tb/scratch/n687v3/plaque_v4/plaque_v4.tif",
+ "render": {
+  "raw_identical": {
+   "previous_out_public": true,
+   "site_asset": true
+  },
+  "showcase_size": [
+   1024,
+   1011
+  ],
+  "themed_size": [
+   1024,
+   1011
+  ],
+  "themed": {
+   "dark": {
+    "file": "plaque.dark.webp",
+    "size": [
+     1024,
+     1011
+    ],
+    "bytes": 94782,
+    "mode": "lossy q82",
+    "border_exact_fraction": 0.0,
+    "border_mode": "#0f1014"
+   },
+   "light": {
+    "file": "plaque.light.webp",
+    "size": [
+     1024,
+     1011
+    ],
+    "bytes": 94538,
+    "mode": "lossy q82",
+    "border_exact_fraction": 0.0,
+    "border_mode": "#fafafa"
+   }
+  },
+  "well_circle_native_px": [
+   607.2,
+   610.6,
+   556.0
+  ],
+  "line_px": 1.8,
+  "files": {
+   "plaque-raw.webp": {
+    "bytes": 58130,
+    "sha256": "a26c9a7ad29c077e47738d186be2d00a59f54ea5c3cfd475947bdf782d7cad37"
+   },
+   "plaque-v4-figure.webp": {
+    "bytes": 117116,
+    "sha256": "6470f604baaf307e316050c2a8233d92238b0a0b3b1d4c594e9c498aafe8d275"
+   },
+   "plaque-v4-plaque.webp": {
+    "bytes": 9766,
+    "sha256": "9e494a3361e9ca12b105a802f5b87e9b920067bcb730ddabd0dcc8dd361526d7"
+   },
+   "plaque.dark.webp": {
+    "bytes": 94782,
+    "sha256": "2e2b216a160406cedfa69db0c475c1aad47ea18832e69fa043262f02a0ef85b1"
+   },
+   "plaque.light.webp": {
+    "bytes": 94538,
+    "sha256": "6d443aeef2281c20242916cdc65c8d81f227807325760b57426438db90ce94d0"
+   }
+  }
+ }
+}
