@@ -1,0 +1,332 @@
+{
+ "item": "N687 v3 website OLS volcano",
+ "command": [
+  "tools/screen/env.sh tools/screen/fetch_example.py",
+  "tools/screen/env.sh tools/screen/run_ols.py",
+  "tools/screen/env.sh tools/screen/export_volcano.py"
+ ],
+ "function": "spacr.ml.perform_regression (after spacr.settings.get_perform_regression_default_settings)",
+ "spacr_commit": "b0952ec3af1cad78e5f2c4159bc2e7ccb3e24bd0",
+ "spacr_worktree": "/mnt/wd4tb/spacr-worktrees/claude-n687-v3",
+ "python": "3.12.13",
+ "seconds": 114.5,
+ "dataset": "einarolafsson/spacr-example-screen (4 plates); tables from the spaCR example-data release (github.com/EinarOlafsson/spacr/releases/tag/example-data) via spacr.example_data.fetch",
+ "settings_source": "einarolafsson/spacr-example-hit settings/regression.json (sha256 6f65a40c08ea316266a115c41770563585ba669b5fbe5cd75af36535cf517c49); inputs swapped to the four plates, regression_type ols, regression_qc False",
+ "inputs": {
+  "plate1_dv.csv": {
+   "bytes": 5088290,
+   "sha256": "06aa6e51e17eb2423f9e534deb984533b98d10945dd4a7f9a8bac2f93d088594"
+  },
+  "plate2_dv.csv": {
+   "bytes": 5003197,
+   "sha256": "6f079cad146f0d507524317fa026235a2f76a7be04da4be396cec3628c1d1fef"
+  },
+  "plate3_dv.csv": {
+   "bytes": 4824810,
+   "sha256": "5cd7b59d55504680272b47060c7056dd76eb85e59d3571bbe8974e62da08d369"
+  },
+  "plate4_dv.csv": {
+   "bytes": 4240228,
+   "sha256": "7d5800071c15098d9f3fe02a84580d884db7a145b06e72bf5fe048286d23d07e"
+  },
+  "plate_1_unique_combinations.csv": {
+   "bytes": 4325565,
+   "sha256": "9bbfd6de409ec501b94abd2f20230611a695b142228892f5c3b8b2b564ba1f13"
+  },
+  "plate_2_unique_combinations.csv": {
+   "bytes": 4186654,
+   "sha256": "88142a5b8df993f881748845d15f2290e662cccddde269cbeacea8f28b119bf8"
+  },
+  "plate_3_unique_combinations.csv": {
+   "bytes": 3577071,
+   "sha256": "3fdb0c1d28f6074211775e72a93ce5a2531f4049093578251a8ee36bbc85765e"
+  },
+  "plate_4_unique_combinations.csv": {
+   "bytes": 3983853,
+   "sha256": "7888648e1e45155e6ef2efe44bfe02b7577a8469ca75c51a7abc6b4981abad34"
+  }
+ },
+ "results_folder": "/mnt/wd4tb/scratch/n687v3/ols/run/screen4/results",
+ "outputs": [
+  "fit_designs",
+  "model",
+  "model_data",
+  "regression_type",
+  "res_folder",
+  "results",
+  "settings",
+  "significant"
+ ],
+ "settings": {
+  "agg_type": "mean",
+  "alpha": 1,
+  "analysis_excluded_wells": [],
+  "analysis_mode": "regression",
+  "analysis_unit": "well",
+  "annotation_source": "toxoplasma",
+  "batch_column": "plateID",
+  "batch_combat_mean_only": false,
+  "batch_control_column": "columnID",
+  "batch_control_values": null,
+  "batch_correction": null,
+  "batch_covariate_column": null,
+  "batch_min_samples": 3,
+  "batch_missing_control": "error",
+  "calibrate_fraction_threshold": false,
+  "cell_area_outlier_mads": null,
+  "cell_intensity_outlier_mads": null,
+  "count_data": [
+   "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_1_unique_combinations.csv",
+   "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_2_unique_combinations.csv",
+   "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_3_unique_combinations.csv",
+   "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_4_unique_combinations.csv"
+  ],
+  "count_grna_column": "grna",
+  "count_value_column": "count",
+  "cov_type": null,
+  "dependent_variable": "pred",
+  "exclude_grnas": null,
+  "fdr_alpha": 0.05,
+  "filter_column": "columnID",
+  "filter_value": [],
+  "fraction_threshold": 0.02,
+  "grna_statistic": "pearson",
+  "group_lasso_lambda": "auto",
+  "guide_min_wells": [
+   1,
+   2,
+   3,
+   4
+  ],
+  "guide_nuisance_columns": [
+   "rowID",
+   "columnID"
+  ],
+  "guide_permutation_batch_size": 500,
+  "guide_permutation_block": "plateID",
+  "guide_permutation_seed": 0,
+  "guide_permutations": 200000,
+  "guide_presence_threshold": 0.0,
+  "guide_primary_min_wells": null,
+  "hinge_n_boot": 200,
+  "hinge_threshold": null,
+  "huber_t": 1.345,
+  "independent_variable_layout": "auto",
+  "independent_variable_layout_resolved": "long",
+  "inference": "parametric",
+  "input_pair_audit": [
+   {
+    "row": 1,
+    "plate": "plate1",
+    "rule": "copied from score file",
+    "score": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate1_dv.csv",
+    "count": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_1_unique_combinations.csv"
+   },
+   {
+    "row": 2,
+    "plate": "plate2",
+    "rule": "copied from score file",
+    "score": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate2_dv.csv",
+    "count": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_2_unique_combinations.csv"
+   },
+   {
+    "row": 3,
+    "plate": "plate3",
+    "rule": "copied from score file",
+    "score": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate3_dv.csv",
+    "count": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_3_unique_combinations.csv"
+   },
+   {
+    "row": 4,
+    "plate": "plate4",
+    "rule": "copied from score file",
+    "score": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate4_dv.csv",
+    "count": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_4_unique_combinations.csv"
+   }
+  ],
+  "intercept": "fitted",
+  "intercept_value": 0.0,
+  "invert_dependent_variable": false,
+  "l1_ratio": 0.5,
+  "lasso_n_boot": 200,
+  "lasso_selection_threshold": 0.6,
+  "level": "both",
+  "max_failure_rate": null,
+  "metadata_files": [],
+  "min_cells_per_well": 10,
+  "min_observations_per_hit": 0,
+  "mixed_control_wells": null,
+  "model_data_layout": "long",
+  "model_plate_position": false,
+  "multiple_testing_method": "fdr_bh",
+  "negative_control_id": "233460",
+  "negative_control_wells": null,
+  "nontargeting_control_grnas": [
+   "000000"
+  ],
+  "normalise_fraction": true,
+  "nucleus_area_outlier_mads": null,
+  "nucleus_intensity_outlier_mads": null,
+  "outlier_detection": false,
+  "p_threshold_alpha": 0.05,
+  "p_threshold_kind": "adjusted",
+  "paired_data": [
+   {
+    "score": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate1_dv.csv",
+    "count": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_1_unique_combinations.csv",
+    "plate": "plate1",
+    "database": null
+   },
+   {
+    "score": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate2_dv.csv",
+    "count": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_2_unique_combinations.csv",
+    "plate": "plate2",
+    "database": null
+   },
+   {
+    "score": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate3_dv.csv",
+    "count": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_3_unique_combinations.csv",
+    "plate": "plate3",
+    "database": null
+   },
+   {
+    "score": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate4_dv.csv",
+    "count": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_4_unique_combinations.csv",
+    "plate": "plate4",
+    "database": null
+   }
+  ],
+  "positive_control_id": "239740",
+  "positive_control_wells": null,
+  "quantile": 0.5,
+  "random_row_column_effects": false,
+  "regression_backend": "statsmodels (CPU)",
+  "regression_panel_manifest": null,
+  "regression_qc": false,
+  "regression_type": "ols",
+  "rra_alpha": 0.25,
+  "rra_permutations": 10000,
+  "score_data": [
+   "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate1_dv.csv",
+   "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate2_dv.csv",
+   "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate3_dv.csv",
+   "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate4_dv.csv"
+  ],
+  "spline_degree": 3,
+  "spline_knots": 4,
+  "src": "/mnt/wd4tb/scratch/n687v3/ols/run/screen4",
+  "strict_errors": null,
+  "target_unique_count": 5,
+  "threshold_method": "std",
+  "threshold_multiplier": 3,
+  "tolerance": 0.02,
+  "transform": null,
+  "verbose": false,
+  "wide_predictor_columns": [],
+  "dst": "/mnt/wd4tb/scratch/n687v3/ols/run/screen4/results",
+  "_regression_stage": "the fit has returned",
+  "_regression_resources": [
+   {
+    "stage": "reading the input tables",
+    "rss": 1165807616,
+    "gpu": null,
+    "tree_memory_bytes": 851122176,
+    "tree_memory_measure": "pss",
+    "tree_process_count": 1
+   },
+   {
+    "stage": "placing the results folder",
+    "rss": 1362882560,
+    "gpu": null,
+    "tree_memory_bytes": 1044405248,
+    "tree_memory_measure": "pss",
+    "tree_process_count": 1
+   },
+   {
+    "stage": "reading the counts",
+    "rss": 1532014592,
+    "gpu": null,
+    "tree_memory_bytes": 1202376704,
+    "tree_memory_measure": "pss",
+    "tree_process_count": 1
+   },
+   {
+    "stage": "fitting the model",
+    "rss": 1554944000,
+    "gpu": null,
+    "tree_memory_bytes": 1225189376,
+    "tree_memory_measure": "pss",
+    "tree_process_count": 1
+   },
+   {
+    "stage": "the fit has returned",
+    "rss": 1966112768,
+    "gpu": null,
+    "tree_memory_bytes": 1596684288,
+    "tree_memory_measure": "pss",
+    "tree_process_count": 1
+   }
+  ],
+  "_regression_folder": "/mnt/wd4tb/scratch/n687v3/ols/run/screen4/results/ols_1",
+  "_regression_exclusions": {
+   "fraction_threshold": 636285,
+   "fraction_threshold_of": 642551,
+   "wells_paired": 1290,
+   "wells_unpaired_counts": 246,
+   "wells_unpaired_scores": 0
+  },
+  "_regression_diagnostics": {
+   "design_identifiability_pdf": "/mnt/wd4tb/scratch/n687v3/ols/run/screen4/results/ols_1/diagnostics/design_identifiability_ols.pdf",
+   "design_diagnostics_pdf": "/mnt/wd4tb/scratch/n687v3/ols/run/screen4/results/ols_1/diagnostics/design_diagnostics_ols.pdf",
+   "collinear_guide_pairs": "/mnt/wd4tb/scratch/n687v3/ols/run/screen4/results/ols_1/diagnostics/collinear_guide_pairs_ols.csv",
+   "residual_diagnostics_pdf": "/mnt/wd4tb/scratch/n687v3/ols/run/screen4/results/ols_1/diagnostics/residual_diagnostics_ols.pdf",
+   "diagnostic_summary": "/mnt/wd4tb/scratch/n687v3/ols/run/screen4/results/ols_1/diagnostics/diagnostic_summary_ols.csv"
+  }
+ },
+ "export": {
+  "genes": 414,
+  "guides": 953,
+  "genes_called_fdr_0.05": 4,
+  "guides_called_fdr_0.05": 4,
+  "genes_past_fdr_and_3sigma": 2,
+  "sigma_mad": 0.22300731971779672,
+  "cut_3sigma": 0.6690219591533901,
+  "critical_raw_p": 0.0001684508195697,
+  "zero_p_drawn_at": 3.2458282655732107e-09,
+  "called_genes": [
+   {
+    "gene": "233460",
+    "symbol": "SAG1",
+    "coefficient": -0.120035566055621,
+    "p": 3.2458282655732108e-06,
+    "q": 0.0006718864509736,
+    "past_3sigma": false
+   },
+   {
+    "gene": "220950",
+    "symbol": "",
+    "coefficient": -0.1140162227893002,
+    "p": 2.1496084554117934e-05,
+    "q": 0.0029664596684682,
+    "past_3sigma": false
+   },
+   {
+    "gene": "239740",
+    "symbol": "GRA14",
+    "coefficient": 0.9314359951463548,
+    "p": 0.0,
+    "q": 0.0,
+    "past_3sigma": true
+   },
+   {
+    "gene": "225160",
+    "symbol": "",
+    "coefficient": 1.0639885186131293,
+    "p": 0.0001684508195697,
+    "q": 0.0174346598254685,
+    "past_3sigma": true
+   }
+  ],
+  "json_bytes": 56408
+ }
+}

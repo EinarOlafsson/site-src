@@ -3,11 +3,12 @@
 <canvas id="fx" aria-hidden="true"></canvas>
 <header class="site-header">
   <div class="wrap">
-    <a class="brand" href="/">Einar B. Olafsson</a>
+    <a class="brand" href="/"><svg class="mark" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="5.6"/><circle cx="8" cy="8" r="1.4" fill="currentColor" stroke="none"/></svg><span data-i18n="site.brand">Microscopy projects</span></a>
     <nav class="nav" aria-label="Projects" data-i18n-aria-label="site.nav">
       <a href="/projects/spacr/" data-nav="spacr" data-langs="{{SPACR_LANGS}}">spaCR</a>
       <a href="/projects/live-cell/" data-nav="live-cell">live_cell</a>
       <a href="/projects/cellect/" data-nav="cellect">Cellect mount</a>
+      <a href="/#about" data-nav="about" data-i18n="site.about">About</a>
     </nav>
     <div class="tools">
 {{LANG_MENU}}
@@ -15,6 +16,21 @@
         <svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><rect x="3" y="2" width="3.5" height="12" rx="1"/><rect x="9.5" y="2" width="3.5" height="12" rx="1"/></svg>
         <span class="label" data-i18n="ui.pause">Pause</span>
       </button>
+      <details class="fx-pick" data-fx-menu>
+        <summary class="icon-btn" title="Background" data-i18n-title="ui.bg_theme"><svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><circle cx="3" cy="3" r="1.2"/><circle cx="8" cy="3" r="1.2"/><circle cx="13" cy="3" r="1.2"/><circle cx="3" cy="8" r="1.2"/><circle cx="8" cy="8" r="1.9"/><circle cx="13" cy="8" r="1.2"/><circle cx="3" cy="13" r="1.2"/><circle cx="8" cy="13" r="1.2"/><circle cx="13" cy="13" r="1.2"/></svg><span class="label" data-i18n="ui.bg_theme">Background</span></summary>
+        <ul aria-label="Background" data-i18n-aria-label="ui.bg_theme">
+          <li><button type="button" data-fx-theme="advection" aria-pressed="true" data-i18n="theme.advection">spaCR advection</button></li>
+          <li><button type="button" data-fx-theme="field" aria-pressed="false" data-i18n="theme.field">spaCR field</button></li>
+          <li><button type="button" data-fx-theme="field_phenomena" aria-pressed="false" data-i18n="theme.field_phenomena">spaCR field phenomena</button></li>
+          <li><button type="button" data-fx-theme="waves" aria-pressed="false" data-i18n="theme.waves">spaCR waves</button></li>
+          <li><button type="button" data-fx-theme="blobs" aria-pressed="false" data-i18n="theme.blobs">spaCR blobs</button></li>
+          <li><button type="button" data-fx-theme="stratified" aria-pressed="false" data-i18n="theme.stratified">spaCR stratified</button></li>
+          <li><button type="button" data-fx-theme="aurora" aria-pressed="false" data-i18n="theme.aurora">spaCR aurora</button></li>
+          <li><button type="button" data-fx-theme="growth" aria-pressed="false" data-i18n="theme.growth">spaCR growth</button></li>
+          <li><button type="button" data-fx-theme="spinn" aria-pressed="false" data-i18n="theme.spinn">spaCR spinn</button></li>
+          <li><button type="button" data-fx-theme="fractals" aria-pressed="false" data-i18n="theme.fractals">spaCR fractals</button></li>
+        </ul>
+      </details>
       <button class="icon-btn" id="theme-toggle" type="button" aria-pressed="false" aria-label="Switch theme" data-i18n-aria-label="site.theme_switch" title="Switch theme" data-i18n-title="site.theme_switch">
         <svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0 1.5v11a5.5 5.5 0 0 1 0-11z"/></svg>
         <span class="label" data-i18n="site.theme">Theme</span>

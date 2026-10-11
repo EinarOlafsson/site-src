@@ -225,5 +225,5 @@ export function loadLanguages(dir, warn = () => {}) {
 
 export function readPartials(partialsDir, html) {
   const part = (n) => fs.readFileSync(path.join(partialsDir, n), "utf8");
-  return html.replace("{{HEAD}}", part("head.html")).replace("{{HEADER}}", part("header.html")).replace("{{FOOTER}}", part("footer.html"));
+  return html.replace("{{HEAD}}", part("head.html")).replace("{{HEADER}}", part("header.html")).replace("{{FOOTER}}", part("footer.html")).replace("{{ABOUT}}", part("about.html"));
 }

@@ -186,6 +186,23 @@ function spacrVars(m, tr) {
   };
 }
 
+// Pixel size of a WebP file (VP8, VP8L or VP8X).
+function webpSize(file) {
+  const b = fs.readFileSync(file);
+  const t = b.toString("ascii", 12, 16);
+  if (t === "VP8X") return [1 + b.readUIntLE(24, 3), 1 + b.readUIntLE(27, 3)];
+  if (t === "VP8L") { const n = b.readUInt32LE(21); return [1 + (n & 0x3fff), 1 + ((n >> 14) & 0x3fff)]; }
+  if (t === "VP8 ") return [b.readUInt16LE(26) & 0x3fff, b.readUInt16LE(28) & 0x3fff];
+  throw new Error(`${file}: not a WebP file`);
+}
+
+function imageVars() {
+  const dir = path.join(SRC, "assets", "img", "spacr");
+  const [sw, sh] = webpSize(path.join(dir, "overview-strip.webp"));
+  const [kw, kh] = webpSize(path.join(dir, "overview-stack.webp"));
+  return { OV_STRIP_W: String(sw), OV_STRIP_H: String(sh), OV_STACK_W: String(kw), OV_STACK_H: String(kh) };
+}
+
 function readJSON(p) { return JSON.parse(fs.readFileSync(p, "utf8")); }
 
 function showcaseVars(tr) {
@@ -251,7 +268,7 @@ function papersVars(tr) {
     const t = thumbFor(p.doi);
     const venue = String(p.venue).split(" ")[0] === "Cell" ? "Cell Reports" : String(p.venue).replace(/\s+\d.*$/, "");
     const visual = t
-      ? `          <img src="/assets/img/papers/${esc(t.file)}" width="480" height="320" alt="${esc(t.figure.number + ": " + t.figure.title)}" loading="lazy" decoding="async">`
+      ? `          <img src="/assets/img/papers/${esc(t.file)}" width="480" height="320" alt="${esc(t.kind === "illustration" ? t.figure.title : t.figure.number + ": " + t.figure.title)}" loading="lazy" decoding="async">`
       : `          <div class="badge" aria-hidden="true"><span>${esc(venue)}</span><b>${esc(p.year)}</b></div>`;
     return [
       `        <li class="paper">`,
@@ -367,7 +384,9 @@ function copyPublic() {
 
 function assetVersion() {
   const h = createHash("sha256");
-  for (const f of ["assets/css/site.css", "assets/js/fx.js", "assets/fonts/open-sans-300.woff2", "assets/fonts/open-sans-400.woff2", "assets/fonts/open-sans-italic-300.woff2", "assets/fonts/open-sans-italic-400.woff2"]) h.update(fs.readFileSync(path.join(SRC, f)));
+  for (const f of ["assets/css/site.css", "assets/js/fx.js", "assets/js/volcano.js", "assets/data/volcano.json", "assets/fonts/open-sans-300.woff2", "assets/fonts/open-sans-400.woff2", "assets/fonts/open-sans-italic-300.woff2", "assets/fonts/open-sans-italic-400.woff2"]) h.update(fs.readFileSync(path.join(SRC, f)));
+  const fxDir = path.join(SRC, "assets", "js", "fx");
+  if (fs.existsSync(fxDir)) for (const f of fs.readdirSync(fxDir).sort()) h.update(f).update(fs.readFileSync(path.join(fxDir, f)));
   return h.digest("hex").slice(0, 10);
 }
 
@@ -380,6 +399,8 @@ function render(html, page, vars, lang = null) {
       .replace(/href="\/projects\/([a-z-]+)\/"/g, (m, p) => (`/projects/${p}/` === lang.home ? `href="${lang.home}${lang.lang.tag}/"` : m));
   }
   if (page) out = out.replace(`data-nav="${page}"`, `data-nav="${page}" aria-current="page"`);
+  if (/\sid="about"/.test(out)) out = out.replace(/href="\/#about"/g, 'href="#about"');
+  if (page === "spacr") out = out.replace(/href="\/projects\/spacr\/#/g, 'href="#');
   out = out.replace(/\{\{([A-Z_]+)\}\}/g, (m, k) => {
     if (!(k in vars)) throw new Error(`unfilled placeholder ${m}`);
     return vars[k];
@@ -456,7 +477,8 @@ function sentinelWords(plainHtml, publicText) {
     .replace(/<[^>]+>/g, " ")
     .replace(/&[a-z#0-9]+;/gi, " ");
   const words = new Set((text.match(/[A-Za-z][A-Za-z_-]{7,}/g) || []).map((w) => w.toLowerCase()));
-  const pub = new Set((publicText.match(/[A-Za-z][A-Za-z_-]{7,}/g) || []).map((w) => w.toLowerCase()));
+  const pubText = publicText + " " + publicText.replace(/([a-z])([A-Z])/g, "$1 $2");
+  const pub = new Set((pubText.match(/[A-Za-z][A-Za-z_-]{7,}/g) || []).map((w) => w.toLowerCase()));
   return [...words].filter((w) => !pub.has(w));
 }
 
@@ -468,7 +490,7 @@ async function main() {
   }
   const stats = await statsVars(readJSON(path.join(DATA, "papers.json")).papers.length);
   const ASSET_VERSION = assetVersion();
-  const varsFor = (tr) => ({ ...spacrVars(meta, tr), ...showcaseVars(tr), ...papersVars(tr), ...stats, ASSET_VERSION });
+  const varsFor = (tr) => ({ ...spacrVars(meta, tr), ...showcaseVars(tr), ...papersVars(tr), ...stats, ...imageVars(), ASSET_VERSION });
   await refreshPaperCandidates();
 
   const i18nPages = new Map();
@@ -508,7 +530,7 @@ async function main() {
       log(`i18n ${dir}/${lang.tag}/: ${known} of ${multi.english.size} strings translated${lang.status ? `, status "${lang.status}"` : ""}`);
     }
   }
-  for (const f of walk(DIST).filter((f) => /\.(css|js|svg|txt)$/.test(f))) publicText += fs.readFileSync(f, "utf8");
+  for (const f of walk(DIST).filter((f) => /\.(css|js|json|svg|txt)$/.test(f))) publicText += fs.readFileSync(f, "utf8");
 
   fs.rmSync(path.join(ROOT, ".stage"), { recursive: true, force: true });
   const tmp = fs.mkdtempSync(path.join(ROOT, ".stage-"));

@@ -142,6 +142,53 @@
    ]
   },
   {
+   "id": "pv",
+   "title": "Toxoplasma vacuoles: parasitophorous vacuole segmentation",
+   "input_label": "Toxoplasma",
+   "text": "One fluorescence image of the Toxoplasma channel from an infected host-cell monolayer. Parasitophorous vacuoles are segmented by spaCR's PV model. This well is in the dataset's held-out test split and was not used to train the model.",
+   "base": "pv-raw.webp",
+   "alt": "Greyscale fluorescence image with bright, rounded Toxoplasma vacuoles scattered over faint host cells",
+   "width": 1024,
+   "height": 1024,
+   "classes": [
+    {
+     "name": "Toxoplasma vacuoles",
+     "color": "#FF00FF",
+     "count": 125,
+     "layer": "pv-vacuole.webp",
+     "model": {
+      "display": "toxoplasma_pv_v4 (round 7)",
+      "url": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r7",
+      "note": "Test F1 0.854 on 11 held-out wells (model card). 136 vacuoles in the hand-curated mask; F1 0.874 at IoU 0.5 on this well"
+     }
+    }
+   ],
+   "facts": [
+    [
+     "Input",
+     "Toxoplasma fluorescence channel, greyscale"
+    ],
+    [
+     "Image",
+     "Anchor well plate7_K07_8, test split (held out from training)",
+     "https://huggingface.co/datasets/einarolafsson/toxoplasma-pv-segmentation-dataset-r7"
+    ],
+    [
+     "Licence",
+     "CC BY 4.0"
+    ],
+    [
+     "Size",
+     "1994 × 1994 px, shown at 1024 px"
+    ],
+    [
+     "Figure",
+     "With caption and checksums",
+     "/assets/img/models/pv-figure.webp"
+    ]
+   ]
+  },
+  {
    "id": "plaque",
    "title": "Plaque assay: Toxoplasma plaques",
    "input_label": "Well",
@@ -159,7 +206,7 @@
      "model": {
       "display": "toxoplasma_plaque_v3",
       "url": "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam-r5-geldoc",
-      "note": "Candidate model, not yet the default. 98 plaques in the hand-drawn mask; F1 0.964 at IoU 0.5 on this well"
+      "note": "The default plaque model in the zoo since 2026-10-10. 98 plaques in the hand-drawn mask; F1 0.964 at IoU 0.5 on this well"
      }
     }
    ],

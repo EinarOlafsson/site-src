@@ -1,0 +1,106 @@
+{
+ "item": "N687 v3 showcase, PV figure",
+ "generated": "2026-10-10",
+ "command": "CUDA_VISIBLE_DEVICES='' run_capped.sh 24G python -I /mnt/firecuda2/Claude/scratch/site-v3/tools/showcase/run_pv.py plate7_K07_8",
+ "model": {
+  "key": "toxoplasma_pv_v4",
+  "display_name": "Toxoplasma PV v4 (round 7)",
+  "weights_name": "cpsam_v2_toxo_r7",
+  "repo_id": "einarolafsson/toxoplasma-pv-segmentation-cpsam-r7",
+  "repo_file": "weights/cpsam_v2_toxo_r7",
+  "url": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r7",
+  "weights_path": "/home/olafsson/.cache/huggingface/hub/models--einarolafsson--toxoplasma-pv-segmentation-cpsam-r7/snapshots/555ef917ef02cd6b7561545f4b9d1fa62bd8c54a/weights/cpsam_v2_toxo_r7",
+  "sha256": "621a475c9bfb6865be7de12c5c4638f4509d734e0c4d39adb15ea541e48961d2",
+  "zoo_sha256": "621a475c9bfb6865be7de12c5c4638f4509d734e0c4d39adb15ea541e48961d2",
+  "sha256_match": true,
+  "why_default": "Newest non-alternative PV entry in spacr.model_zoo.BUNDLED_REMOTE_MODELS; toxoplasma_pv_v5 (round 8) is labelled 'ALTERNATIVE, NOT BETTER ... prefer toxoplasma_pv_v4'; the zoo has no explicit default flag and the Model Zoo screen lists families newest version first; neither PV entry is alpha-gated",
+  "card_test_metric": {
+   "set": "11 anchor wells (10 nonempty scored, 683 objects)",
+   "f1_at_iou_0_5": 0.8536,
+   "stock_cpsam_v2_f1": 0.7648,
+   "cv_f1": "0.8142 +/- 0.0145 (5-fold)"
+  }
+ },
+ "image": {
+  "dataset": "einarolafsson/toxoplasma-pv-segmentation-dataset-r7",
+  "dataset_url": "https://huggingface.co/datasets/einarolafsson/toxoplasma-pv-segmentation-dataset-r7",
+  "licence": "CC BY 4.0 (dataset card)",
+  "stem": "plate7_K07_8",
+  "file": "images/plate7_K07_8.tif",
+  "mask": "masks/plate7_K07_8.tif",
+  "split": "test",
+  "fold": "final_holdout",
+  "image_sha256": "57e1a26ecaec52810664991487475d3f1b49bfab6d845b5f07816a55af3248f8",
+  "mask_sha256": "d3c222c5f51e3c5000286c1a6420f232d4ac990bd7f1740407c53e1476b07ff3",
+  "shape": [
+   1994,
+   1994
+  ],
+  "dtype": "uint16",
+  "channel": "single Toxoplasma fluorescence channel, 2-D greyscale"
+ },
+ "settings": {
+  "normalize": true,
+  "flow_threshold": 0.4,
+  "cellprob_threshold": 0.0,
+  "diameter": null,
+  "min_size": 15,
+  "max_size_fraction": 1.0,
+  "channels": "single grayscale channel, 2-D input (cellpose 4 has no channels argument)",
+  "input": "float32 of the raw uint16 values; cellpose 1st-99th percentile normalisation",
+  "source": "r7 card and training/report.json give no eval settings; options of spacr features/data/model_compare_2026-10-10/compare.py (the maintainer's PV head-to-head that scored toxoplasma_pv_v4), Cellpose 4 defaults otherwise"
+ },
+ "environment": {
+  "cellpose": "4.2.1.1",
+  "torch": "2.13.0+cu130",
+  "python": "3.12.13",
+  "device": "cpu fp32",
+  "torch_threads": 16,
+  "spacr_worktree": "/mnt/wd4tb/spacr-worktrees/claude-n687-v3"
+ },
+ "timings_s": {
+  "weights_fetch": 85.2,
+  "model_load": 3.1,
+  "eval": 934.1
+ },
+ "counts": {
+  "predicted": 125,
+  "ground_truth": 136
+ },
+ "comparison": {
+  "matching": "cellpose.metrics.average_precision (Hungarian matching), IoU 0.5",
+  "tp": 114,
+  "fp": 11,
+  "fn": 22,
+  "precision": 0.912,
+  "recall": 0.8382,
+  "f1_at_iou_0_5": 0.8736,
+  "model_card_qc_for_this_field": "qc/r7_perimage.csv: n_true 136, n_pred 125, tp 114, fp 11, fn 22, F1 0.8736"
+ },
+ "masks_tif": "/mnt/wd4tb/scratch/n687v3/pv/work/pv-vacuole.tif",
+ "render": {
+  "out_dir": "/mnt/wd4tb/scratch/n687v3/pv/out",
+  "size": [
+   1024,
+   1024
+  ],
+  "scale": 0.5135,
+  "raw_stretch": "1st-99.8th percentile, grayscale",
+  "raw_webp": {
+   "quality": 80,
+   "bytes": 19886
+  },
+  "figure_webp": {
+   "quality": 82,
+   "bytes": 56694,
+   "size": [
+    1024,
+    1124
+   ]
+  },
+  "layer_webp": {
+   "lossless": true,
+   "bytes": 5502
+  }
+ }
+}

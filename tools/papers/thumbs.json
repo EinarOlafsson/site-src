@@ -1,0 +1,56 @@
+[
+  {
+    "doi": "10.64898/2026.07.20.739547",
+    "short": "Kaur H et al., bioRxiv 2026 (GRA8)",
+    "file": "kaur2026_biorxiv_fig4c.webp",
+    "licence": "CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/); US Government work, not subject to copyright under 17 USC 105",
+    "licence_sources": [
+      "https://api.biorxiv.org/details/biorxiv/10.64898/2026.07.20.739547 (license: cc0; checked 2026-10-10)",
+      "https://api.crossref.org/works/10.64898/2026.07.20.739547 (vor: https://creativecommons.org/publicdomain/zero/1.0/)",
+      "https://www.biorxiv.org/content/early/2026/07/23/2026.07.20.739547.source.xml (<license> CC0: 'US Government work ... also made available for use under a CC0 license')"
+    ],
+    "reusable": true,
+    "figure": {
+      "number": "Fig. 4",
+      "panel": "4C (the six microscopy tiles: WT, Δgra8, Δgra8GRA8 merges and their ALIX zoom insets), rearranged as a 3x2 grid",
+      "title": "TgGRA8 is essential for PV recruitment of ALG-2",
+      "source_url": "https://www.biorxiv.org/content/biorxiv/early/2026/07/23/2026.07.20.739547/F4.large.jpg",
+      "note": "Panel C shows ALIX recruitment to the PV, lost in Δgra8 and restored by complementation; spaCR quantified PV/cytoplasm recruitment (>10,000 PVs per replicate) in panels B, D, F. Bar charts, axis text and panel letters left out; strain and 'ALIX at the PV' labels re-typeset. F4.large.jpg (1280x929) is the largest image bioRxiv serves."
+    },
+    "attribution": "Fig. 4C from Kaur et al. bioRxiv 2026, CC0 1.0 (cropped and rearranged)",
+    "badge": {
+      "journal": "bioRxiv",
+      "year": 2026
+    },
+    "bytes": 23968,
+    "size_px": "480x320"
+  },
+  {
+    "doi": "10.1016/j.celrep.2025.115694",
+    "short": "McFadden MJ et al., Cell Reports 2025 (PMC12166542)",
+    "file": "mcfadden2025_celrep_illustration.webp",
+    "kind": "illustration",
+    "licence": "Illustration: our own work (spaCR maintainers), from data under CC BY 4.0. Paper itself: CC BY-NC-ND 4.0, so no figure from it is used",
+    "paper_licence": "CC BY-NC-ND 4.0 (http://creativecommons.org/licenses/by-nc-nd/4.0/)",
+    "licence_sources": [
+      "https://api.crossref.org/works/10.1016/j.celrep.2025.115694 (vor: http://creativecommons.org/licenses/by-nc-nd/4.0/; checked 2026-10-10)",
+      "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI:10.1016/j.celrep.2025.115694&resultType=core (license: cc by-nc-nd, PMC12166542)",
+      "https://zenodo.org/api/records/4501412 (data: license cc-by-4.0)"
+    ],
+    "reusable": true,
+    "figure": {
+      "number": "Illustration",
+      "panel": null,
+      "title": "Four HeLa cells expressing the calcium sensor Yellow Cameleon 3.60, coloured by YFP/CFP ratio (warm = high calcium), outlined and tracked with spaCR, with each tracked cell's calcium trace oscillating after histamine and stopping after pyrilamine",
+      "source_url": "https://doi.org/10.5281/zenodo.4501412",
+      "note": "Shows the method McFadden et al. used spaCR for (segment and track cells over time, quantify single-cell calcium oscillations), not their data. Data: Mahlandt EK, Arts JJG, Goedhart J (2021) Example data from timelapse fluorescence imaging experiments, Zenodo 10.5281/zenodo.4501412, YCaM.zip, CC BY 4.0. Cellpose (cpsam) via spacr.utils._choose_model on every 4th frame, CPU; linked with spaCR's trackpy helper spacr.timelapse._facilitate_trackin_with_adaptive_removal; frame 46 of 121 shown."
+    },
+    "attribution": "Illustration made with spaCR from Mahlandt, Arts & Goedhart, Zenodo 10.5281/zenodo.4501412 (CC BY 4.0); not from the paper",
+    "badge": {
+      "journal": "Cell Reports",
+      "year": 2025
+    },
+    "bytes": 19246,
+    "size_px": "480x320"
+  }
+]

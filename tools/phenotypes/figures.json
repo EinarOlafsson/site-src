@@ -1,0 +1,95 @@
+{
+ "license": "CC BY 4.0 (data); figures made with spaCR",
+ "figures": [
+  {
+   "file": "class_example_crops.webp",
+   "alt": "Two three-by-three grids of single-cell fluorescence crops on black. Left grid labelled SAG1, right grid labelled GRA14. Each crop shows a HeLa cell with a blue nucleus, green GFP-TSG101 cytoplasm and red Toxoplasma vacuoles; in most SAG1 crops the vacuoles look yellow where green overlaps red, in the GRA14 crops they stay red.",
+   "caption": "The 9 held-out cells per class that spaCR's CNN classified correctly with the highest confidence, from 405 test cells in 4 wells never used for training (B02, C01, E02, G01); test accuracy 0.901.",
+   "provenance": "spaCR GFP-TSG101 recruitment screen, plate 1 (HF datasets einarolafsson/spacr-example-screen and einarolafsson/spacr-example-hit, CC BY 4.0; Olafsson EB et al.); 224 px single-cell PNG crops of those cells read from plate1-data.tar of spacr-example-screen (blue nuclei, green GFP-TSG101, red Toxoplasma); classes are the screen's control wells: column 1 (wells A01-H01, enriched for guides against SAG1, TGGT1_233460, the negative control) versus column 2 (A02-H02, enriched for guides against GRA14, TGGT1_239740, the positive control whose loss removes TSG101 recruitment to the vacuole). Classifier: MobileNetV3-small trained by spacr.deep_spacr.train_test_model; tiles drawn by spacr.plot.plot_image_grid (1-99.5 percentile stretch per channel).",
+   "width": 1200,
+   "height": 660,
+   "bytes": 84684,
+   "sha256": "32ce0788a8679ad2c3e0652544a0de5e5b276b5f50a52544110b708a416a2ffd"
+  },
+  {
+   "file": "xgb_confusion_matrix.webp",
+   "alt": "Two-by-two confusion matrix heatmap in blues, true class on rows (SAG1 c1, GRA14 c2), predicted class on columns, with row-normalised fractions 0.81, 0.19, 0.12 and 0.88.",
+   "caption": "XGBoost on 76 GFP-TSG101-channel measurements per cell, 5-fold cross-validation with whole wells held out: 1,277 control cells from 16 wells, accuracy 0.853 (445 of 547 SAG1-well and 644 of 730 GRA14-well cells correct).",
+   "provenance": "spaCR GFP-TSG101 recruitment screen, plate 1 (HF datasets einarolafsson/spacr-example-screen and einarolafsson/spacr-example-hit, CC BY 4.0; Olafsson EB et al.); per-cell measurements from measurements.db of spacr-example-hit (the plate-1 cut of spacr-example-screen, fields 1-4); classes are the screen's control wells: column 1 (wells A01-H01, enriched for guides against SAG1, TGGT1_233460, the negative control) versus column 2 (A02-H02, enriched for guides against GRA14, TGGT1_239740, the positive control whose loss removes TSG101 recruitment to the vacuole). Model and features from spacr.ml.generate_ml_scores; folds from spacr.io.make_cv_folds grouped by well; figure by spacr.classifier_evaluation._write_confusion_figure (title removed).",
+   "width": 900,
+   "height": 750,
+   "bytes": 15668,
+   "sha256": "17f903f86d79ec2383c4dfce6d7741790f0e06289a61c4bcd899166d75d333af"
+  },
+  {
+   "file": "xgb_roc_pr.webp",
+   "alt": "Two panels. Left: ROC curve rising steeply toward the top-left corner above a dashed diagonal chance line, legend AUC = 0.922. Right: precision-recall curve mostly between 0.85 and 0.97 precision, falling at the highest recall, above a dashed prevalence line at 0.57, legend AP = 0.913.",
+   "caption": "ROC (AUC 0.922) and precision-recall (average precision 0.913) of the same well-held-out XGBoost predictions for 1,277 cells, GRA14 wells as the positive class (prevalence 0.57).",
+   "provenance": "spaCR GFP-TSG101 recruitment screen, plate 1 (HF datasets einarolafsson/spacr-example-screen and einarolafsson/spacr-example-hit, CC BY 4.0; Olafsson EB et al.); per-cell measurements from measurements.db of spacr-example-hit (the plate-1 cut of spacr-example-screen, fields 1-4); classes are the screen's control wells: column 1 (wells A01-H01, enriched for guides against SAG1, TGGT1_233460, the negative control) versus column 2 (A02-H02, enriched for guides against GRA14, TGGT1_239740, the positive control whose loss removes TSG101 recruitment to the vacuole). Out-of-fold probabilities of the generate_ml_scores XGBoost settings (sklearn clone per fold); curves by sklearn.metrics in spaCR's figure style, saved with spacr.plot.save_figure.",
+   "width": 1200,
+   "height": 550,
+   "bytes": 24852,
+   "sha256": "f1486a10252e5519566b03b8cd58bd67cd8a2c9759c4ce7c81b5b3764e1fd1a1"
+  },
+  {
+   "file": "cnn_confusion_matrix.webp",
+   "alt": "Two-by-two confusion matrix heatmap in blues for the image classifier, true class on rows, predicted on columns, fractions 0.92, 0.08, 0.12 and 0.88.",
+   "caption": "spaCR's CNN on single-cell crops of 405 held-out cells from 4 test wells: accuracy 0.901 (184 of 200 SAG1-well and 181 of 205 GRA14-well cells correct).",
+   "provenance": "spaCR GFP-TSG101 recruitment screen, plate 1 (HF datasets einarolafsson/spacr-example-screen and einarolafsson/spacr-example-hit, CC BY 4.0; Olafsson EB et al.); 224 px single-cell PNG crops of those cells read from plate1-data.tar of spacr-example-screen (blue nuclei, green GFP-TSG101, red Toxoplasma); classes are the screen's control wells: column 1 (wells A01-H01, enriched for guides against SAG1, TGGT1_233460, the negative control) versus column 2 (A02-H02, enriched for guides against GRA14, TGGT1_239740, the positive control whose loss removes TSG101 recruitment to the vacuole). Dataset by spacr.io.generate_training_dataset (split by well), MobileNetV3-small by spacr.deep_spacr.train_test_model; figure by spacr.classifier_evaluation._write_confusion_figure (title removed).",
+   "width": 900,
+   "height": 750,
+   "bytes": 15770,
+   "sha256": "80bf82654223630762d79e7c4a7134a4c0a41e9685842e883c2aec304ec3ab8e"
+  },
+  {
+   "file": "cnn_roc_pr.webp",
+   "alt": "Two panels for the image classifier. Left: ROC curve hugging the top-left corner above a dashed chance line, legend AUC = 0.968. Right: precision-recall curve near 1.0 precision until high recall, above a dashed prevalence line at 0.51, legend AP = 0.970.",
+   "caption": "ROC (AUC 0.968) and precision-recall (average precision 0.970) of the CNN on 405 cells from 4 held-out wells, GRA14 wells as the positive class.",
+   "provenance": "spaCR GFP-TSG101 recruitment screen, plate 1 (HF datasets einarolafsson/spacr-example-screen and einarolafsson/spacr-example-hit, CC BY 4.0; Olafsson EB et al.); 224 px single-cell PNG crops of those cells read from plate1-data.tar of spacr-example-screen (blue nuclei, green GFP-TSG101, red Toxoplasma); classes are the screen's control wells: column 1 (wells A01-H01, enriched for guides against SAG1, TGGT1_233460, the negative control) versus column 2 (A02-H02, enriched for guides against GRA14, TGGT1_239740, the positive control whose loss removes TSG101 recruitment to the vacuole). Probabilities from the checkpoint written by spacr.deep_spacr.train_test_model; curves by sklearn.metrics in spaCR's figure style.",
+   "width": 1200,
+   "height": 550,
+   "bytes": 22706,
+   "sha256": "e4d929a5006307d1d1bf8ff8ea61b2fa66aa3ff61942f626af7b7aaef542eb44"
+  },
+  {
+   "file": "shap_beeswarm.webp",
+   "alt": "SHAP beeswarm: twelve feature names on the left, one row of coloured dots per feature along a horizontal SHAP value axis from about -1.1 to 1.4. The top rows, cell_channel_1_shannon_entropy and cell_channel_1_channel_2_M2_correlation_85, spread widest in both directions; lower rows cluster near zero.",
+   "caption": "SHAP values of the XGBoost model for 256 held-out cells from 3 wells (C02, D02, H01), top 12 of 76 features by mean |SHAP|; each dot is a cell coloured by its feature value (dark low, yellow high), and positive values push toward the GRA14 class.",
+   "provenance": "spaCR GFP-TSG101 recruitment screen, plate 1 (HF datasets einarolafsson/spacr-example-screen and einarolafsson/spacr-example-hit, CC BY 4.0; Olafsson EB et al.); per-cell measurements from measurements.db of spacr-example-hit (the plate-1 cut of spacr-example-screen, fields 1-4); classes are the screen's control wells: column 1 (wells A01-H01, enriched for guides against SAG1, TGGT1_233460, the negative control) versus column 2 (A02-H02, enriched for guides against GRA14, TGGT1_239740, the positive control whose loss removes TSG101 recruitment to the vacuole). SHAP values from spacr.ml._shap_values (TreeExplainer, tree_path_dependent) on the generate_ml_scores model; beeswarm drawn by spaCR's pyqtgraph FastPlot.add_beeswarm, as on the app's explanation panel.",
+   "width": 1200,
+   "height": 498,
+   "bytes": 42632,
+   "sha256": "4455afba01cfe5c8e88687dbc130ebfd2d5ca6943deea1b71b620f1297943ac3"
+  },
+  {
+   "file": "shap_waterfall_cell.webp",
+   "alt": "SHAP waterfall for one cell: ten horizontal arrows, red pushing right and blue pushing left, from the expected value 0.178 at the bottom to f(x) = 1.545 at the top; cell_channel_1_shannon_entropy adds +0.92 and cell_channel_1_channel_2_M2_correlation_85 adds +0.47.",
+   "caption": "Per-cell SHAP explanation of one held-out GRA14-well cell (plate 1, well C02, field 1, object 35): the model's base value of 0.178 log-odds plus the feature contributions gives 1.545, a GRA14 probability of 0.82.",
+   "provenance": "spaCR GFP-TSG101 recruitment screen, plate 1 (HF datasets einarolafsson/spacr-example-screen and einarolafsson/spacr-example-hit, CC BY 4.0; Olafsson EB et al.); per-cell measurements from measurements.db of spacr-example-hit (the plate-1 cut of spacr-example-screen, fields 1-4); classes are the screen's control wells: column 1 (wells A01-H01, enriched for guides against SAG1, TGGT1_233460, the negative control) versus column 2 (A02-H02, enriched for guides against GRA14, TGGT1_239740, the positive control whose loss removes TSG101 recruitment to the vacuole). SHAP values from spacr.ml._shap_values; waterfall drawn by shap.plots.waterfall (spaCR has no per-cell SHAP plot) and saved with spacr.plot.save_figure.",
+   "width": 1200,
+   "height": 547,
+   "bytes": 48916,
+   "sha256": "74031e0805c7eab2b5b21644f69ad5d6fc0cd1ff2904e70a3598b80cd920f47e"
+  },
+  {
+   "file": "xgb_feature_importance.webp",
+   "alt": "Horizontal grey bar chart of the 15 most important measurement features, longest bar at the top for cell_channel_1_channel_2_M2_correlation_85 (about 0.20), then cell_channel_1_shannon_entropy (about 0.13), with the remaining bars below 0.06.",
+   "caption": "Top 15 of 76 features by XGBoost importance for the model trained on 1,021 control cells from 13 wells; cell_channel_1_channel_2_M2_correlation_85 ranks first (0.196), then cell_channel_1_shannon_entropy (0.133).",
+   "provenance": "spaCR GFP-TSG101 recruitment screen, plate 1 (HF datasets einarolafsson/spacr-example-screen and einarolafsson/spacr-example-hit, CC BY 4.0; Olafsson EB et al.); per-cell measurements from measurements.db of spacr-example-hit (the plate-1 cut of spacr-example-screen, fields 1-4); classes are the screen's control wells: column 1 (wells A01-H01, enriched for guides against SAG1, TGGT1_233460, the negative control) versus column 2 (A02-H02, enriched for guides against GRA14, TGGT1_239740, the positive control whose loss removes TSG101 recruitment to the vacuole). Importances are the fitted XGBClassifier's feature_importances_ written by spacr.ml.generate_ml_scores; bars drawn by spacr.plot.plot_feature_importance.",
+   "width": 1200,
+   "height": 737,
+   "bytes": 48918,
+   "sha256": "5ac823a74f71f371fffff9de1d5c7c623bd01c124b8264069e0294625e366c47"
+  },
+  {
+   "file": "saliency_maps.webp",
+   "alt": "Four rows of five single-cell crops: SAG1 crops, their Grad-CAM heatmaps, GRA14 crops, their Grad-CAM heatmaps. Heatmaps are jet-coloured over a grey version of the crop; on GRA14 cells the hot spot sits on the red parasite vacuoles, on SAG1 cells heat also falls on the black background corners.",
+   "caption": "Grad-CAM maps of the CNN for the 5 most confident correct held-out cells per class; on GRA14-well cells 4-13% of the map falls on the masked black background, on SAG1-well cells 18-53%.",
+   "provenance": "spaCR GFP-TSG101 recruitment screen, plate 1 (HF datasets einarolafsson/spacr-example-screen and einarolafsson/spacr-example-hit, CC BY 4.0; Olafsson EB et al.); 224 px single-cell PNG crops of those cells read from plate1-data.tar of spacr-example-screen (blue nuclei, green GFP-TSG101, red Toxoplasma); classes are the screen's control wells: column 1 (wells A01-H01, enriched for guides against SAG1, TGGT1_233460, the negative control) versus column 2 (A02-H02, enriched for guides against GRA14, TGGT1_239740, the positive control whose loss removes TSG101 recruitment to the vacuole). Maps from spacr.attribution.AttributionMapGenerator(method='gradcam', default last convolution), the generator spacr.deep_spacr.generate_activation_map uses.",
+   "width": 1200,
+   "height": 970,
+   "bytes": 84386,
+   "sha256": "6df59d2c998dad93410922af58345df7af350d75b0a950b28d214f867a04e57e"
+  }
+ ]
+}

@@ -1,14 +1,29 @@
 /*
  * Site scripts.
  *
- * Background: a WebGL port of spaCR's "spaCR advection" theme
- * (spacr/qt/widgets/ambient.py, _DataArtEngine._frame_genetic_advection).
- * Each grain has a fixed (u, v, depth). Its position at time t is a closed
- * form: travel along x, a sum of three sines in y, then three wrapping
- * vortices that rotate grains near their centres. A trail is extrapolated
- * from the last three samples with clamped curvature, and grains within the
- * pointer radius are pulled towards the pointer, as in the app. The vertex
- * shader evaluates all of it, so the CPU only uploads the time.
+ * Background: WebGL ports of spaCR's ambient themes (spacr/qt/widgets/
+ * ambient.py). This file holds the shared core (canvas, clock, pointer,
+ * pause, reduced motion, CSS fallback, theme picker) and the default theme,
+ * "spaCR advection" (_DataArtEngine._frame_genetic_advection). Every other
+ * theme lives in assets/js/fx/<slug>.js and is fetched only when picked; it
+ * calls spacrFx.register(slug, factory).
+ *
+ * Theme contract. factory(env) returns
+ *   { t0, resize(w, h, dpr), restyle(dark), frame(t, dt, input), degrade(), dispose() }
+ * frame draws the whole frame, clear included; dt 0 means "draw the current
+ * state without advancing". input = { x, y, pull, clicks: [{ x, y, t }] }
+ * with x, y in 0..1 from the top left, pull 0..1 (pointer presence,
+ * smoothed) and clicks in theme time, newest last, at most 8, under 5 s old.
+ * GL objects come from env.program/buffer/texture/framebuffer/renderbuffer;
+ * the core deletes them and resets GL state when the theme is switched away,
+ * so switching never leaks.
+ *
+ * Advection: each grain has a fixed (u, v, depth). Its position at time t is
+ * a closed form: travel along x, a sum of three sines in y, then three
+ * wrapping vortices that rotate grains near their centres. A trail is
+ * extrapolated from the last three samples with clamped curvature, and
+ * grains within the pointer radius are pulled towards the pointer, as in the
+ * app. The vertex shader evaluates all of it, so the CPU only uploads time.
  *
  * Reduced motion: one still frame, no loop. Pause: the same, until resumed.
  * No WebGL: the CSS gradient in site.css stays visible.
@@ -26,6 +41,10 @@
   try { ui = JSON.parse(document.getElementById("i18n-ui").textContent) || {}; } catch (e) { /* English page */ }
   function T(k, en) { return typeof ui[k] === "string" ? ui[k] : en; }
 
+  var self = document.currentScript;
+  var assetVer = (self && /[?&]v=([^&#]+)/.exec(self.src) || [])[1] || "";
+  var themeBase = self && self.src ? self.src.replace(/[?#].*$/, "").replace(/[^\/]*$/, "") + "fx/" : "/assets/js/fx/";
+
   var reduceQuery = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
   var state = {
     reduced: !!(reduceQuery && reduceQuery.matches),
@@ -37,6 +56,15 @@
     root.classList.toggle("fx-paused", state.paused);
   }
   syncClasses();
+
+  var DEFAULT_FX = "advection";
+  var fxMenu = document.querySelector("[data-fx-menu]");
+  var fxChoices = fxMenu ? [].slice.call(fxMenu.querySelectorAll("[data-fx-theme]")) : [];
+  var FX_SLUGS = fxChoices.map(function (b) { return b.getAttribute("data-fx-theme"); });
+  if (FX_SLUGS.indexOf(DEFAULT_FX) < 0) FX_SLUGS.unshift(DEFAULT_FX);
+  function validFx(s) { return typeof s === "string" && FX_SLUGS.indexOf(s) >= 0 ? s : DEFAULT_FX; }
+  var fxWanted = validFx(store.get("fx-theme"));
+  root.setAttribute("data-fx", fxWanted);
 
   var field = null;
   var clips = [];
@@ -95,7 +123,47 @@
   var PALETTE = ["#3B82F6", "#FF00FF", "#00CEC8"];
   var BG = { dark: "#0f1115", light: "#fafaf9" };
 
-  var VERT = [
+  function hexToRgb(hex) {
+    var v = parseInt(hex.slice(1), 16);
+    return [(v >> 16 & 255) / 255, (v >> 8 & 255) / 255, (v & 255) / 255];
+  }
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      var t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+
+  var registry = {};
+  window.spacrFx = {
+    register: function (slug, factory) {
+      if (typeof factory !== "function") return;
+      var waiting = registry[slug];
+      registry[slug] = factory;
+      if (typeof waiting === "object" && waiting) waiting.forEach(function (cb) { cb(factory); });
+    }
+  };
+  function loadTheme(slug, cb) {
+    if (slug === DEFAULT_FX) { cb(advection); return; }
+    var have = registry[slug];
+    if (typeof have === "function") { cb(have); return; }
+    if (have) { have.push(cb); return; }
+    registry[slug] = [cb];
+    var s = document.createElement("script");
+    s.src = themeBase + slug + ".js" + (assetVer ? "?v=" + assetVer : "");
+    s.async = true;
+    s.onerror = function () {
+      var list = registry[slug];
+      delete registry[slug];
+      if (window.console) console.warn("fx: could not load the " + slug + " background");
+      if (typeof list === "object" && list) list.forEach(function (f) { f(null); });
+    };
+    document.head.appendChild(s);
+  }
+
+  var ADV_VERT = [
     "precision highp float;",
     "attribute vec4 a;",
     "attribute float c;",
@@ -163,7 +231,7 @@
     "  gl_Position = vec4(p.x * 2.0 - 1.0, 1.0 - p.y * 2.0, 0.0, 1.0);",
     "}"
   ].join("\n");
-  var FRAG = [
+  var ADV_FRAG = [
     "precision mediump float;",
     "varying vec4 vc;",
     "void main() {",
@@ -173,53 +241,17 @@
     "}"
   ].join("\n");
 
-  function hexToRgb(hex) {
-    var v = parseInt(hex.slice(1), 16);
-    return [(v >> 16 & 255) / 255, (v >> 8 & 255) / 255, (v & 255) / 255];
-  }
-  function mulberry32(a) {
-    return function () {
-      a |= 0; a = a + 0x6D2B79F5 | 0;
-      var t = Math.imul(a ^ a >>> 15, 1 | a);
-      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-      return ((t ^ t >>> 14) >>> 0) / 4294967296;
-    };
-  }
-
-  function makeField(canvas) {
-    var gl = null;
-    try {
-      var opts = { antialias: false, alpha: false, depth: false, stencil: false, powerPreference: "low-power", preserveDrawingBuffer: false };
-      gl = canvas.getContext("webgl", opts) || canvas.getContext("experimental-webgl", opts);
-    } catch (e) { gl = null; }
-    if (!gl) return null;
-
-    function sh(type, src) {
-      var o = gl.createShader(type); gl.shaderSource(o, src); gl.compileShader(o);
-      if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(o));
-      return o;
-    }
-    var prog;
-    try {
-      prog = gl.createProgram();
-      gl.attachShader(prog, sh(gl.VERTEX_SHADER, VERT));
-      gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FRAG));
-      gl.linkProgram(prog);
-      if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
-    } catch (e) {
-      if (window.console) console.warn("fx: shader failed, using the CSS fallback", e);
-      return null;
-    }
+  function advection(env) {
+    var gl = env.gl;
+    var prog = env.program(ADV_VERT, ADV_FRAG);
     gl.useProgram(prog);
     function U(name) { return gl.getUniformLocation(prog, name); }
     var u = {
       t: U("t"), res: U("res"), ptr: U("ptr"), pull: U("pull"), radius: U("radius"), phase: U("phase"),
       trailScale: U("trailScale"), trails: U("trails"), psize: U("psize"), vort: U("vort"), col: U("col"), gain: U("gain")
     };
-
-    var small = Math.min(window.innerWidth, window.innerHeight) < 600 || (navigator.hardwareConcurrency || 4) <= 4;
-    var GRAINS = small ? 4000 : 12000;
-    var TRAILS = small ? 6 : 9;
+    var GRAINS = env.small ? 4000 : 12000;
+    var TRAILS = env.small ? 6 : 9;
     var rng = mulberry32(20261010);
     var data = new Float32Array(GRAINS * TRAILS * 5);
     var o = 0;
@@ -231,14 +263,10 @@
         data[o++] = gu; data[o++] = gv; data[o++] = gd; data[o++] = k; data[o++] = ci;
       }
     }
-    var buf = gl.createBuffer();
+    var buf = env.buffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
     var la = gl.getAttribLocation(prog, "a"), lc = gl.getAttribLocation(prog, "c");
-    gl.enableVertexAttribArray(la);
-    gl.vertexAttribPointer(la, 4, gl.FLOAT, false, 20, 0);
-    gl.enableVertexAttribArray(lc);
-    gl.vertexAttribPointer(lc, 1, gl.FLOAT, false, 20, 16);
 
     var anchors = [];
     for (var i = 0; i < 5; i++) anchors.push([rng(), rng(), rng()]);
@@ -247,43 +275,194 @@
     gl.uniform1f(u.trails, TRAILS);
     gl.uniform1f(u.trailScale, 11 / (TRAILS - 1));
     gl.uniform1f(u.radius, 0.22);
-    gl.enable(gl.BLEND);
 
     var count = GRAINS * TRAILS;
-    var ptr = [0.5, 0.5], pull = 0, pullTarget = 0, lastMove = 0;
-    var time = 40, last = 0, running = false, raf = 0;
-    var slow = 0, frames = 0;
     var dark = true;
+    return {
+      t0: 40,
+      resize: function (w, h, dpr) {
+        gl.useProgram(prog);
+        gl.uniform2f(u.res, w, h);
+        gl.uniform1f(u.psize, Math.max(1.5, 1.6 * dpr));
+      },
+      restyle: function (d) {
+        dark = d;
+        var cols = PALETTE.map(hexToRgb);
+        if (!dark) cols = cols.map(function (c) { return c.map(function (x) { return x * 0.82; }); });
+        gl.useProgram(prog);
+        gl.uniform3fv(u.col, new Float32Array([].concat(cols[0], cols[1], cols[2])));
+        gl.uniform1f(u.gain, dark ? 0.62 : 0.55);
+      },
+      frame: function (t, dt, input) {
+        var bg = env.bg();
+        gl.clearColor(bg[0], bg[1], bg[2], 1);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.useProgram(prog);
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+        gl.enableVertexAttribArray(la);
+        gl.vertexAttribPointer(la, 4, gl.FLOAT, false, 20, 0);
+        gl.enableVertexAttribArray(lc);
+        gl.vertexAttribPointer(lc, 1, gl.FLOAT, false, 20, 16);
+        gl.enable(gl.BLEND);
+        if (dark) gl.blendFunc(gl.ONE, gl.ONE);
+        else gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+        gl.uniform1f(u.t, t);
+        gl.uniform2f(u.ptr, input.x, input.y);
+        gl.uniform1f(u.pull, input.pull);
+        gl.drawArrays(gl.POINTS, 0, count);
+      },
+      degrade: function () {
+        if (count <= TRAILS * 1500) return false;
+        count = Math.max(TRAILS * 1500, Math.floor(count * 0.6 / TRAILS) * TRAILS);
+        return true;
+      }
+    };
+  }
+
+  function makeField(canvas) {
+    var gl = null;
+    try {
+      var opts = { antialias: false, alpha: false, depth: false, stencil: false, powerPreference: "low-power", preserveDrawingBuffer: false };
+      gl = canvas.getContext("webgl", opts) || canvas.getContext("experimental-webgl", opts);
+    } catch (e) { gl = null; }
+    if (!gl) return null;
+
+    var small = Math.min(window.innerWidth, window.innerHeight) < 600 || (navigator.hardwareConcurrency || 4) <= 4;
+    var owned = [];
+    function own(kind, obj) { owned.push([kind, obj]); return obj; }
+    function compile(type, src) {
+      var o = own("Shader", gl.createShader(type));
+      gl.shaderSource(o, src); gl.compileShader(o);
+      if (!gl.getShaderParameter(o, gl.COMPILE_STATUS) && !gl.isContextLost()) throw new Error(gl.getShaderInfoLog(o));
+      return o;
+    }
+    var maxAttribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
+    var maxUnits = Math.min(8, gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS));
+    function resetState() {
+      for (var i = 0; i < maxAttribs; i++) gl.disableVertexAttribArray(i);
+      for (var j = 0; j < maxUnits; j++) { gl.activeTexture(gl.TEXTURE0 + j); gl.bindTexture(gl.TEXTURE_2D, null); }
+      gl.activeTexture(gl.TEXTURE0);
+      gl.useProgram(null);
+      gl.bindBuffer(gl.ARRAY_BUFFER, null);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+      gl.disable(gl.BLEND); gl.disable(gl.DEPTH_TEST); gl.disable(gl.SCISSOR_TEST); gl.disable(gl.CULL_FACE);
+      gl.blendEquation(gl.FUNC_ADD);
+      gl.blendFunc(gl.ONE, gl.ZERO);
+      gl.colorMask(true, true, true, true);
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+      gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
+      gl.viewport(0, 0, canvas.width, canvas.height);
+    }
+    function release() {
+      resetState();
+      for (var i = owned.length - 1; i >= 0; i--) {
+        var r = owned[i];
+        if (r[0] === "Program") gl.deleteProgram(r[1]);
+        else gl["delete" + r[0]](r[1]);
+      }
+      owned = [];
+    }
+    var env = {
+      gl: gl,
+      canvas: canvas,
+      small: small,
+      palette: PALETTE.slice(),
+      rgb: hexToRgb,
+      rng: mulberry32,
+      ext: function (name) { return gl.getExtension(name); },
+      dark: function () { return currentTheme() !== "light"; },
+      bg: function () { return hexToRgb(currentTheme() === "light" ? BG.light : BG.dark); },
+      size: function () { return [canvas.width, canvas.height]; },
+      program: function (vs, fs) {
+        var p = own("Program", gl.createProgram());
+        gl.attachShader(p, compile(gl.VERTEX_SHADER, vs));
+        gl.attachShader(p, compile(gl.FRAGMENT_SHADER, fs));
+        gl.linkProgram(p);
+        if (!gl.getProgramParameter(p, gl.LINK_STATUS) && !gl.isContextLost()) throw new Error(gl.getProgramInfoLog(p));
+        return p;
+      },
+      buffer: function () { return own("Buffer", gl.createBuffer()); },
+      texture: function () { return own("Texture", gl.createTexture()); },
+      framebuffer: function () { return own("Framebuffer", gl.createFramebuffer()); },
+      renderbuffer: function () { return own("Renderbuffer", gl.createRenderbuffer()); }
+    };
+
+    var theme = null, themeSlug = null;
+    var ptr = [0.5, 0.5], pull = 0, pullTarget = 0, lastMove = 0;
+    var clicks = [];
+    var time = 0, last = 0, running = false, raf = 0;
+    var slow = 0, frames = 0, dpr = 1;
+    var drawn = false;
+
+    function build(factory) {
+      var made = null;
+      try {
+        made = factory(env);
+        if (!made || typeof made.frame !== "function") throw new Error("not a theme");
+      } catch (e) {
+        if (window.console) console.warn("fx: background failed to start", e);
+        release();
+        return null;
+      }
+      return made;
+    }
+    function adopt(slug, made) {
+      theme = made; themeSlug = slug;
+      time = typeof made.t0 === "number" ? made.t0 : 0;
+      clicks = []; slow = 0; frames = 0;
+      if (made.resize) made.resize(canvas.width, canvas.height, dpr);
+      if (made.restyle) made.restyle(env.dark());
+      draw(0);
+      if (awake && motionAllowed()) start();
+    }
+    function use(slug) {
+      loadTheme(slug, function (factory) {
+        if (slug !== fxWanted) return;
+        var old = theme;
+        if (old) {
+          try { if (old.dispose) old.dispose(); } catch (e) { /* ignore */ }
+          theme = null;
+          release();
+        }
+        var made = factory ? build(factory) : null;
+        if (!made && slug !== DEFAULT_FX) {
+          made = build(advection);
+          slug = DEFAULT_FX;
+        }
+        if (!made) { stop(); root.classList.remove("has-webgl"); return; }
+        adopt(slug, made);
+      });
+    }
 
     function resize() {
-      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
       var w = Math.max(1, Math.round(window.innerWidth * dpr));
       var h = Math.max(1, Math.round(window.innerHeight * dpr));
       if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
       gl.viewport(0, 0, w, h);
-      gl.uniform2f(u.res, w, h);
-      gl.uniform1f(u.psize, Math.max(1.5, 1.6 * dpr));
+      if (theme && theme.resize) theme.resize(w, h, dpr);
     }
     function restyle() {
-      dark = currentTheme() !== "light";
-      var cols = PALETTE.map(hexToRgb);
-      if (!dark) cols = cols.map(function (c) { return c.map(function (x) { return x * 0.82; }); });
-      gl.uniform3fv(u.col, new Float32Array([].concat(cols[0], cols[1], cols[2])));
-      gl.uniform1f(u.gain, dark ? 0.62 : 0.55);
-      if (dark) gl.blendFunc(gl.ONE, gl.ONE);
-      else gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-      if (!running) draw();
+      if (!theme) return;
+      if (theme.restyle) theme.restyle(env.dark());
+      if (!running) draw(0);
     }
-    function draw() {
-      pull += (pullTarget - pull) * 0.06;
+    function draw(dt) {
+      if (!theme || gl.isContextLost()) return;
+      pull += (pullTarget - pull) * (dt > 0 ? Math.min(1, dt * 3.6) : 0);
       if (performance.now() - lastMove > 2500) pullTarget = 0;
-      var bg = hexToRgb(dark ? BG.dark : BG.light);
-      gl.clearColor(bg[0], bg[1], bg[2], 1);
-      gl.clear(gl.COLOR_BUFFER_BIT);
-      gl.uniform1f(u.t, time);
-      gl.uniform2f(u.ptr, ptr[0], ptr[1]);
-      gl.uniform1f(u.pull, pull);
-      gl.drawArrays(gl.POINTS, 0, count);
+      while (clicks.length && (time - clicks[0].t > 5 || clicks[0].t > time)) clicks.shift();
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      try {
+        theme.frame(time, dt, { x: ptr[0], y: ptr[1], pull: pull, clicks: clicks });
+      } catch (e) {
+        if (window.console) console.warn("fx: background frame failed", e);
+        stop();
+        return;
+      }
+      if (!drawn) { drawn = true; root.classList.add("has-webgl"); }
     }
     function frame(now) {
       raf = 0;
@@ -293,14 +472,14 @@
       time += dt;
       if (dt > 0.034) slow++;
       if (++frames % 90 === 0) {
-        if (slow > 45 && count > TRAILS * 1500) count = Math.max(TRAILS * 1500, Math.floor(count * 0.6 / TRAILS) * TRAILS);
+        if (slow > 45 && theme && theme.degrade) theme.degrade();
         slow = 0;
       }
-      draw();
+      draw(dt);
       raf = requestAnimationFrame(frame);
     }
     function start() {
-      if (running || document.hidden) return;
+      if (running || document.hidden || !theme) return;
       running = true; last = 0;
       raf = requestAnimationFrame(frame);
     }
@@ -315,22 +494,83 @@
       ptr[1] = e.clientY / window.innerHeight;
       pullTarget = 1; lastMove = performance.now();
     }, { passive: true });
-    window.addEventListener("resize", function () { resize(); if (!running) draw(); }, { passive: true });
+    window.addEventListener("pointerdown", function (e) {
+      if (!running || e.button > 0) return;
+      clicks.push({ x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight, t: time });
+      if (clicks.length > 8) clicks.shift();
+    }, { passive: true });
+    window.addEventListener("resize", function () { resize(); if (!running) draw(0); }, { passive: true });
     document.addEventListener("visibilitychange", function () {
       if (document.hidden) stop(); else if (motionAllowed() && awake) start();
     });
     canvas.addEventListener("webglcontextlost", function (e) {
-      e.preventDefault(); stop(); root.classList.remove("has-webgl");
+      e.preventDefault(); stop(); theme = null; owned = []; root.classList.remove("has-webgl");
     });
 
     resize();
-    restyle();
-    draw();
+    resetState();
     return {
       restyle: restyle,
-      motion: function (on) { if (on && awake) start(); else { stop(); draw(); } },
-      start: start
+      motion: function (on) { if (on && awake) start(); else { stop(); draw(0); } },
+      start: start,
+      use: function (slug) { use(slug); },
+      boot: function (slug) { use(slug); },
+      current: function () { return themeSlug; }
     };
+  }
+
+  function syncFxMenu() {
+    fxChoices.forEach(function (b) {
+      b.setAttribute("aria-pressed", b.getAttribute("data-fx-theme") === fxWanted ? "true" : "false");
+    });
+  }
+  function chooseFx(slug) {
+    slug = validFx(slug);
+    store.set("fx-theme", slug);
+    if (slug === fxWanted) return;
+    fxWanted = slug;
+    root.setAttribute("data-fx", slug);
+    syncFxMenu();
+    if (field) field.use(slug);
+  }
+  if (fxMenu) {
+    var fxSummary = fxMenu.querySelector("summary");
+    syncFxMenu();
+    fxChoices.forEach(function (b, i) {
+      b.addEventListener("click", function () {
+        chooseFx(b.getAttribute("data-fx-theme"));
+        fxMenu.open = false;
+        if (fxSummary) fxSummary.focus();
+      });
+      b.addEventListener("keydown", function (e) {
+        var n = fxChoices.length, j = null;
+        if (e.key === "ArrowDown") j = (i + 1) % n;
+        else if (e.key === "ArrowUp") j = (i - 1 + n) % n;
+        else if (e.key === "Home") j = 0;
+        else if (e.key === "End") j = n - 1;
+        if (j !== null) { e.preventDefault(); fxChoices[j].focus(); }
+      });
+    });
+    fxMenu.addEventListener("toggle", function () {
+      if (!fxMenu.open) return;
+      var cur = fxMenu.querySelector('[data-fx-theme][aria-pressed="true"]') || fxChoices[0];
+      if (cur && fxMenu.matches(":focus-within")) cur.focus();
+    });
+    fxMenu.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && fxMenu.open) { fxMenu.open = false; if (fxSummary) fxSummary.focus(); }
+      else if (e.key === "ArrowDown" && e.target === fxSummary) {
+        e.preventDefault();
+        fxMenu.open = true;
+        var cur = fxMenu.querySelector('[data-fx-theme][aria-pressed="true"]') || fxChoices[0];
+        if (cur) cur.focus();
+      }
+    });
+    document.addEventListener("click", function (e) {
+      if (fxMenu.open && !fxMenu.contains(e.target)) fxMenu.open = false;
+    });
+    fxMenu.addEventListener("focusout", function (e) {
+      if (fxMenu.open && e.relatedTarget && !fxMenu.contains(e.relatedTarget)) fxMenu.open = false;
+    });
   }
 
   function bootField() {
@@ -338,7 +578,7 @@
     if (!canvas) return;
     field = makeField(canvas);
     if (!field) { canvas.remove(); return; }
-    root.classList.add("has-webgl");
+    field.boot(fxWanted);
     var events = ["pointermove", "pointerdown", "scroll", "keydown", "touchstart", "wheel"];
     var woke = false;
     function wake() {

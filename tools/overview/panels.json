@@ -1,0 +1,216 @@
+{
+ "item": "N687 overview composite",
+ "alt_hint": "From one microscope field to a screen hit with spaCR: image, masks, measurements, classifier scores and hits.",
+ "text_policy": "No burned-in captions or panel labels; only data text (table column names and values, colour-bar and axis tick values, the gene name GRA14). Captions go in HTML.",
+ "palette": {
+  "nuclei": "#3B82F6",
+  "cells": "#00CEC8",
+  "parasites": "#FF00FF",
+  "panel_background": "#10131A",
+  "panel_border": "#2B313D",
+  "score_low": "#4F7CFF",
+  "score_high_and_significant": "#FF8A3D"
+ },
+ "files": {
+  "strip": {
+   "webp": "overview-strip.webp",
+   "bytes": 65952,
+   "size": [
+    1600,
+    400
+   ],
+   "avif": "overview-strip.avif",
+   "avif_bytes": 37770,
+   "layout": "5 panels in one row (300, 300, 320, 300, 340 px wide, 400 px tall), 10 px transparent gaps, 14 px corner radius"
+  },
+  "stack": {
+   "webp": "overview-stack.webp",
+   "bytes": 80114,
+   "size": [
+    800,
+    1140
+   ],
+   "avif": "overview-stack.avif",
+   "avif_bytes": 46279,
+   "layout": "row 1: image | masks (395 px squares); row 2: measurements table (800 x 330); row 3: classifier scores | hits; 10 px transparent gaps"
+  }
+ },
+ "data_source": {
+  "datasets": [
+   {
+    "name": "einarolafsson/spacr-example-screen",
+    "kind": "Hugging Face dataset",
+    "url": "https://huggingface.co/datasets/einarolafsson/spacr-example-screen",
+    "used": "plate1-data.tar: spaCR Measure cell_png crops (224 px) of plate1 H02 field 4"
+   },
+   {
+    "name": "einarolafsson/spacr-example-hit",
+    "kind": "Hugging Face dataset",
+    "url": "https://huggingface.co/datasets/einarolafsson/spacr-example-hit",
+    "used": "measurements/measurements.db (spaCR Measure database, plate 1 cut), plate1_dv.csv (classifier predictions), plate_1_unique_combinations.csv (guide reads)"
+   }
+  ],
+  "licence": "CC BY 4.0",
+  "screen": "HeLa GFP-TSG101 cells infected with a pooled Toxoplasma gondii CRISPR-Cas9 library (spaCR TSG101 recruitment screen), plate 1",
+  "plate": "plate1",
+  "well": "H02 (rowID r8, columnID c2)",
+  "field": "f4",
+  "well_guide": "239740_1 (TGGT1_239740, GRA14; 92% of the well's guide reads)",
+  "crop_in_field_window_rows_cols": {
+   "strip": [
+    0,
+    520,
+    780,
+    1170
+   ],
+   "stack": [
+    0,
+    520,
+    650,
+    1170
+   ],
+   "window_in_reassembled_canvas": [
+    40,
+    940,
+    780,
+    1980
+   ]
+  }
+ },
+ "panels": [
+  {
+   "n": 1,
+   "key": "image",
+   "label": "Image",
+   "description": "Raw image of plate 1, well H02, field 4 (GRA14 guide well): nuclei blue, channel 1 green, parasites magenta; 6 infected cells in the strip crop.",
+   "detail": "Field reassembled from spaCR Measure cell crops placed at their measured centroids (cell-masked crops, so uninfected cells and background are dark and some cells are clipped square); 0.5-99.7 percentile stretch per channel.",
+   "spacr": "spacr.measure (crop export); positions from measurements.db cell table"
+  },
+  {
+   "n": 2,
+   "key": "masks",
+   "label": "Masks",
+   "description": "Cell (cyan), nucleus (blue) and parasite (magenta) masks of the same cells: 6 cells, 8 nuclei and 8 parasite objects in the strip crop.",
+   "detail": "Cell outlines are the spaCR cell masks carried by the crops. Nucleus and parasite masks were recomputed on CPU with cellpose on the reassembled planes and filtered at spaCR Measure minimum sizes (nucleus 2000 px, parasite 500 px), because the dataset ships no mask images.",
+   "spacr": "spacr.deep_spacr._vs_default_segment(device=\"cpu\")"
+  },
+  {
+   "n": 3,
+   "key": "measurements",
+   "label": "Measurements",
+   "description": "Real rows from the spaCR measurement database (measurements.db, table cell) for cells 9, 11, 26 of this field; 166 columns per cell, a few shown.",
+   "columns": {
+    "strip": [
+     "object_label",
+     "cell_area",
+     "cell_perimeter",
+     "cell_eccentricity",
+     "cell_solidity",
+     "cell_feret_diameter_max",
+     "cell_channel_1_mean_intensity"
+    ],
+    "stack": [
+     "object_label",
+     "cell_area",
+     "cell_perimeter",
+     "cell_solidity"
+    ]
+   },
+   "objects": {
+    "strip": [
+     9,
+     11,
+     26
+    ],
+    "stack": [
+     9,
+     11,
+     21,
+     26
+    ]
+   },
+   "values": {
+    "9": {
+     "cell_area": 56190.0,
+     "cell_perimeter": 1337.6265504461924,
+     "cell_eccentricity": 0.9447687730836175,
+     "cell_solidity": 0.7775548329066629,
+     "cell_feret_diameter_max": 519.2003466870954,
+     "cell_channel_1_mean_intensity": 379.01751201281365
+    },
+    "11": {
+     "cell_area": 48104.0,
+     "cell_perimeter": 974.5310960166873,
+     "cell_eccentricity": 0.7160605870507784,
+     "cell_solidity": 0.8721444629777358,
+     "cell_feret_diameter_max": 324.7552924895913,
+     "cell_channel_1_mean_intensity": 419.2686678862465
+    },
+    "21": {
+     "cell_area": 18091.0,
+     "cell_perimeter": 526.2152954766495,
+     "cell_eccentricity": 0.5463240495013956,
+     "cell_solidity": 0.9851339577434111,
+     "cell_feret_diameter_max": 177.341478509682,
+     "cell_channel_1_mean_intensity": 438.0352108783373
+    },
+    "26": {
+     "cell_area": 24660.0,
+     "cell_perimeter": 621.9137802864844,
+     "cell_eccentricity": 0.7622854834355793,
+     "cell_solidity": 0.9852964679558894,
+     "cell_feret_diameter_max": 228.96506283710622,
+     "cell_channel_1_mean_intensity": 384.48645579886454
+    }
+   },
+   "spacr": "spacr.measure (Measure; measurements.db table cell)"
+  },
+  {
+   "n": 4,
+   "key": "classifier_scores",
+   "label": "Classifier scores",
+   "description": "Each cell coloured by its spaCR classifier score (probability of the GRA14-knockout-like phenotype, 0 blue to 1 orange): 5 of 6 cells in the crop score above 0.5; cell 9 scores 0.002.",
+   "scores": {
+    "9": 0.0017,
+    "10": 0.9989,
+    "11": 0.9991,
+    "21": 0.9995,
+    "24": 0.9975,
+    "26": 0.9992
+   },
+   "spacr": "spaCR classifier per-cell cross-validated predictions (plate1_dv.csv column 'pred')"
+  },
+  {
+   "n": 5,
+   "key": "hits",
+   "label": "Hits",
+   "description": "Volcano plot of 13 genes: OLS regression of well-mean classifier score on guide fraction calls GRA14 (TGGT1_239740, ringed) a hit, effect +0.48, p 0.0062, q 0.040; the other orange point is the negative control SAG1 (effect -0.71, q 0.0062).",
+   "detail": "Orange = q < 0.05 (Benjamini-Hochberg); dashed line p = 0.05; x = regression coefficient, y = -log10 p. Re-run here on CPU; matches the shipped results/ols.",
+   "spacr": "spacr.ml.perform_regression(regression_type='ols', inference='parametric'); drawn with spacr.volcano_style.render_volcano"
+  }
+ ],
+ "commands": [
+  "#!/usr/bin/env bash",
+  "set -euo pipefail",
+  "SITE=/mnt/firecuda2/Claude/scratch/site-v3",
+  "P=$SITE/tools/pipeline",
+  "O=$SITE/tools/overview",
+  "D=/mnt/wd4tb/scratch/n687/pipeline/data",
+  "W=/mnt/wd4tb/scratch/n687v3/overview/work",
+  "OUT=/mnt/wd4tb/scratch/n687v3/overview",
+  "R=/mnt/firecuda2/Claude/repo/spacr/tools/run_capped.sh",
+  "PY=/home/olafsson/anaconda3/envs/spacr/bin/python",
+  "export CUDA_VISIBLE_DEVICES='' MPLBACKEND=Agg OMP_NUM_THREADS=8",
+  "export PYTHONPATH=/mnt/wd4tb/spacr-worktrees/claude-n687-v3",
+  "mkdir -p $W/recon $W/regress",
+  "cp $D/hit/plate1_dv.csv $D/hit/plate_1_unique_combinations.csv $W/regress/",
+  "cd $P",
+  "$R 16G $PY -I reconstruct.py $D/hit/measurements/measurements.db $D/crops_H02_f4 $W/recon",
+  "$R 16G $PY segment.py $W/recon 40 940 780 1980",
+  "rm -rf $W/regress/results $W/regress/settings",
+  "$R 16G $PY regress.py $W/regress transform=None outlier_detection=False min_cells_per_well=10",
+  "cd $O",
+  "$R 16G $PY build_overview.py $D $W $OUT",
+  "$R 16G $PY -I write_panels_json.py $W $OUT $O/run.sh"
+ ]
+}
