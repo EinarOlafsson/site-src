@@ -612,3 +612,6 @@ html[data-fx="blobs"] .fx-css {
 .results picture img, .wide picture img, .strip picture img, .ov-strip picture img { background: var(--bg); }
 .results.neutral img { background: #fff; padding: var(--s2); border: 1px solid var(--line-strong); box-sizing: border-box; }
 picture { display: block; }
+.perm { margin-top: var(--s6); }
+.perm > h3 { margin: 0 0 var(--s1); }
+.perm > .note { max-width: var(--measure); margin: 0 0 var(--s4); }

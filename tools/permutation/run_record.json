@@ -1,0 +1,379 @@
+{
+ "item": "N687 v3 website permutation figures",
+ "commands": [
+  "tools/screen/env.sh tools/screen/fetch_example.py   (public tables, already fetched)",
+  "tools/permutation/env.sh tools/permutation/run_perm.py --permutations 2000000 --seed 0 --tag p2m",
+  "tools/permutation/env.sh tools/permutation/make_figures.py --tag p2m",
+  "tools/permutation/env.sh tools/permutation/write_manifest.py --tag p2m"
+ ],
+ "environment": "tools/permutation/env.sh: CUDA_VISIBLE_DEVICES='', MPLBACKEND=Agg, QT_QPA_PLATFORM=offscreen, HOME/SPACR_HOME/MPLCONFIGDIR under /mnt/wd4tb/scratch/n687v3/perm/state, OMP/BLAS threads 8, RAM cap 24G (tools/run_capped.sh), python -I; CPU only",
+ "spacr_commit": "0e244094ca7b78e04a03e5688ad8ffa6cd3fd6a1",
+ "spacr_worktree": "/mnt/wd4tb/spacr-worktrees/claude-n687-v4",
+ "python": "3.12.13",
+ "functions": [
+  "spacr.settings.get_perform_regression_default_settings",
+  "spacr.ml.perform_regression (analysis_mode=guide_permutation, inference=nonparametric) -> spacr.ml._run_guide_permutation_analysis",
+  "spacr.guide_permutation.analyse_long_guide_table / guide_freedman_lane_test (guides)",
+  "spacr.guide_permutation.analyse_long_gene_table / gene_freedman_lane_test (genes)",
+  "spacr.multiple_testing.adjust_p_values (fdr_bh), spacr.thresholds.coefficient_threshold (effect cut)",
+  "spacr.permutation_qc (exchangeability report), spacr.regression_diagnostics.write_diagnostic_suite",
+  "spacr.gene_tile.gene_tile (symbols, compartments)",
+  "figures: spacr.figures.style.figure_style, spacr.plot.save_figure (applies spacr.figures.style._apply_user_style), tools/themed/theme.py",
+  "null panel: spacr.guide_permutation.prepare_long_gene_data, _nuisance_design, _residualize with numpy.random.default_rng(seed) (exceedances verified equal to spaCR's)"
+ ],
+ "readout": {
+  "what": "MaxViT per-cell PC-class probability (column pred), averaged per well (agg_type mean)",
+  "public_tables": "plate<N>_dv.csv from the spaCR example-data release (einarolafsson/spacr-example-screen), fetched by spacr.example_data.fetch",
+  "maxvit_source": "byte-identical (sha256) to the manuscript MaxViT single-cell score source data listed in maxvit_source_data",
+  "maxvit_source_data": {
+   "Figure_5B-C_Figure_S5_MaxViT_single_cell_scores_plate1.csv": {
+    "path": "/mnt/firecuda2/Claude/toxoplasma_projects/manuscript/version_2/submit/source_data/Figure_5B_C_and_Figure_S5_MaxViT_single_cell_scores/Figure_5B-C_Figure_S5_MaxViT_single_cell_scores_plate1.csv",
+    "bytes": 5088290,
+    "sha256": "06aa6e51e17eb2423f9e534deb984533b98d10945dd4a7f9a8bac2f93d088594",
+    "identical_to": "plate1_dv.csv"
+   },
+   "Figure_5B-C_Figure_S5_MaxViT_single_cell_scores_plate2.csv": {
+    "path": "/mnt/firecuda2/Claude/toxoplasma_projects/manuscript/version_2/submit/source_data/Figure_5B_C_and_Figure_S5_MaxViT_single_cell_scores/Figure_5B-C_Figure_S5_MaxViT_single_cell_scores_plate2.csv",
+    "bytes": 5003197,
+    "sha256": "6f079cad146f0d507524317fa026235a2f76a7be04da4be396cec3628c1d1fef",
+    "identical_to": "plate2_dv.csv"
+   },
+   "Figure_5B-C_Figure_S5_MaxViT_single_cell_scores_plate3.csv": {
+    "path": "/mnt/firecuda2/Claude/toxoplasma_projects/manuscript/version_2/submit/source_data/Figure_5B_C_and_Figure_S5_MaxViT_single_cell_scores/Figure_5B-C_Figure_S5_MaxViT_single_cell_scores_plate3.csv",
+    "bytes": 4824810,
+    "sha256": "5cd7b59d55504680272b47060c7056dd76eb85e59d3571bbe8974e62da08d369",
+    "identical_to": "plate3_dv.csv"
+   },
+   "Figure_5B-C_Figure_S5_MaxViT_single_cell_scores_plate4.csv": {
+    "path": "/mnt/firecuda2/Claude/toxoplasma_projects/manuscript/version_2/submit/source_data/Figure_5B_C_and_Figure_S5_MaxViT_single_cell_scores/Figure_5B-C_Figure_S5_MaxViT_single_cell_scores_plate4.csv",
+    "bytes": 4240228,
+    "sha256": "7d5800071c15098d9f3fe02a84580d884db7a145b06e72bf5fe048286d23d07e",
+    "identical_to": "plate4_dv.csv"
+   }
+  }
+ },
+ "inputs": {
+  "plate1_dv.csv": {
+   "path": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate1_dv.csv",
+   "bytes": 5088290,
+   "sha256": "06aa6e51e17eb2423f9e534deb984533b98d10945dd4a7f9a8bac2f93d088594"
+  },
+  "plate2_dv.csv": {
+   "path": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate2_dv.csv",
+   "bytes": 5003197,
+   "sha256": "6f079cad146f0d507524317fa026235a2f76a7be04da4be396cec3628c1d1fef"
+  },
+  "plate3_dv.csv": {
+   "path": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate3_dv.csv",
+   "bytes": 4824810,
+   "sha256": "5cd7b59d55504680272b47060c7056dd76eb85e59d3571bbe8974e62da08d369"
+  },
+  "plate4_dv.csv": {
+   "path": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate4_dv.csv",
+   "bytes": 4240228,
+   "sha256": "7d5800071c15098d9f3fe02a84580d884db7a145b06e72bf5fe048286d23d07e"
+  },
+  "plate_1_unique_combinations.csv": {
+   "path": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_1_unique_combinations.csv",
+   "bytes": 4325565,
+   "sha256": "9bbfd6de409ec501b94abd2f20230611a695b142228892f5c3b8b2b564ba1f13"
+  },
+  "plate_2_unique_combinations.csv": {
+   "path": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_2_unique_combinations.csv",
+   "bytes": 4186654,
+   "sha256": "88142a5b8df993f881748845d15f2290e662cccddde269cbeacea8f28b119bf8"
+  },
+  "plate_3_unique_combinations.csv": {
+   "path": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_3_unique_combinations.csv",
+   "bytes": 3577071,
+   "sha256": "3fdb0c1d28f6074211775e72a93ce5a2531f4049093578251a8ee36bbc85765e"
+  },
+  "plate_4_unique_combinations.csv": {
+   "path": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_4_unique_combinations.csv",
+   "bytes": 3983853,
+   "sha256": "7888648e1e45155e6ef2efe44bfe02b7577a8469ca75c51a7abc6b4981abad34"
+  }
+ },
+ "settings_source": "einarolafsson/spacr-example-hit settings/regression.json (sha256 6f65a40c08ea316266a115c41770563585ba669b5fbe5cd75af36535cf517c49)",
+ "overrides": {
+  "score_data": [
+   "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate1_dv.csv",
+   "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate2_dv.csv",
+   "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate3_dv.csv",
+   "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate4_dv.csv"
+  ],
+  "count_data": [
+   "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_1_unique_combinations.csv",
+   "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_2_unique_combinations.csv",
+   "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_3_unique_combinations.csv",
+   "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_4_unique_combinations.csv"
+  ],
+  "src": "/mnt/wd4tb/scratch/n687v3/perm/run/p2m",
+  "dst": "/mnt/wd4tb/scratch/n687v3/perm/run/p2m/results",
+  "regression_qc": false,
+  "analysis_mode": "guide_permutation",
+  "inference": "nonparametric",
+  "guide_permutations": 2000000,
+  "guide_permutation_seed": 0
+ },
+ "seed": 0,
+ "permutations": 2000000,
+ "smallest_attainable_p": 4.99999750000125e-07,
+ "timings": {
+  "perform_regression_wall_seconds": 619.0,
+  "process_wall": "10:27.82",
+  "process_user_cpu_seconds": 3497.98,
+  "max_rss_kb": 1893860,
+  "figures_seconds": 141.4,
+  "null_regeneration_seconds": 125.1,
+  "machine_load_note": "shared workstation, load average 20-80 on 32 cores during the run"
+ },
+ "null_check": [
+  {
+   "gene": "239740",
+   "spacr_exceedances": 0,
+   "regenerated_exceedances": 0,
+   "spacr_r": 0.4350611018630288,
+   "regenerated_r": 0.43506110186302926,
+   "match": true
+  },
+  {
+   "gene": "225160",
+   "spacr_exceedances": 1,
+   "regenerated_exceedances": 1,
+   "spacr_r": 0.2404210084775983,
+   "regenerated_r": 0.24042100847759837,
+   "match": true
+  },
+  {
+   "gene": "233460",
+   "spacr_exceedances": 0,
+   "regenerated_exceedances": 0,
+   "spacr_r": -0.3165235248142887,
+   "regenerated_r": -0.31652352481428886,
+   "match": true
+  }
+ ],
+ "effect_rule": "3x std of 29 controls = 0.221",
+ "differences_from_preprint_S7S": "The preprint run excluded the control columns (filter_value c1-c3) and the three control gRNAs, required >= 100 cells per well and < 4 vacuoles per cell, used fraction_threshold 0.0168 and log transform. This run uses the shipped spacr-example-hit settings (all columns, min_cells_per_well 10, fraction_threshold 0.02, no transform), so the control guides (SAG1 gRNA 4 and GRA14 gRNA 1 in their control columns) stay in the test.",
+ "results_folder": "/mnt/wd4tb/scratch/n687v3/perm/run/p2m/results",
+ "settings": {
+  "agg_type": "mean",
+  "alpha": 1,
+  "analysis_excluded_wells": [],
+  "analysis_mode": "guide_permutation",
+  "analysis_unit": "well",
+  "annotation_source": "toxoplasma",
+  "batch_column": "plateID",
+  "batch_combat_mean_only": false,
+  "batch_control_column": "columnID",
+  "batch_control_values": null,
+  "batch_correction": null,
+  "batch_covariate_column": null,
+  "batch_min_samples": 3,
+  "batch_missing_control": "error",
+  "calibrate_fraction_threshold": false,
+  "cell_area_outlier_mads": null,
+  "cell_intensity_outlier_mads": null,
+  "count_data": [
+   "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_1_unique_combinations.csv",
+   "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_2_unique_combinations.csv",
+   "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_3_unique_combinations.csv",
+   "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_4_unique_combinations.csv"
+  ],
+  "count_grna_column": "grna",
+  "count_value_column": "count",
+  "cov_type": null,
+  "dependent_variable": "pred",
+  "exclude_grnas": null,
+  "fdr_alpha": 0.05,
+  "filter_column": "columnID",
+  "filter_value": [],
+  "fraction_threshold": 0.02,
+  "grna_statistic": "pearson",
+  "group_lasso_lambda": "auto",
+  "guide_min_wells": [
+   1,
+   2,
+   3,
+   4
+  ],
+  "guide_nuisance_columns": [
+   "rowID",
+   "columnID"
+  ],
+  "guide_permutation_batch_size": 500,
+  "guide_permutation_block": "plateID",
+  "guide_permutation_seed": 0,
+  "guide_permutations": 2000000,
+  "guide_presence_threshold": 0.0,
+  "guide_primary_min_wells": null,
+  "hinge_n_boot": 200,
+  "hinge_threshold": null,
+  "huber_t": 1.345,
+  "independent_variable_layout": "auto",
+  "independent_variable_layout_resolved": "long",
+  "inference": "nonparametric",
+  "input_pair_audit": [
+   {
+    "row": 1,
+    "plate": "plate1",
+    "rule": "copied from score file",
+    "score": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate1_dv.csv",
+    "count": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_1_unique_combinations.csv"
+   },
+   {
+    "row": 2,
+    "plate": "plate2",
+    "rule": "copied from score file",
+    "score": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate2_dv.csv",
+    "count": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_2_unique_combinations.csv"
+   },
+   {
+    "row": 3,
+    "plate": "plate3",
+    "rule": "copied from score file",
+    "score": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate3_dv.csv",
+    "count": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_3_unique_combinations.csv"
+   },
+   {
+    "row": 4,
+    "plate": "plate4",
+    "rule": "copied from score file",
+    "score": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate4_dv.csv",
+    "count": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_4_unique_combinations.csv"
+   }
+  ],
+  "intercept": "fitted",
+  "intercept_value": 0.0,
+  "invert_dependent_variable": false,
+  "l1_ratio": 0.5,
+  "lasso_n_boot": 200,
+  "lasso_selection_threshold": 0.6,
+  "level": "both",
+  "max_failure_rate": null,
+  "metadata_files": [],
+  "min_cells_per_well": 10,
+  "min_observations_per_hit": 0,
+  "mixed_control_wells": null,
+  "model_data_layout": "long",
+  "model_plate_position": false,
+  "multiple_testing_method": "fdr_bh",
+  "negative_control_id": "233460",
+  "negative_control_wells": null,
+  "nontargeting_control_grnas": [
+   "000000"
+  ],
+  "normalise_fraction": true,
+  "nucleus_area_outlier_mads": null,
+  "nucleus_intensity_outlier_mads": null,
+  "outlier_detection": false,
+  "p_threshold_alpha": 0.05,
+  "p_threshold_kind": "adjusted",
+  "paired_data": [
+   {
+    "score": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate1_dv.csv",
+    "count": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_1_unique_combinations.csv",
+    "plate": "plate1",
+    "database": null
+   },
+   {
+    "score": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate2_dv.csv",
+    "count": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_2_unique_combinations.csv",
+    "plate": "plate2",
+    "database": null
+   },
+   {
+    "score": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate3_dv.csv",
+    "count": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_3_unique_combinations.csv",
+    "plate": "plate3",
+    "database": null
+   },
+   {
+    "score": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate4_dv.csv",
+    "count": "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate_4_unique_combinations.csv",
+    "plate": "plate4",
+    "database": null
+   }
+  ],
+  "positive_control_id": "239740",
+  "positive_control_wells": null,
+  "quantile": 0.5,
+  "random_row_column_effects": false,
+  "regression_backend": "statsmodels (CPU)",
+  "regression_panel_manifest": null,
+  "regression_qc": false,
+  "regression_type": "ols",
+  "rra_alpha": 0.25,
+  "rra_permutations": 10000,
+  "score_data": [
+   "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate1_dv.csv",
+   "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate2_dv.csv",
+   "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate3_dv.csv",
+   "/mnt/wd4tb/scratch/n687v3/ols/dl/example_data/plate4_dv.csv"
+  ],
+  "spline_degree": 3,
+  "spline_knots": 4,
+  "src": "/mnt/wd4tb/scratch/n687v3/perm/run/p2m",
+  "strict_errors": null,
+  "target_unique_count": 5,
+  "threshold_method": "std",
+  "threshold_multiplier": 3,
+  "tolerance": 0.02,
+  "transform": null,
+  "verbose": false,
+  "wide_predictor_columns": [],
+  "dst": "/mnt/wd4tb/scratch/n687v3/perm/run/p2m/results",
+  "_regression_stage": "the permutation has returned",
+  "_regression_resources": [
+   {
+    "stage": "reading the input tables",
+    "rss": 1168400384,
+    "gpu": null,
+    "tree_memory_bytes": 920043520,
+    "tree_memory_measure": "pss",
+    "tree_process_count": 1
+   },
+   {
+    "stage": "placing the results folder",
+    "rss": 1389899776,
+    "gpu": null,
+    "tree_memory_bytes": 1132264448,
+    "tree_memory_measure": "pss",
+    "tree_process_count": 1
+   },
+   {
+    "stage": "reading the counts",
+    "rss": 1594863616,
+    "gpu": null,
+    "tree_memory_bytes": 1267026944,
+    "tree_memory_measure": "pss",
+    "tree_process_count": 1
+   },
+   {
+    "stage": "permuting the guides",
+    "rss": 1539211264,
+    "gpu": null,
+    "tree_memory_bytes": 1211277312,
+    "tree_memory_measure": "pss",
+    "tree_process_count": 1
+   },
+   {
+    "stage": "the permutation has returned",
+    "rss": 1812094976,
+    "gpu": null,
+    "tree_memory_bytes": 1551817728,
+    "tree_memory_measure": "pss",
+    "tree_process_count": 1
+   }
+  ],
+  "_regression_folder": "/mnt/wd4tb/scratch/n687v3/perm/run/p2m/results/guide_permutation",
+  "_regression_exclusions": {
+   "fraction_threshold": 636285,
+   "fraction_threshold_of": 642551,
+   "wells_paired": 1290,
+   "wells_unpaired_counts": 246,
+   "wells_unpaired_scores": 0
+  }
+ }
+}

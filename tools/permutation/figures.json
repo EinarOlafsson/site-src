@@ -1,0 +1,181 @@
+{
+ "item": "N687 v3 Screen results: permutation test",
+ "generated": "2026-10-11",
+ "spacr_commit": "0e244094ca7b78e04a03e5688ad8ffa6cd3fd6a1",
+ "themes": {
+  "dark": {
+   "ground": "#0f1115",
+   "ink": "#ffffff"
+  },
+  "light": {
+   "ground": "#fafaf9",
+   "ink": "#15181e"
+  }
+ },
+ "style_reference": "Figure S7R,S of the spaCR/EAF1 preprint (within-plate Freedman-Lane permutation volcanoes, x partial Pearson r, y -log10 BH-adjusted empirical P, dashed BH q = 0.05, dotted effect cutoff, points coloured by predicted compartment)",
+ "figures": [
+  {
+   "id": "perm_gene_volcano",
+   "tab": "screen",
+   "files": {
+    "dark": {
+     "file": "perm_gene_volcano.dark.webp",
+     "width": 1200,
+     "height": 750,
+     "bytes": 27336,
+     "sha256": "8fdbe6f8892137e8c44eb33248964d51646ab829c088c7fc68dc25dd014d0528",
+     "border_exact_fraction": 1.0
+    },
+    "light": {
+     "file": "perm_gene_volcano.light.webp",
+     "width": 1200,
+     "height": 750,
+     "bytes": 27002,
+     "sha256": "d4061e261a713fa91dcb34c50d7003a41af21a03aa38744af90ae6c1c2127767",
+     "border_exact_fraction": 1.0
+    }
+   },
+   "alt": "Gene-level permutation volcano: partial correlation against minus log10 BH-adjusted empirical P, coloured by compartment; GRA14, EAF1 and SAG1 named.",
+   "caption": "Gene level: 414 genes tested (each gene's summed guide fractions). 4 reach BH q < 0.05 (SAG1 (TGGT1_233460) r = -0.317, P = 5.0×10^-7, q = 1.0×10^-4; GRA14 (TGGT1_239740) r = +0.435, P = 5.0×10^-7, q = 1.0×10^-4; EAF1 (TGGT1_225160) r = +0.240, P = 1.0×10^-6, q = 1.4×10^-4; GRA12B (TGGT1_275860) r = +0.157, P = 1.7×10^-4, q = 1.7×10^-2); 3 also pass the effect cut: SAG1 (TGGT1_233460), GRA14 (TGGT1_239740), EAF1 (TGGT1_225160). 2 genes sit at the P floor (no permutation as extreme). 2,000,000 within-plate Freedman-Lane permutations, seed 0; smallest attainable P = 1/(B+1) = 5.0×10^-7. MaxViT per-cell scores averaged per well, 1,290 wells on 4 plates, partial Pearson r given plate, row and column. Dashed line BH q = 0.05; dotted lines the spaCR effect cut (3x std of 29 controls = 0.221)."
+  },
+  {
+   "id": "perm_guide_volcano",
+   "tab": "screen",
+   "files": {
+    "dark": {
+     "file": "perm_guide_volcano.dark.webp",
+     "width": 1200,
+     "height": 750,
+     "bytes": 29592,
+     "sha256": "221007930f92e0a179618e4c4ff153ede381d971224f4d47feb6b78d883d0889",
+     "border_exact_fraction": 1.0
+    },
+    "light": {
+     "file": "perm_guide_volcano.light.webp",
+     "width": 1200,
+     "height": 750,
+     "bytes": 29308,
+     "sha256": "b0528413c82f6fe3ee4585e0a77e31ff036ff0499b6b80850a5bb05b457b3f97",
+     "border_exact_fraction": 1.0
+    }
+   },
+   "alt": "Guide-level permutation volcano: partial correlation against minus log10 BH-adjusted empirical P, coloured by compartment; GRA14 guides 1 and 3, SAG1 guide 4 and EAF1 guide 2 named.",
+   "caption": "Guide level: 953 guides tested. 3 reach BH q < 0.05 (SAG1 guide 4 r = -0.317, P = 5.0×10^-7, q = 1.6×10^-4; GRA14 guide 1 r = +0.397, P = 5.0×10^-7, q = 1.6×10^-4; GRA14 guide 3 r = +0.263, P = 5.0×10^-7, q = 1.6×10^-4); 3 pass the effect cut. 3 guides sit at the P floor. 2,000,000 within-plate Freedman-Lane permutations, seed 0; smallest attainable P = 1/(B+1) = 5.0×10^-7. MaxViT per-cell scores averaged per well, 1,290 wells on 4 plates, partial Pearson r given plate, row and column. Dashed line BH q = 0.05; dotted lines the spaCR effect cut (3x std of 29 controls = 0.221)."
+  },
+  {
+   "id": "perm_null",
+   "tab": "screen",
+   "files": {
+    "dark": {
+     "file": "perm_null.dark.webp",
+     "width": 1200,
+     "height": 480,
+     "bytes": 17356,
+     "sha256": "3efed99f5438f931891a0b76b600964af84d585661b28ad39fd31339c675c935",
+     "border_exact_fraction": 1.0
+    },
+    "light": {
+     "file": "perm_null.light.webp",
+     "width": 1200,
+     "height": 480,
+     "bytes": 17378,
+     "sha256": "cb8ec21e84da442fdeb37a2c8de443d75b1c2060b841ad5907856d38c3405bea",
+     "border_exact_fraction": 1.0
+    }
+   },
+   "alt": "Three histograms of the permutation null of the partial correlation, for GRA14, EAF1 and SAG1, each with the observed value far outside the null.",
+   "caption": "Permutation null of the gene-level partial correlation for GRA14, EAF1 and SAG1 (2,000,000 draws, seed 0; log count scale). Solid line: observed r; dashed: -r (the test is two-sided on |r|). b = permutations at least as extreme; P = (b+1)/(B+1). GRA14 r = +0.435, b = 0; EAF1 r = +0.240, b = 1; SAG1 r = -0.317, b = 0. The draws were regenerated from spaCR's own projection and seeded generator, and their exceedance counts equal the counts spaCR reported for these genes."
+  }
+ ],
+ "data": {
+  "file": "perm.json",
+  "bytes": 19254,
+  "sha256": "9f889b4c3180d6c9299ad8ab7f96891a81bfe63165b25c32126b0dd6a07697fe"
+ },
+ "numbers": {
+  "n_genes": 414,
+  "n_guides": 953,
+  "n_wells": 1290,
+  "permutations": 2000000,
+  "seed": 0,
+  "smallest_attainable_p": 4.99999750000125e-07,
+  "effect_cut": 0.2211501636299335,
+  "genes_at_floor": 2,
+  "guides_at_floor": 3,
+  "genes_q_lt_alpha": [
+   {
+    "gene": "233460",
+    "symbol": "SAG1",
+    "coefficient": -0.3165235248142887,
+    "permutation_p_value": 4.99999750000125e-07,
+    "q_value": 0.00010349994825,
+    "permutation_exceedances": 0,
+    "wells_with_gene": 1152,
+    "hit": true
+   },
+   {
+    "gene": "239740",
+    "symbol": "GRA14",
+    "coefficient": 0.4350611018630288,
+    "permutation_p_value": 4.99999750000125e-07,
+    "q_value": 0.00010349994825,
+    "permutation_exceedances": 0,
+    "wells_with_gene": 137,
+    "hit": true
+   },
+   {
+    "gene": "225160",
+    "symbol": "",
+    "coefficient": 0.2404210084775983,
+    "permutation_p_value": 9.9999950000025e-07,
+    "q_value": 0.000137999931,
+    "permutation_exceedances": 1,
+    "wells_with_gene": 17,
+    "hit": true
+   },
+   {
+    "gene": "275860",
+    "symbol": "GRA12B",
+    "coefficient": 0.156927431814856,
+    "permutation_p_value": 0.0001689999155,
+    "q_value": 0.0174914912542543,
+    "permutation_exceedances": 337,
+    "wells_with_gene": 10,
+    "hit": false
+   }
+  ],
+  "guides_q_lt_alpha": [
+   {
+    "grna": "233460_4",
+    "symbol": "SAG1",
+    "coefficient": -0.3165235248142887,
+    "permutation_p_value": 4.99999750000125e-07,
+    "q_value": 0.0001588332539167,
+    "permutation_exceedances": 0,
+    "wells_with_guide": 1152,
+    "hit": true
+   },
+   {
+    "grna": "239740_1",
+    "symbol": "GRA14",
+    "coefficient": 0.3973821996353735,
+    "permutation_p_value": 4.99999750000125e-07,
+    "q_value": 0.0001588332539167,
+    "permutation_exceedances": 0,
+    "wells_with_guide": 132,
+    "hit": true
+   },
+   {
+    "grna": "239740_3",
+    "symbol": "GRA14",
+    "coefficient": 0.2627907232577809,
+    "permutation_p_value": 4.99999750000125e-07,
+    "q_value": 0.0001588332539167,
+    "permutation_exceedances": 0,
+    "wells_with_guide": 4,
+    "hit": true
+   }
+  ]
+ },
+ "effect_rule": "3x std of 29 controls = 0.221"
+}
