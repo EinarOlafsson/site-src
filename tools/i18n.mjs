@@ -187,7 +187,9 @@ export const FIXED = {
   "mc.metric.median_count_error_pct": "Median count error",
   "mc.metric.plates_within_5pct": "Plates within 5%",
   "mc.metric.plates_within_10pct": "Plates within 10%",
-  "mc.default_from": "Default in spaCR ({value})"
+  "mc.default_from": "Default in spaCR ({value})",
+  "mc.newer": "Also published, not the default: {value}",
+  "mc.previous": "Previous versions: {value}"
 };
 
 export const UI_KEYS = Object.keys(FIXED).filter((k) => k.startsWith("ui."));
@@ -213,6 +215,24 @@ export function showcaseKeys(sc) {
   return out;
 }
 
+// One card per task: the newest model that is not an alternative or a
+// candidate. Newer alternatives/candidates and older versions are listed
+// in one line each. statusOf(m) gives the model's status.
+// Versions of one model share a key stem (key without its _vN suffix).
+export function selectModels(g, statusOf) {
+  const fam = new Map();
+  for (const m of g.models || []) {
+    const stem = String(m.key).replace(/[_-]v\d+$/, "");
+    if (!fam.has(stem)) fam.set(stem, []);
+    fam.get(stem).push(m);
+  }
+  return [...fam.values()].map((ms) => {
+    let i = ms.length - 1;
+    while (i > 0 && ["alternative", "candidate"].includes(statusOf(ms[i]))) i--;
+    return { shown: ms[i], newer: ms.slice(i + 1), older: ms.slice(0, i) };
+  });
+}
+
 // Strings that come from data/models.json (group titles, motivations, notes, labels).
 export function modelKeys(mj) {
   const out = [];
@@ -220,7 +240,7 @@ export function modelKeys(mj) {
   for (const g of mj.groups || []) {
     add(dataKey(`mc.group.${g.id}.title`, g.title), g.title);
     add(dataKey(`mc.group.${g.id}.motivation`, g.motivation), g.motivation);
-    for (const m of g.models || []) {
+    for (const m of selectModels(g, (x) => x.status || "").map((f) => f.shown)) {
       if (m.note) add(dataKey("mc.note", m.note), m.note);
       if (m.test && m.test.source) add(dataKey("mc.testsrc", m.test.source), m.test.source);
       if (m.test && m.test.size) add(dataKey("mc.testsize", m.test.size), m.test.size);

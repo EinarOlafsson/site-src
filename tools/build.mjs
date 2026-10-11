@@ -25,7 +25,7 @@ import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { apply as applyI18n, dataKey, englishFor, esc as escI18n, loadLanguages, readPartials, referenceJSON, sameSignature, slug, strip as stripI18n, translator, UI_KEYS } from "./i18n.mjs";
+import { apply as applyI18n, selectModels, dataKey, englishFor, esc as escI18n, loadLanguages, readPartials, referenceJSON, sameSignature, slug, strip as stripI18n, translator, UI_KEYS } from "./i18n.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SRC = path.join(ROOT, "src");
@@ -281,10 +281,21 @@ function modelsVars(tr, zs) {
   const p = path.join(DATA, "models.json");
   if (!fs.existsSync(p)) return { MODELS_HTML: "" };
   const mj = readJSON(p);
-  const T = (prefix, text) => esc(tr(dataKey(prefix, text)));
+  const T = (prefix, text) => { try { return esc(tr(dataKey(prefix, text))); } catch (e) { return esc(text); } };
   const metricOrder = ["f1_50", "f1_75", "ap", "precision", "recall", "aji", "dice", "map50", "map50_95", "median_count_error_pct", "plates_within_5pct", "plates_within_10pct"];
   const groups = (mj.groups || []).map((g) => {
-    const cards = (g.models || []).map((m) => {
+    const statusOf = (m) => {
+      const zkey = String(m.key).replace(/-/g, "_");
+      if (zs.defaults[zkey]) return "default";
+      const mk = ((zs.display[zkey] || "").match(/\b(default|alternative|candidate)\b/i) || [])[1];
+      return mk ? mk.toLowerCase() : (m.status || "");
+    };
+    const fams = selectModels(g, statusOf);
+    const linkList = (ms) => ms.map((m) => `<a href="${esc(m.repo_url)}">${esc(m.version || m.key)}</a>${["alternative", "candidate"].includes(statusOf(m)) ? ` (${esc(tr("mc." + statusOf(m)))})` : ""}`).join(", ");
+    const extra = fams.map((sel) => [
+      sel.newer.length ? `          <p class="mc-more">${esc(tr("mc.newer")).replace("{value}", linkList(sel.newer))}</p>` : "",
+      sel.older.length ? `          <p class="mc-more">${esc(tr("mc.previous")).replace("{value}", linkList(sel.older))}</p>` : ""].filter(Boolean).join("\n")).filter(Boolean).join("\n");
+    const cards = fams.map((f) => f.shown).filter(Boolean).map((m) => {
       const zkey = String(m.key).replace(/-/g, "_");
       const def = zs.defaults[zkey];
       const disp = zs.display[zkey] || "";
@@ -322,11 +333,12 @@ function modelsVars(tr, zs) {
         `          </article>`].filter(Boolean).join("\n");
     });
     return [
-      `        <div class="mc-group" role="group" aria-labelledby="mc-${esc(g.id)}">`,
+      `        <div class="mc-group${fams.length > 1 ? " wide" : ""}" role="group" aria-labelledby="mc-${esc(g.id)}">`,
       `          <h3 id="mc-${esc(g.id)}">${T(`mc.group.${g.id}.title`, g.title)}</h3>`,
       `          <p class="note mc-why">${T(`mc.group.${g.id}.motivation`, g.motivation)}</p>`,
-      `          <div class="mc-grid">`,
+      `          <div class="${fams.length > 1 ? "mc-grid" : "mc-one"}">`,
       cards.join("\n"),
+      extra,
       `          </div>`,
       `        </div>`].join("\n");
   });

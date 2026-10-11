@@ -109,5 +109,7 @@
   "mc.metric.median_count_error_pct": "Median count error",
   "mc.metric.plates_within_5pct": "Plates within 5%",
   "mc.metric.plates_within_10pct": "Plates within 10%",
-  "mc.default_from": "Default in spaCR ({value})"
+  "mc.default_from": "Default in spaCR ({value})",
+  "mc.newer": "Also published, not the default: {value}",
+  "mc.previous": "Previous versions: {value}"
 }
