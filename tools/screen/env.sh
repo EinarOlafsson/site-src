@@ -3,7 +3,7 @@
 export CUDA_VISIBLE_DEVICES=''
 export QT_QPA_PLATFORM=offscreen
 export MPLBACKEND=Agg
-export PYTHONPATH=/mnt/wd4tb/spacr-worktrees/claude-n687-v3
+export PYTHONPATH=/mnt/wd4tb/spacr-worktrees/claude-n687-v4
 S=/mnt/wd4tb/scratch/n687v3/ols
 export HOME=$S/state
 export SPACR_HOME=$S/state/.spacr

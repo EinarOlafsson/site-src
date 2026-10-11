@@ -1,0 +1,332 @@
+{
+ "item": "N687 themed figures",
+ "generated": "2026-10-10",
+ "spacr_commit": "a3dd6a6b8588f4cf3487ca73719edf5fdc75b397 (worktree claude-n687-v3)",
+ "environment": "tools/themed/env.sh: CUDA_VISIBLE_DEVICES='', MPLBACKEND=Agg, QT_QPA_PLATFORM=offscreen, isolated HOME/SPACR_HOME/MPLCONFIGDIR, RAM cap 24G (tools/run_capped.sh)",
+ "themes": {
+  "dark": {
+   "ground": "#0f1115",
+   "ink": "#ffffff"
+  },
+  "light": {
+   "ground": "#fafaf9",
+   "ink": "#15181e"
+  }
+ },
+ "figures": [
+  {
+   "id": "dose_response",
+   "tab": "assays",
+   "replaces": "src/assets/img/examples/dose_response.webp",
+   "files": {
+    "dark": {
+     "file": "dose_response.dark.webp",
+     "width": 1170,
+     "height": 792,
+     "bytes": 49568
+    },
+    "light": {
+     "file": "dose_response.light.webp",
+     "width": 1170,
+     "height": 792,
+     "bytes": 50952
+    }
+   },
+   "alt": "Dose-response curves of median cell count for five compounds, SNX-2112 highlighted with its EC50",
+   "caption": "Dose-Response: four-parameter logistic fits for the 5 of 58 compounds with a bounded EC50; SNX-2112 EC50 0.299 µM (95% CI 0.279–0.319). Data: spacr-example-dose, 1,536 wells, 4 plates.",
+   "numbers": {
+    "status_counts": {
+     "unbounded": 28,
+     "refused": 26,
+     "fitted": 5
+    },
+    "n_wells": 1536,
+    "n_plates": 4,
+    "n_compounds_excl_dmso": 58,
+    "fitted": [
+     {
+      "group": "SNX-2112",
+      "ec50": 0.2993651500904668,
+      "ec50_low": 0.27901687232122463,
+      "ec50_high": 0.31947936683053063,
+      "hill": -2.7800653580520227,
+      "r_squared": 0.9958432254062981,
+      "n": 24
+     },
+     {
+      "group": "pevonedistat",
+      "ec50": 0.3273701345922397,
+      "ec50_low": 0.2485285622507527,
+      "ec50_high": 0.404886861033656,
+      "hill": -1.6496980518011704,
+      "r_squared": 0.9779946451621667,
+      "n": 24
+     },
+     {
+      "group": "AZD5438",
+      "ec50": 0.4856297492133107,
+      "ec50_low": 0.40495201817203086,
+      "ec50_high": 0.5715507410768563,
+      "hill": -2.3993988669769237,
+      "r_squared": 0.9764432811881394,
+      "n": 24
+     },
+     {
+      "group": "ENMD-2076",
+      "ec50": 1.0262913795131898,
+      "ec50_low": 0.9212881646143704,
+      "ec50_high": 1.168053345755192,
+      "hill": -2.7022057061636713,
+      "r_squared": 0.9853315271921868,
+      "n": 24
+     },
+     {
+      "group": "CP-724714",
+      "ec50": 3.358700180157957,
+      "ec50_low": 2.804476611153353,
+      "ec50_high": 9.475031494744254,
+      "hill": -21.34252264128231,
+      "r_squared": 0.8446992951909791,
+      "n": 24
+     }
+    ]
+   },
+   "provenance": {
+    "dataset": "einarolafsson/spacr-example-dose (CC0-1.0), dose_plate.csv",
+    "script": "tools/themed/make_dose.py <dark|light>",
+    "spacr": [
+     "spacr.qt.screens.dose_response.DoseResponseScreen",
+     "spacr.qt.widgets.dose_response.fit_frame",
+     "spacr.figures.style._apply_user_style",
+     "spacr.plot.save_figure"
+    ],
+    "theme_changes": "chrome in theme ink; unfocused series alpha 0.8 (dark) / 0.5 (light); series colours below 3:1 on the light ground mixed toward the ink (SNX-2112 #eda100 -> #c28606 on light)"
+   }
+  },
+  {
+   "id": "control_chart",
+   "tab": "assays",
+   "replaces": "src/assets/img/examples/control_chart.webp",
+   "files": {
+    "dark": {
+     "file": "control_chart.dark.webp",
+     "width": 1200,
+     "height": 747,
+     "bytes": 97472
+    },
+    "light": {
+     "file": "control_chart.light.webp",
+     "width": 1200,
+     "height": 747,
+     "bytes": 98112
+    }
+   },
+   "alt": "Control chart of DMSO-well median cell count across 24 plates with control limits and flagged plates",
+   "caption": "Control chart: DMSO-well median cell count across 24 plates; all 24 fall outside the limits after cell-line, time-point and seeding changes. Data: spacr-example-control-chart.",
+   "numbers": {
+    "n_plates": 24,
+    "n_wells_total": 9131,
+    "n_negcon_wells": 1522,
+    "centre": 77.06708585,
+    "sigma": 1.361893373973236,
+    "estimator": "subgroup_s",
+    "flagged_plates": [
+     "BR00116991",
+     "BR00116992",
+     "BR00116993",
+     "BR00116994",
+     "BR00116995",
+     "BR00117008",
+     "BR00117009",
+     "BR00117010",
+     "BR00117011",
+     "BR00117012",
+     "BR00117013",
+     "BR00117015",
+     "BR00117016",
+     "BR00117017",
+     "BR00117019",
+     "BR00117024",
+     "BR00117025",
+     "BR00117026",
+     "BR00117050",
+     "BR00117051",
+     "BR00117052",
+     "BR00117053",
+     "BR00117054",
+     "BR00117055"
+    ],
+    "rule_violations": 33
+   },
+   "provenance": {
+    "dataset": "einarolafsson/spacr-example-control-chart, control_chart_wells.csv",
+    "script": "tools/themed/make_control_chart.py <dark|light>",
+    "spacr": [
+     "spacr.qt.screens.control_chart.ControlChartScreen",
+     "spacr.plot.save_figure"
+    ]
+   }
+  },
+  {
+   "id": "plaque",
+   "tab": "assays",
+   "replaces": "src/assets/img/models/plaque-figure.webp (no caption strip now)",
+   "files": {
+    "dark": {
+     "file": "plaque.dark.webp",
+     "width": 1024,
+     "height": 1011,
+     "bytes": 95304
+    },
+    "light": {
+     "file": "plaque.light.webp",
+     "width": 1024,
+     "height": 1011,
+     "bytes": 94936
+    }
+   },
+   "alt": "Crystal-violet plaque well with 99 plaques outlined in magenta",
+   "caption": "Plaque Assay: 99 plaques found by toxoplasma_plaque_v3 in a well from Cabral et al. 2024 (CC BY 4.0); 98 in the hand-drawn mask.",
+   "numbers": {
+    "count_in_saved_mask": 99,
+    "reference_count": 98,
+    "tp": 95,
+    "fp": 4,
+    "fn": 3,
+    "f1_at_iou_0_5": 0.964
+   },
+   "provenance": {
+    "image": "einarolafsson/toxoplasma-plaque-dataset images/literature__PMC11448412__spectrum.01229-24.f002.jpg__p19__w00.tif",
+    "mask": "/mnt/wd4tb/scratch/n687/models/out_public/plaque.tif (saved toxoplasma_plaque_v3 output; model not re-run)",
+    "weights_sha256": "8f59850dbe09c3a252728b0a7ca38ae5b52a28f2dbaa7a068174b4b7bfac768c",
+    "script": "tools/themed/make_plaque.py",
+    "render": "outlines 1.8 px at 1024 px width, 4x supersampled, #FF00FF; outside the fitted well circle (native centre/radius [607.2, 610.6, 556.0]) is the theme ground",
+    "ground_note": "lossy WebP (lossless does not fit 100 kB); ground decodes within 1 level of the theme colour (#0f1014 / #fafafa)"
+   }
+  },
+  {
+   "id": "recruitment",
+   "tab": "assays",
+   "replaces": "src/assets/img/spacr/recruitment.webp",
+   "files": {
+    "dark": {
+     "file": "recruitment.dark.webp",
+     "width": 1200,
+     "height": 464,
+     "bytes": 37826
+    },
+    "light": {
+     "file": "recruitment.light.webp",
+     "width": 1200,
+     "height": 464,
+     "bytes": 38820
+    }
+   },
+   "alt": "Bar plots of GFP-TSG101 recruitment for negative and positive control wells on four plates",
+   "caption": "Recruitment: GFP-TSG101 vacuole-to-cytoplasm ratio in SAG1 (negative) and GRA14 (positive) control wells on four plates, 16 wells each; plate means 1.31 vs 1.09, p = 8.6 × 10⁻⁵ (t-test, n = 4). Data: spacr-example-screen.",
+   "numbers": {
+    "wells_per_plate": [
+     {
+      "plate": 1,
+      "pathogen": "nc",
+      "mean": 1.2980863001340963,
+      "std": 0.024862075810396244,
+      "count": 16
+     },
+     {
+      "plate": 1,
+      "pathogen": "pc",
+      "mean": 1.0863178484026155,
+      "std": 0.030121916445496805,
+      "count": 16
+     },
+     {
+      "plate": 2,
+      "pathogen": "nc",
+      "mean": 1.3451567255865582,
+      "std": 0.02222278432693988,
+      "count": 16
+     },
+     {
+      "plate": 2,
+      "pathogen": "pc",
+      "mean": 1.1446393635633545,
+      "std": 0.01891749587837752,
+      "count": 16
+     },
+     {
+      "plate": 3,
+      "pathogen": "nc",
+      "mean": 1.289191979123489,
+      "std": 0.020889000430232625,
+      "count": 16
+     },
+     {
+      "plate": 3,
+      "pathogen": "pc",
+      "mean": 1.0745069734934847,
+      "std": 0.0175297706217881,
+      "count": 16
+     },
+     {
+      "plate": 4,
+      "pathogen": "nc",
+      "mean": 1.292146721000653,
+      "std": 0.024946536164261634,
+      "count": 16
+     },
+     {
+      "plate": 4,
+      "pathogen": "pc",
+      "mean": 1.0566060437237166,
+      "std": 0.009523166241606068,
+      "count": 16
+     }
+    ],
+    "plate_means": {
+     "nc": [
+      1.2981,
+      1.3452,
+      1.2892,
+      1.2921
+     ],
+     "pc": [
+      1.0863,
+      1.1446,
+      1.0745,
+      1.0566
+     ]
+    },
+    "mean_of_plate_means": {
+     "nc": 1.3061,
+     "pc": 1.0905
+    },
+    "p_student_plate_means": 8.641817034932801e-05,
+    "p_welch_plate_means": 0.00016974480200422957,
+    "p_paired_plate_means": 8.544847153472419e-05,
+    "p_student_all_wells": 1.2877518885427334e-65
+   },
+   "provenance": {
+    "dataset": "einarolafsson/spacr-example-screen (CC BY 4.0), plate1-4-measurements.tar",
+    "scripts": [
+     "tools/themed/fetch_screen_measurements.py",
+     "tools/themed/run_recruitment.py <1-4> 1",
+     "tools/themed/make_recruitment.py"
+    ],
+    "spacr": [
+     "spacr.submodules.analyze_recruitment (default settings; channel_of_interest 1; nc = column 1 SAG1, pc = column 2 GRA14 from the plate guide counts)",
+     "spacr.figures.style.figure_style",
+     "spacr.plot.save_figure"
+    ],
+    "previous_image": "crop of README deck slide 43 (docs/source/_static/deck, \"preprint data\"); no generator in site-v3; p = 8.4e-5 there"
+   }
+  }
+ ],
+ "not_made": [
+  {
+   "id": "volcano",
+   "source": "src/assets/img/spacr/volcano.webp (preprint Fig. 5 crop, CC BY-NC-ND)",
+   "reason": "not reproducible from public data: plate<N>_dv.csv has one per-cell score column (pred, with cv_predictions 0/1) and no classifier label; no MaxViT or second classifier score is published in spacr-example-screen, spacr-example-hit or the example-data release. Show the existing crop on a neutral card."
+  }
+ ]
+}

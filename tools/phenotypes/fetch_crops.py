@@ -3,6 +3,7 @@
 Untrusted download: only PNG members named in the hit cut's png_list are written,
 under their basename, into DL/crops/<columnID>/.
 Usage: env.sh fetch_crops.py <columnID> [<columnID> ...]
+       env.sh fetch_crops.py --paths <json with {"candidates": {key: [png_path, ...]}}> <outdir>
 """
 import io, json, os, re, sqlite3, sys, tarfile, time
 import common
@@ -38,13 +39,22 @@ def header_at(off, span=1 << 20):
     return None, None
 
 
+if cols and cols[0] == '--paths':
+    import pathlib
+    rec = json.load(open(cols[1]))
+    jobs = {'paths': sorted({p for v in rec['candidates'].values() for p in v})}
+    outdir = pathlib.Path(cols[2])
+    cols = []
+else:
+    jobs = None
 con = sqlite3.connect(f'file:{common.HIT}/measurements/measurements.db?mode=ro', uri=True)
 log = {}
 t0 = time.time()
-for col in cols:
-    paths = [r[0] for r in con.execute("select png_path from png_list where columnID=?", (col,))]
+groups = [(c, [r[0] for r in con.execute("select png_path from png_list where columnID=?", (c,))], common.DL / 'crops' / c) for c in cols]
+if jobs:
+    groups = [('paths', jobs['paths'], outdir)]
+for col, paths, out in groups:
     want = set(paths)
-    out = common.DL / 'crops' / col
     out.mkdir(parents=True, exist_ok=True)
     want = {p for p in want if not (out / os.path.basename(p)).exists()}
     prefixes = sorted({'/'.join(p.split('/')[:4]) + '/' for p in want})
@@ -81,4 +91,4 @@ for col in cols:
         print(col, pre, 'remaining', len(want), round(time.time() - t0), 's', flush=True)
     log[col] = {'requested': len(paths), 'fetched_now': got, 'missing': sorted(want)}
 print(json.dumps(log, indent=1))
-(common.DL / f'fetch_log_{"_".join(cols)}.json').write_text(json.dumps(log, indent=1))
+(common.DL / f'fetch_log_{"_".join(log)}.json').write_text(json.dumps(log, indent=1))

@@ -1,0 +1,418 @@
+{
+ "item": "N687 v3 whole-field panels",
+ "field": {
+  "stem": "MTOC_Screen__mtocScreen_20250531_145355__plate2_P08_16_1",
+  "screen": "Toxoplasma MTOC recruitment screen (MTOC_Screen, mtocScreen_20250531_145355)",
+  "plate": "plate2",
+  "well": "P08",
+  "field": 16,
+  "fov_id": "plate2_P08_16_1 (spaCR prcf plate2_r16_c8_f16)",
+  "size_px": [
+   2000,
+   2000
+  ],
+  "channels": {
+   "0": "Hoechst (nuclei)",
+   "1": "CellMask (host membranes; parasites take up the dye and are its brightest structures)"
+  },
+  "cells": "HeLa-type adherent host cells infected with Toxoplasma gondii (as named in the source datasets' screen)",
+  "not_public": "The screen's MTOC marker channel is not in these datasets; only Hoechst and CellMask are shown."
+ },
+ "sources": [
+  {
+   "dataset": "einarolafsson/cross-channel-cell-from-hoechst",
+   "url": "https://huggingface.co/datasets/einarolafsson/cross-channel-cell-from-hoechst",
+   "licence": "CC BY 4.0",
+   "revision": "0ce8ee27581108bc3e369ab0b2f1f1474dfe87e9",
+   "used": "Hoechst image and instance cell masks",
+   "files": [
+    "images/MTOC_Screen__mtocScreen_20250531_145355__plate2_P08_16_1.tif",
+    "masks/MTOC_Screen__mtocScreen_20250531_145355__plate2_P08_16_1.tif"
+   ]
+  },
+  {
+   "dataset": "einarolafsson/cross-channel-nuclei-from-cellmask",
+   "url": "https://huggingface.co/datasets/einarolafsson/cross-channel-nuclei-from-cellmask",
+   "licence": "CC BY 4.0",
+   "revision": "67c45ebd25000a36dc42120379e06285bdcb4b1d",
+   "used": "CellMask image and instance nucleus masks",
+   "files": [
+    "images/MTOC_Screen__mtocScreen_20250531_145355__plate2_P08_16_1.tif",
+    "masks/MTOC_Screen__mtocScreen_20250531_145355__plate2_P08_16_1.tif"
+   ]
+  },
+  {
+   "dataset": "einarolafsson/cross-channel-toxoplasma-from-cellmask",
+   "url": "https://huggingface.co/datasets/einarolafsson/cross-channel-toxoplasma-from-cellmask",
+   "licence": "CC BY 4.0",
+   "revision": "f59ba4c2f9e974eccdb117f33718a0b5dc995172",
+   "used": "instance parasitophorous-vacuole masks (PV model cpsam_v2_toxo_r5)",
+   "files": [
+    "masks_pv/MTOC_Screen__mtocScreen_20250531_145355__plate2_P08_16_1.tif"
+   ]
+  }
+ ],
+ "segmentation": "Masks are the datasets' published instance masks for this field (not re-segmented here); spaCR Measure's own reconciliation (spacr.measure.measure_crop: cell >= 8000 px, nucleus >= 2000 px, vacuole >= 150 px, 90% overlap merge, cells without a nucleus dropped) decides which objects are drawn, so every outline is a measured object.",
+ "display": "Per-channel percentile scaling over the whole field: Hoechst 1st-99.7th percentile (gamma 0.9) in blue; CellMask 1st-99.95th percentile through a cool-to-warm lookup table (slate host cytoplasm, warm peach for the brightest CellMask structures, which are the parasites). Mask panels show both channels as dimmed grey.",
+ "outlines": "Outlines: sub-pixel contours (skimage.measure.find_contours) drawn with PIL at 4x supersampling and box-downsampled; about 1 CSS px at the page's display width. Cells #00CEC8, nuclei #3B82F6, vacuoles #FF00FF.",
+ "windows": {
+  "pipeline_rows_cols": [
+   200,
+   1100,
+   200,
+   1400
+  ],
+  "overview_rows_cols": [
+   280,
+   1080,
+   484,
+   1076
+  ],
+  "overview_stack_rows_cols": [
+   280,
+   1079,
+   480,
+   1080
+  ],
+  "recruitment_rows_cols": [
+   540,
+   1039,
+   520,
+   1000
+  ]
+ },
+ "measure": {
+  "function": "spacr.measure.measure_crop",
+  "settings": {
+   "src": "/mnt/wd4tb/scratch/n687v3/fov/work/measure/merged",
+   "channels": [
+    0,
+    1
+   ],
+   "cell_mask_dim": 2,
+   "nucleus_mask_dim": 3,
+   "pathogen_mask_dim": 4,
+   "cell_min_size": 8000,
+   "nucleus_min_size": 2000,
+   "pathogen_min_size": 150,
+   "save_png": false,
+   "save_arrays": false,
+   "plot": false,
+   "measure_gpu": false,
+   "n_jobs": 8,
+   "verbose": false
+  },
+  "seconds": 663.3,
+  "fields_measured": 52,
+  "note": "53 fields of plate 2 measured on CPU; plate2_J02_5_1 was refused by Measure (a nucleus label spanning two cells) and is not in the database, leaving 52."
+ },
+ "classifier": {
+  "function": "spacr.ml.ml_analysis",
+  "settings": {
+   "channel_of_interest": null,
+   "location_column": "infection",
+   "positive_control": "infected",
+   "negative_control": "uninfected",
+   "model_type": "xgboost",
+   "n_estimators": 600,
+   "learning_rate": 0.05,
+   "reg_alpha": 0.1,
+   "reg_lambda": 1.0,
+   "test_size": 0.2,
+   "split_by": "field",
+   "n_repeats": 5,
+   "n_jobs": 8,
+   "remove_low_variance_features": true,
+   "remove_highly_correlated_features": true,
+   "cross_validation": false,
+   "verbose": false
+  },
+  "label": "infected = Measure linked >= 1 vacuole object to the cell",
+  "n_features_offered": 228,
+  "n_features_used": 99,
+  "train_cells": 1790,
+  "test_cells": 443,
+  "fields_total": 52,
+  "auc_heldout_fields": 0.656,
+  "auc_showcase_field": 0.863,
+  "showcase_cells": 37,
+  "showcase_infected": 32
+ },
+ "spacr": {
+  "worktree": "/mnt/wd4tb/spacr-worktrees/claude-n687-v4",
+  "commit": "0e244094c"
+ },
+ "theme": {
+  "dark_bg": "#0f1115",
+  "light_bg": "#fafaf9",
+  "dark_text": "#ffffff",
+  "light_text": "#15181e",
+  "note": "Graph and table panels and every gap use the page background; microscopy stays on its dark image background in both themes."
+ },
+ "pipeline": [
+  {
+   "file": "01_raw",
+   "step": "Image",
+   "line": "One whole 2000 x 2000 px field (plate 2, well P08, field 16) of the Toxoplasma MTOC screen; the panel shows a 1200 x 900 px window with 13 measured host cells and 54 parasite vacuoles: nuclei (Hoechst) blue, CellMask grey with the dye-loaded parasites warm."
+  },
+  {
+   "file": "02_masks",
+   "step": "Masks",
+   "line": "Cell (cyan), nucleus (blue) and vacuole (magenta) outlines of the whole field; 37 cells, 44 nuclei and 130 vacuole objects passed spaCR Measure in the field, 13 cells, 15 nuclei and 54 vacuoles in this window."
+  },
+  {
+   "file": "03_measurements",
+   "step": "Measure",
+   "line": "Cells coloured by cell_pathogen_overlap_fraction from spaCR Measure (fraction of the cell covered by vacuoles): 0.000 to 0.161 in this window, 9 of 13 cells above 0; colour bar 0 to 0.3."
+  },
+  {
+   "file": "04_classification",
+   "step": "Classify",
+   "line": "Cells coloured by a spaCR XGBoost score (spacr.ml.ml_analysis) for 'infected', learned from host features only (nucleus, cytoplasm intensity and texture with vacuole pixels excluded, cell shape) on 51 other fields of the same plate; this field was never trained on. 8 of 13 cells score above 0.5 (7 of them infected); ROC AUC 0.863 on this field, 0.656 on held-out training-plate fields."
+  },
+  {
+   "file": "05_screen_hit",
+   "step": "Hit",
+   "line": "Volcano of a different, public screen (GFP-TSG101 recruitment, pooled Toxoplasma CRISPR knockout, 4 plates): 414 genes, 4 with q < 0.05 (orange); GRA14, the screen's positive control, is the hit (coefficient 0.931, reported p = 0, so drawn as a triangle at the top of the axis). The MTOC screen's hits are not public, so this panel is not computed from the field above.",
+   "data": {
+    "dataset": "einarolafsson/spacr-example-screen and einarolafsson/spacr-example-hit",
+    "licence": "CC BY 4.0",
+    "revisions": {
+     "spacr-example-screen": "ec328b0f411c0ea46ceccb51aa867028b59af202",
+     "spacr-example-hit": "f141d22022e41461e170c95ef986b14cc48bb6b6"
+    },
+    "settings": "Gene-level OLS regression of the GFP-TSG101 example screen (four plates), run by spaCR with the settings/regression.json shipped in einarolafsson/spacr-example-hit; results file /mnt/wd4tb/scratch/n687v3/ols/run/screen4/results/ols/results_gene.csv",
+    "facts": {
+     "n_genes": 414,
+     "n_significant_q05": 4,
+     "significant": [
+      {
+       "gene": "220950",
+       "gene_name": null,
+       "coefficient": -0.114,
+       "p_value": 2.1496084554117934e-05,
+       "q_value": 0.0029664596684682,
+       "condition": "other"
+      },
+      {
+       "gene": "225160",
+       "gene_name": null,
+       "coefficient": 1.064,
+       "p_value": 0.0001684508195697,
+       "q_value": 0.0174346598254685,
+       "condition": "other"
+      },
+      {
+       "gene": "233460",
+       "gene_name": "SAG1",
+       "coefficient": -0.12,
+       "p_value": 3.2458282655732108e-06,
+       "q_value": 0.0006718864509736,
+       "condition": "nc"
+      },
+      {
+       "gene": "239740",
+       "gene_name": "GRA14",
+       "coefficient": 0.931,
+       "p_value": 0.0,
+       "q_value": 0.0,
+       "condition": "pc"
+      }
+     ],
+     "hit": {
+      "gene": "TGGT1_239740",
+      "name": "GRA14",
+      "coefficient": 0.931,
+      "p_value_reported": 0.0,
+      "q_value": 0.0,
+      "n_cells_gene": 137
+     },
+     "y_cap": 7.0
+    },
+    "axes": "x: regression coefficient (effect on the classifier score), clipped to +-2 with off-scale genes as edge arrows; y: -log10 p, capped at 7; dashed line p = 0.05"
+   }
+  }
+ ],
+ "overview": {
+  "strip": "1600x400: image | masks | measurement table | classifier scores | hit volcano (panel widths 296, 296, 352, 296, 312; 12 px gaps)",
+  "stack": "800 wide: image | masks; table; scores | volcano",
+  "table_objects": [
+   34,
+   36,
+   9
+  ],
+  "table_line": "Five spaCR Measure columns (cell_area, cell_eccentricity, nucleus_area, cell_pathogen_overlap_fraction, cell_channel_1_mean_intensity) for cells 34, 36, 9 of this field, values as stored in measurements.db (nucleus_area summed over the cell's nuclei)."
+ },
+ "recruitment_field": {
+  "line": "One field, five views: Hoechst, CellMask, then the cell, nucleus and vacuole outlines on the same window (a 500 x 480 px window of plate2_P08_16_1).",
+  "note": "The MTOC screen is a recruitment screen, but its recruited-marker channel is not public; the strip shows the two public channels."
+ },
+ "files": {
+  "pipeline/01_raw.dark.webp": {
+   "bytes": 47806,
+   "quality": 90,
+   "size": [
+    800,
+    600
+   ]
+  },
+  "pipeline/02_masks.dark.webp": {
+   "bytes": 80314,
+   "quality": 90,
+   "size": [
+    800,
+    600
+   ]
+  },
+  "pipeline/03_measurements.dark.webp": {
+   "bytes": 41450,
+   "quality": 90,
+   "size": [
+    800,
+    600
+   ]
+  },
+  "pipeline/04_classification.dark.webp": {
+   "bytes": 50532,
+   "quality": 90,
+   "size": [
+    800,
+    600
+   ]
+  },
+  "pipeline/05_screen_hit.dark.webp": {
+   "bytes": 11274,
+   "quality": 90,
+   "size": [
+    800,
+    600
+   ]
+  },
+  "spacr/overview-strip.dark.webp": {
+   "bytes": 79660,
+   "quality": 90,
+   "size": [
+    1600,
+    400
+   ]
+  },
+  "spacr/overview-stack.dark.webp": {
+   "bytes": 119760,
+   "quality": 90,
+   "size": [
+    800,
+    1414
+   ]
+  },
+  "spacr/recruitment-field.dark.webp": {
+   "bytes": 43002,
+   "quality": 90,
+   "size": [
+    1200,
+    241
+   ]
+  },
+  "pipeline/01_raw.light.webp": {
+   "bytes": 47806,
+   "quality": 90,
+   "size": [
+    800,
+    600
+   ]
+  },
+  "pipeline/02_masks.light.webp": {
+   "bytes": 80314,
+   "quality": 90,
+   "size": [
+    800,
+    600
+   ]
+  },
+  "pipeline/03_measurements.light.webp": {
+   "bytes": 41400,
+   "quality": 90,
+   "size": [
+    800,
+    600
+   ]
+  },
+  "pipeline/04_classification.light.webp": {
+   "bytes": 50522,
+   "quality": 90,
+   "size": [
+    800,
+    600
+   ]
+  },
+  "pipeline/05_screen_hit.light.webp": {
+   "bytes": 11182,
+   "quality": 90,
+   "size": [
+    800,
+    600
+   ]
+  },
+  "spacr/overview-strip.light.webp": {
+   "bytes": 78872,
+   "quality": 90,
+   "size": [
+    1600,
+    400
+   ]
+  },
+  "spacr/overview-stack.light.webp": {
+   "bytes": 117332,
+   "quality": 90,
+   "size": [
+    800,
+    1414
+   ]
+  },
+  "spacr/recruitment-field.light.webp": {
+   "bytes": 43548,
+   "quality": 90,
+   "size": [
+    1200,
+    241
+   ]
+  }
+ },
+ "rejected_candidates": [
+  {
+   "source": "einarolafsson/spacr-example-screen",
+   "why": "Measurements and 224 px single-cell crops only; no whole field is public (the old panels were reassembled from these crops)."
+  },
+  {
+   "source": "einarolafsson/spacr-example-measure, -make-masks, -recruitment, -host-pathogen, -replication, -import, -annotate, toxo_mito",
+   "why": "MIT licence, not CC BY / CC0 as required (several do hold whole fields with masks)."
+  },
+  {
+   "source": "einarolafsson/spacr-example-invasion",
+   "why": "Synthetic images, MIT."
+  },
+  {
+   "source": "einarolafsson/toxoplasma-pv-segmentation-dataset(-r7)",
+   "why": "CC BY 4.0 whole fields with curated vacuole masks, but single channel: no nuclei or cell masks."
+  },
+  {
+   "source": "einarolafsson/spacr-example-stitch, spacr-example-ops",
+   "why": "CC BY 4.0 but 10X in-situ sequencing tiles of human cells (no parasites, no masks)."
+  },
+  {
+   "source": "MTOC_Screen plate2 A05_16_1, A05_4_1, O05_22_1, C19_2_1, P14_6_1; plate1 L09_3_1, L08_12_1, B15_11_1, A17_17_1; plate4 A08_3_1",
+   "why": "Viewed side by side: well spread and in focus, but fewer or smaller vacuoles per cell (A05_4, O05_22, C19_2, L08_12, B15_11), empty space (P14_6, L09_3, A17_17), or edge debris (A08_3)."
+  },
+  {
+   "source": "CSA_screen plate2 A22_5_1",
+   "why": "Confluent sheet on half the field, the other half empty."
+  },
+  {
+   "source": "THP1_screen PLATE2 A22_17_1, PLATE4 A13_18_1",
+   "why": "THP-1 cells in tight clumps with many extracellular parasites; outlines unreadable at panel size."
+  },
+  {
+   "source": "datasets named live_cell / livecell / live-cell",
+   "why": "Excluded by rule (private project)."
+  }
+ ]
+}

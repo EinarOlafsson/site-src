@@ -186,23 +186,6 @@ function spacrVars(m, tr) {
   };
 }
 
-// Pixel size of a WebP file (VP8, VP8L or VP8X).
-function webpSize(file) {
-  const b = fs.readFileSync(file);
-  const t = b.toString("ascii", 12, 16);
-  if (t === "VP8X") return [1 + b.readUIntLE(24, 3), 1 + b.readUIntLE(27, 3)];
-  if (t === "VP8L") { const n = b.readUInt32LE(21); return [1 + (n & 0x3fff), 1 + ((n >> 14) & 0x3fff)]; }
-  if (t === "VP8 ") return [b.readUInt16LE(26) & 0x3fff, b.readUInt16LE(28) & 0x3fff];
-  throw new Error(`${file}: not a WebP file`);
-}
-
-function imageVars() {
-  const dir = path.join(SRC, "assets", "img", "spacr");
-  const [sw, sh] = webpSize(path.join(dir, "overview-strip.webp"));
-  const [kw, kh] = webpSize(path.join(dir, "overview-stack.webp"));
-  return { OV_STRIP_W: String(sw), OV_STRIP_H: String(sh), OV_STACK_W: String(kw), OV_STACK_H: String(kh) };
-}
-
 function readJSON(p) { return JSON.parse(fs.readFileSync(p, "utf8")); }
 
 function showcaseVars(tr) {
@@ -532,7 +515,7 @@ async function main() {
   }
   const stats = await statsVars(readJSON(path.join(DATA, "papers.json")).papers.length);
   const ASSET_VERSION = assetVersion();
-  const varsFor = (tr) => ({ ...spacrVars(meta, tr), ...showcaseVars(tr), ...papersVars(tr), ...stats, ...imageVars(), ASSET_VERSION });
+  const varsFor = (tr) => ({ ...spacrVars(meta, tr), ...showcaseVars(tr), ...papersVars(tr), ...stats, ASSET_VERSION });
   await refreshPaperCandidates();
 
   const i18nPages = new Map();

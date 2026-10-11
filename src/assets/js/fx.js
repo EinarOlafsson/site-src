@@ -25,6 +25,7 @@
  * grains within the pointer radius are pulled towards the pointer, as in the
  * app. The vertex shader evaluates all of it, so the CPU only uploads time.
  *
+ * Motion starts on its own shortly after load (or at the first interaction).
  * Reduced motion: one still frame, no loop. Pause: the same, until resumed.
  * No WebGL: the CSS gradient in site.css stays visible.
  */
@@ -79,6 +80,11 @@
       themeBtn.setAttribute("aria-label", label);
       themeBtn.title = label;
     }
+    [].forEach.call(document.querySelectorAll("source[data-theme-dark]"), function (src) {
+      var base = src.getAttribute("data-theme-dark");
+      var m = t === "dark" ? (base || "all") : "not all";
+      if (src.media !== m) src.media = m;
+    });
     if (field) field.restyle();
   }
   if (themeBtn) {
@@ -589,6 +595,9 @@
       if (motionAllowed()) field.start();
     }
     events.forEach(function (n) { window.addEventListener(n, wake, { passive: true }); });
+    setTimeout(function () {
+      if ("requestIdleCallback" in window) requestIdleCallback(wake, { timeout: 1000 }); else wake();
+    }, 1200);
   }
   var awake = false;
 

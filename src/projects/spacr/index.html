@@ -3,8 +3,10 @@
 <head>
 {{HEAD}}
 <title data-i18n="head.title">spaCR: spatial phenotype analysis of CRISPR-Cas9 screens</title>
-<link rel="preload" as="image" href="/assets/img/spacr/overview-strip.webp" media="(min-width: 601px)" fetchpriority="high">
-<link rel="preload" as="image" href="/assets/img/spacr/overview-stack.webp" media="(max-width: 600px)" fetchpriority="high">
+<link rel="preload" as="image" href="/assets/img/spacr/overview-strip.dark.webp" media="(min-width: 601px) and (prefers-color-scheme: dark)" fetchpriority="high">
+<link rel="preload" as="image" href="/assets/img/spacr/overview-strip.light.webp" media="(min-width: 601px) and (prefers-color-scheme: light)" fetchpriority="high">
+<link rel="preload" as="image" href="/assets/img/spacr/overview-stack.dark.webp" media="(max-width: 600px) and (prefers-color-scheme: dark)" fetchpriority="high">
+<link rel="preload" as="image" href="/assets/img/spacr/overview-stack.light.webp" media="(max-width: 600px) and (prefers-color-scheme: light)" fetchpriority="high">
 <meta name="description" data-i18n-content="head.description" content="spaCR {{SPACR_VERSION}}: segmentation, single-cell measurement, classification, barcode mapping and regression for image-based pooled CRISPR screens. Pipeline, published models, screen results, papers and installation.">
 <script src="/assets/js/volcano.js?v={{ASSET_VERSION}}" defer></script>
 </head>
@@ -49,11 +51,13 @@
       </div>
       <figure class="ov-strip">
         <a class="figlink" href="#pipeline"><picture>
-          <source media="(max-width: 600px)" srcset="/assets/img/spacr/overview-stack.webp" width="{{OV_STACK_W}}" height="{{OV_STACK_H}}">
-          <img src="/assets/img/spacr/overview-strip.webp" width="{{OV_STRIP_W}}" height="{{OV_STRIP_H}}" data-i18n-alt="ov.strip.alt" alt="One field of the example screen in five panels: the raw image, cell, nucleus and parasite outlines, a table of measurements, cells coloured by classifier score, and a volcano plot with the hit labelled" fetchpriority="high">
+          <source data-theme-dark="(max-width: 600px)" media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset="/assets/img/spacr/overview-stack.dark.webp" width="800" height="1414">
+          <source media="(max-width: 600px)" srcset="/assets/img/spacr/overview-stack.light.webp" width="800" height="1414">
+          <source data-theme-dark="" media="(prefers-color-scheme: dark)" srcset="/assets/img/spacr/overview-strip.dark.webp" width="1600" height="400">
+          <img src="/assets/img/spacr/overview-strip.light.webp" width="1600" height="400" data-i18n-alt="ov.strip2.alt" alt="One field of HeLa cells infected with Toxoplasma in five panels: the image, thin cell, nucleus and vacuole outlines, a table of measured values, cells coloured by an infection score, and a volcano plot with GRA14 labelled" fetchpriority="high">
         </picture></a>
         <ol class="ov-steps" aria-hidden="true"><li data-i18n="ov.strip.1">Image</li><li data-i18n="ov.strip.2">Masks</li><li data-i18n="ov.strip.3">Measurements</li><li data-i18n="ov.strip.4">Classifier scores</li><li data-i18n="ov.strip.5">Hits</li></ol>
-        <figcaption data-i18n="ov.strip.caption">One field from the public example screen followed from the raw image to the gene it implicates: plate 1, well H02, a GRA14 well. Data: <a href="https://huggingface.co/datasets/einarolafsson/spacr-example-screen">spacr-example-screen</a> and <a href="https://huggingface.co/datasets/einarolafsson/spacr-example-hit">spacr-example-hit</a>, CC BY 4.0. See <a href="#pipeline">Pipeline</a>.</figcaption>
+        <figcaption data-i18n="ov.strip2.caption">One whole field of HeLa cells infected with <i>Toxoplasma</i> (MTOC screen plate 2, well P08, field 16; <a href="https://huggingface.co/datasets/einarolafsson/cross-channel-cell-from-hoechst">public data</a>, CC BY 4.0) through spaCR: image, outlines, Measure values and an infection score. The hit list comes from a different public screen, the four-plate GFP-TSG101 <a href="https://huggingface.co/datasets/einarolafsson/spacr-example-screen">example screen</a>. See <a href="#pipeline">Pipeline</a>.</figcaption>
       </figure>
       <ul class="stats six" aria-label="spaCR in numbers" data-i18n-aria-label="stats.label">
         <li><a class="row" href="#models"><b>{{STAT_MODELS}}</b><span data-i18n="stats.models">published models</span></a></li>
@@ -143,16 +147,16 @@
     <div class="wrap">
       <div class="section-head">
         <h2 data-i18n="pipeline.title">Pipeline</h2>
-        <p data-i18n="pipeline.intro">One field followed through spaCR: plate 1, well H02, field 4 of the example screen, a well whose guides are 92% GRA14, the positive control.</p>
+        <p data-i18n="pipeline.intro2">One whole field followed through spaCR: HeLa cells infected with <i>Toxoplasma</i>, plate 2, well P08, field 16 of the MTOC screen, imaged with Hoechst and CellMask. Steps 1 to 4 use this field; step 5 is the hit list of the GFP-TSG101 example screen, because the MTOC screen's hits are not public.</p>
       </div>
       <ol class="strip">
-        <li><a class="figlink" href="/assets/img/pipeline/01_raw.webp"><img src="/assets/img/pipeline/01_raw.webp" width="800" height="600" data-i18n-alt="pipeline.s1.alt" alt="Infected cells: nuclei blue, marker green, parasites red" loading="lazy" decoding="async"></a><h3><span class="num">1</span><span data-i18n="pipeline.s1.title">Image</span></h3><p data-i18n="pipeline.s1.text">19 infected cells, reassembled from Measure crops.</p></li>
-        <li><a class="figlink" href="/assets/img/pipeline/02_masks.webp"><img src="/assets/img/pipeline/02_masks.webp" width="800" height="600" data-i18n-alt="pipeline.s2.alt" alt="Cell, nucleus and parasite outlines on the same cells" loading="lazy" decoding="async"></a><h3><span class="num">2</span><span data-i18n="pipeline.s2.title">Mask</span></h3><p data-i18n="pipeline.s2.text">Cell, nucleus and parasite outlines.</p></li>
-        <li><a class="figlink" href="/assets/img/pipeline/03_measurements.webp"><img src="/assets/img/pipeline/03_measurements.webp" width="800" height="600" data-i18n-alt="pipeline.s3.alt" alt="Cells coloured by parasite channel-1 intensity" loading="lazy" decoding="async"></a><h3><span class="num">3</span><span data-i18n="pipeline.s3.title">Measure</span></h3><p data-i18n="pipeline.s3.text">Cells coloured by parasite channel-1 intensity.</p></li>
-        <li><a class="figlink" href="/assets/img/pipeline/04_classification.webp"><img src="/assets/img/pipeline/04_classification.webp" width="800" height="600" data-i18n-alt="pipeline.s4.alt" alt="Cells coloured by classifier score, most near 1" loading="lazy" decoding="async"></a><h3><span class="num">4</span><span data-i18n="pipeline.s4.title">Classify</span></h3><p data-i18n="pipeline.s4.text">Classifier score per cell; 18 of 19 above 0.5.</p></li>
-        <li><a class="figlink" href="/assets/img/pipeline/05_screen_hit.webp"><img src="/assets/img/pipeline/05_screen_hit.webp" width="800" height="600" data-i18n-alt="pipeline.s5.alt" alt="Volcano plot with GRA14 ringed and SAG1 labelled" loading="lazy" decoding="async"></a><h3><span class="num">5</span><span data-i18n="pipeline.s5.title">Hit</span></h3><p data-i18n="pipeline.s5.text">GRA14 called by regression (q 0.040).</p></li>
+        <li><a class="figlink" href="/assets/img/pipeline/01_raw.dark.webp"><picture><source data-theme-dark="" media="(prefers-color-scheme: dark)" srcset="/assets/img/pipeline/01_raw.dark.webp" width="800" height="600"><img src="/assets/img/pipeline/01_raw.light.webp" width="800" height="600" data-i18n-alt="pipeline.s1.alt2" alt="HeLa cells with blue nuclei and grey cytoplasm; Toxoplasma vacuoles appear as warm clusters" loading="lazy" decoding="async"></picture></a><h3><span class="num">1</span><span data-i18n="pipeline.s1.title">Image</span></h3><p data-i18n="pipeline.s1.text2">13 host cells and 54 vacuoles in this window of a 2000 × 2000 px field; Hoechst blue, CellMask grey.</p></li>
+        <li><a class="figlink" href="/assets/img/pipeline/02_masks.dark.webp"><picture><source data-theme-dark="" media="(prefers-color-scheme: dark)" srcset="/assets/img/pipeline/02_masks.dark.webp" width="800" height="600"><img src="/assets/img/pipeline/02_masks.light.webp" width="800" height="600" data-i18n-alt="pipeline.s2.alt2" alt="Thin cyan cell, blue nucleus and magenta vacuole outlines on the same cells" loading="lazy" decoding="async"></picture></a><h3><span class="num">2</span><span data-i18n="pipeline.s2.title">Mask</span></h3><p data-i18n="pipeline.s2.text2">Cell, nucleus and vacuole outlines: 37 cells, 44 nuclei and 130 vacuoles in the field.</p></li>
+        <li><a class="figlink" href="/assets/img/pipeline/03_measurements.dark.webp"><picture><source data-theme-dark="" media="(prefers-color-scheme: dark)" srcset="/assets/img/pipeline/03_measurements.dark.webp" width="800" height="600"><img src="/assets/img/pipeline/03_measurements.light.webp" width="800" height="600" data-i18n-alt="pipeline.s3.alt2" alt="Cells coloured by the fraction of their area covered by vacuoles" loading="lazy" decoding="async"></picture></a><h3><span class="num">3</span><span data-i18n="pipeline.s3.title">Measure</span></h3><p data-i18n="pipeline.s3.text2">Cells coloured by vacuole coverage (Measure): 9 of 13 above 0, up to 0.161.</p></li>
+        <li><a class="figlink" href="/assets/img/pipeline/04_classification.dark.webp"><picture><source data-theme-dark="" media="(prefers-color-scheme: dark)" srcset="/assets/img/pipeline/04_classification.dark.webp" width="800" height="600"><img src="/assets/img/pipeline/04_classification.light.webp" width="800" height="600" data-i18n-alt="pipeline.s4.alt2" alt="Cells coloured by an infection score from blue (low) to orange (high)" loading="lazy" decoding="async"></picture></a><h3><span class="num">4</span><span data-i18n="pipeline.s4.title">Classify</span></h3><p data-i18n="pipeline.s4.text2">XGBoost infection score from host features only; 8 of 13 cells above 0.5, field not used for training.</p></li>
+        <li><a class="figlink" href="/assets/img/pipeline/05_screen_hit.dark.webp"><picture><source data-theme-dark="" media="(prefers-color-scheme: dark)" srcset="/assets/img/pipeline/05_screen_hit.dark.webp" width="800" height="600"><img src="/assets/img/pipeline/05_screen_hit.light.webp" width="800" height="600" data-i18n-alt="pipeline.s5.alt2" alt="Volcano plot of 414 genes with GRA14 labelled at the top" loading="lazy" decoding="async"></picture></a><h3><span class="num">5</span><span data-i18n="pipeline.s5.title">Hit</span></h3><p data-i18n="pipeline.s5.text2">Four-plate GFP-TSG101 screen: 414 genes, 4 called at q &lt; 0.05; GRA14 is the hit.</p></li>
       </ol>
-      <p class="note" data-i18n="pipeline.data">Data: <a href="https://huggingface.co/datasets/einarolafsson/spacr-example-screen">spacr-example-screen</a> crops and <a href="https://huggingface.co/datasets/einarolafsson/spacr-example-hit">spacr-example-hit</a> measurements, scores and guide counts. Cell outlines are the screen's masks; nucleus and parasite outlines were recomputed with Cellpose-SAM through spaCR on CPU; the regression covers this 30-well subset.</p>
+      <p class="note" data-i18n="pipeline.data2">Data: Hoechst and CellMask images with published cell, nucleus and vacuole masks from <a href="https://huggingface.co/datasets/einarolafsson/cross-channel-cell-from-hoechst">cross-channel-cell-from-hoechst</a>, <a href="https://huggingface.co/datasets/einarolafsson/cross-channel-nuclei-from-cellmask">cross-channel-nuclei-from-cellmask</a> and <a href="https://huggingface.co/datasets/einarolafsson/cross-channel-toxoplasma-from-cellmask">cross-channel-toxoplasma-from-cellmask</a> (CC BY 4.0). Measure and the XGBoost classifier ran in spaCR on CPU over 52 fields of the same plate. Hit list: OLS regression of <a href="https://huggingface.co/datasets/einarolafsson/spacr-example-screen">spacr-example-screen</a>.</p>
       <ul class="steps" aria-label="Modules" data-i18n-aria-label="modules.label" style="margin-top:48px">
         <li><b data-i18n="modules.mask.name">Mask</b><span data-i18n="modules.mask.text">Segments cells, nuclei, pathogens and organelles with Cellpose models.</span></li>
         <li><b data-i18n="modules.measure.name">Measure</b><span data-i18n="modules.measure.text">Shape, intensity, texture and position of every object, and a crop of each, in SQLite.</span></li>
@@ -193,7 +197,7 @@
         <li><div class="tile"><b>2</b><span data-i18n="screen.stat.genes">genes past 3σ with both classifiers</span></div></li>
         <li><div class="tile"><b>p 8.4 × 10⁻⁵</b><span data-i18n="screen.stat.recruitment">GRA14 vs SAG1 recruitment</span></div></li>
       </ul>
-      <figure class="wide results">
+      <figure class="wide results neutral">
         <img src="/assets/img/spacr/volcano.webp" width="1200" height="744" data-i18n-alt="screen.volcano.alt" alt="Two volcano plots of gene effect against significance; EAF1 and GRA14 lie above the threshold in both" loading="lazy" decoding="async">
         <figcaption data-i18n="screen.volcano.caption">Gene effects from a measurement classifier (XGBoost, left) and an image classifier (MaxViT, right); EAF1 and GRA14 pass 3σ in both. Preprint Fig. 5.</figcaption>
       </figure>
@@ -265,12 +269,12 @@
       </div>
       <ul class="stats mini">
         <li><div class="tile"><b>5,000</b><span data-i18n="phenotypes.stat.cells">cells mapped</span></div></li>
-        <li><div class="tile"><b>5</b><span data-i18n="phenotypes.stat.clusters">clusters</span></div></li>
-        <li><div class="tile"><b>9%</b><span data-i18n="phenotypes.stat.unassigned">unassigned</span></div></li>
+        <li><div class="tile"><b>6</b><span data-i18n="phenotypes.stat.clusters">clusters</span></div></li>
+        <li><div class="tile"><b>60,816</b><span data-i18n="phenotypes.stat.plate">cells measured on plate 1</span></div></li>
       </ul>
       <figure class="wide">
-        <img src="/assets/img/spacr/umap.webp" width="1200" height="592" data-i18n-alt="phenotypes.umap.alt" alt="UMAP of 5,000 cells with five outlined clusters and four example crops per cluster" loading="lazy" decoding="async">
-        <figcaption data-i18n="phenotypes.umap.caption">Image UMAP of 5,000 cells from screen plate 1: five HDBSCAN clusters that differ in nuclei and vacuoles per cell; crops are cells near each cluster centre.</figcaption>
+        <picture><source data-theme-dark="" media="(prefers-color-scheme: dark)" srcset="/assets/img/spacr/umap.dark.webp" width="1200" height="700"><img src="/assets/img/spacr/umap.light.webp" width="1200" height="700" data-i18n-alt="phenotypes.umap.alt2" alt="UMAP scatter of 5,000 cells forming 6 outlined, numbered clusters on the left; on the right one row per cluster with its number, its cell count and four example single-cell crops framed in the cluster colour." loading="lazy" decoding="async"></picture>
+        <figcaption data-i18n="phenotypes.umap.caption2">UMAP of 6 measurements of 5,000 randomly sampled cells from screen plate 1 (60,816 cells), 6 DBSCAN clusters that differ mainly in nuclei and parasite objects per cell (1: 2,529 cells, median 1 nucleus and 1 parasite object; 2: 146 cells, median 1 nucleus and 1 parasite object; 3: 1,131 cells, median 1 nucleus and 2 parasite objects; 4: 468 cells, median 2 nuclei and 1 parasite object; 5: 502 cells, median 2 nuclei and 3 parasite objects; 6: 223 cells, median 3 nuclei and 3 parasite objects); crops are cells near each cluster centre.</figcaption>
       </figure>
       <div class="grid two results" style="margin-top:48px">
         <figure>
@@ -278,8 +282,8 @@
           <figcaption data-i18n="phenotypes.crops.caption">Object crops saved by Measure from a sixteen-field run.</figcaption>
         </figure>
         <figure>
-          <img src="/assets/img/spacr/recruitment-field.webp" width="1200" height="241" data-i18n-alt="phenotypes.field.alt" alt="One field shown as separate channels followed by the cell, nucleus and parasite masks" loading="lazy" decoding="async">
-          <figcaption data-i18n="phenotypes.field.caption">One recruitment-assay field: channels, then cell, nucleus and parasite masks.</figcaption>
+          <picture><source data-theme-dark="" media="(prefers-color-scheme: dark)" srcset="/assets/img/spacr/recruitment-field.dark.webp" width="1200" height="241"><img src="/assets/img/spacr/recruitment-field.light.webp" width="1200" height="241" data-i18n-alt="phenotypes.field.alt2" alt="Hoechst and CellMask channels of one field, then the same window with thin cell, nucleus and vacuole outlines" loading="lazy" decoding="async"></picture>
+          <figcaption data-i18n="phenotypes.field.caption2">One field, five views: Hoechst, CellMask, then cell, nucleus and vacuole outlines (MTOC screen plate 2, well P08, field 16; CC BY 4.0).</figcaption>
         </figure>
       </div>
 
@@ -290,44 +294,27 @@
         </div>
         <div class="results stack">
         <figure class="wide">
-          <img src="/assets/img/phenotypes/class_example_crops.webp" width="1200" height="660" data-i18n-alt="phenotypes.cls.crops.alt" alt="Two three-by-three grids of single-cell fluorescence crops on black. Left grid labelled SAG1, right grid labelled GRA14. Each crop shows a HeLa cell with a blue nucleus, green GFP-TSG101 cytoplasm and red Toxoplasma vacuoles; in most SAG1 crops the vacuoles look yellow where green overlaps red, in the GRA14 crops they stay red." loading="lazy" decoding="async">
-          <figcaption data-i18n="phenotypes.cls.crops.caption">The 9 held-out cells per class that spaCR&#x27;s CNN classified correctly with the highest confidence, from 405 test cells in 4 wells never used for training (B02, C01, E02, G01); test accuracy 0.901.</figcaption>
-        </figure>
-        <div class="grid two">
-        <figure>
-          <img src="/assets/img/phenotypes/xgb_confusion_matrix.webp" width="900" height="750" data-i18n-alt="phenotypes.cls.xgbcm.alt" alt="Two-by-two confusion matrix heatmap in blues, true class on rows (SAG1 c1, GRA14 c2), predicted class on columns, with row-normalised fractions 0.81, 0.19, 0.12 and 0.88." loading="lazy" decoding="async">
-          <figcaption data-i18n="phenotypes.cls.xgbcm.caption">XGBoost on 76 GFP-TSG101-channel measurements per cell, 5-fold cross-validation with whole wells held out: 1,277 control cells from 16 wells, accuracy 0.853 (445 of 547 SAG1-well and 644 of 730 GRA14-well cells correct).</figcaption>
-        </figure>
-        <figure>
-          <img src="/assets/img/phenotypes/xgb_roc_pr.webp" width="1200" height="550" data-i18n-alt="phenotypes.cls.xgbroc.alt" alt="Two panels. Left: ROC curve rising steeply toward the top-left corner above a dashed diagonal chance line, legend AUC = 0.922. Right: precision-recall curve mostly between 0.85 and 0.97 precision, falling at the highest recall, above a dashed prevalence line at 0.57, legend AP = 0.913." loading="lazy" decoding="async">
-          <figcaption data-i18n="phenotypes.cls.xgbroc.caption">ROC (AUC 0.922) and precision-recall (average precision 0.913) of the same well-held-out XGBoost predictions for 1,277 cells, GRA14 wells as the positive class (prevalence 0.57).</figcaption>
-        </figure>
-        <figure>
-          <img src="/assets/img/phenotypes/cnn_confusion_matrix.webp" width="900" height="750" data-i18n-alt="phenotypes.cls.cnncm.alt" alt="Two-by-two confusion matrix heatmap in blues for the image classifier, true class on rows, predicted on columns, fractions 0.92, 0.08, 0.12 and 0.88." loading="lazy" decoding="async">
-          <figcaption data-i18n="phenotypes.cls.cnncm.caption">spaCR&#x27;s CNN on single-cell crops of 405 held-out cells from 4 test wells: accuracy 0.901 (184 of 200 SAG1-well and 181 of 205 GRA14-well cells correct).</figcaption>
-        </figure>
-        <figure>
-          <img src="/assets/img/phenotypes/cnn_roc_pr.webp" width="1200" height="550" data-i18n-alt="phenotypes.cls.cnnroc.alt" alt="Two panels for the image classifier. Left: ROC curve hugging the top-left corner above a dashed chance line, legend AUC = 0.968. Right: precision-recall curve near 1.0 precision until high recall, above a dashed prevalence line at 0.51, legend AP = 0.970." loading="lazy" decoding="async">
-          <figcaption data-i18n="phenotypes.cls.cnnroc.caption">ROC (AUC 0.968) and precision-recall (average precision 0.970) of the CNN on 405 cells from 4 held-out wells, GRA14 wells as the positive class.</figcaption>
-        </figure>
-        </div>
-        <figure class="wide">
-          <img src="/assets/img/phenotypes/saliency_maps.webp" width="1200" height="970" data-i18n-alt="phenotypes.cls.saliency.alt" alt="Four rows of five single-cell crops: SAG1 crops, their Grad-CAM heatmaps, GRA14 crops, their Grad-CAM heatmaps. Heatmaps are jet-coloured over a grey version of the crop; on GRA14 cells the hot spot sits on the red parasite vacuoles, on SAG1 cells heat also falls on the black background corners." loading="lazy" decoding="async">
-          <figcaption data-i18n="phenotypes.cls.saliency.caption">Grad-CAM maps of the CNN for the 5 most confident correct held-out cells per class; on GRA14-well cells 4-13% of the map falls on the masked black background, on SAG1-well cells 18-53%.</figcaption>
+          <picture><source data-theme-dark="" media="(prefers-color-scheme: dark)" srcset="/assets/img/phenotypes/class_example_crops.dark.webp" width="1200" height="650"><img src="/assets/img/phenotypes/class_example_crops.light.webp" width="1200" height="650" data-i18n-alt="phenotypes.cls.crops.alt2" alt="Two three-by-three grids of single-cell fluorescence crops on black, labelled SAG1 (left) and GRA14 (right). Each crop shows a HeLa cell with a blue nucleus, green GFP-TSG101 and red Toxoplasma vacuoles; in most SAG1 crops the vacuoles look yellow where green overlaps red, in the GRA14 crops they stay red." loading="lazy" decoding="async"></picture>
+          <figcaption data-i18n="phenotypes.cls.crops.caption2">The 9 held-out cells per class that spaCR's CNN classified correctly with the highest confidence, from 405 test cells (306 SAG1-well, 99 GRA14-well) in 4 wells never used for training (A01, C02, F01, H01); test accuracy 0.909, ROC AUC 0.958.</figcaption>
         </figure>
         <figure class="wide">
-          <img src="/assets/img/phenotypes/shap_beeswarm.webp" width="1200" height="498" data-i18n-alt="phenotypes.cls.shap.alt" alt="SHAP beeswarm: twelve feature names on the left, one row of coloured dots per feature along a horizontal SHAP value axis from about -1.1 to 1.4. The top rows, cell_channel_1_shannon_entropy and cell_channel_1_channel_2_M2_correlation_85, spread widest in both directions; lower rows cluster near zero." loading="lazy" decoding="async">
-          <figcaption data-i18n="phenotypes.cls.shap.caption">SHAP values of the XGBoost model for 256 held-out cells from 3 wells (C02, D02, H01), top 12 of 76 features by mean |SHAP|; each dot is a cell coloured by its feature value (dark low, yellow high), and positive values push toward the GRA14 class.</figcaption>
+          <picture><source data-theme-dark="" media="(prefers-color-scheme: dark)" srcset="/assets/img/phenotypes/saliency_maps.dark.webp" width="1200" height="933"><img src="/assets/img/phenotypes/saliency_maps.light.webp" width="1200" height="933" data-i18n-alt="phenotypes.cls.saliency.alt2" alt="Four rows of five single-cell crops: SAG1 crops, the same cells as dim grey images with a magma heat overlay of input-gradient saliency drawn only inside the cell, then GRA14 crops and their saliency overlays. The heat is brightest along the cell outline, with smaller hot spots inside the cells." loading="lazy" decoding="async"></picture>
+          <figcaption data-i18n="phenotypes.cls.saliency.caption2">Input-gradient saliency (SmoothGrad, 32 samples) of the CNN for the 5 most confident correct held-out cells per class, shown inside the cell only; in 10 of 10 cells the share of saliency inside the cell (39-93%) is below the share of the crop the cell covers (50-95%), and inside the cell it peaks at the cell outline.</figcaption>
         </figure>
         <figure class="wide">
-          <img src="/assets/img/phenotypes/shap_waterfall_cell.webp" width="1200" height="547" data-i18n-alt="phenotypes.cls.shapcell.alt" alt="SHAP waterfall for one cell: ten horizontal arrows, red pushing right and blue pushing left, from the expected value 0.178 at the bottom to f(x) = 1.545 at the top; cell_channel_1_shannon_entropy adds +0.92 and cell_channel_1_channel_2_M2_correlation_85 adds +0.47." loading="lazy" decoding="async">
-          <figcaption data-i18n="phenotypes.cls.shapcell.caption">Per-cell SHAP explanation of one held-out GRA14-well cell (plate 1, well C02, field 1, object 35): the model&#x27;s base value of 0.178 log-odds plus the feature contributions gives 1.545, a GRA14 probability of 0.82.</figcaption>
+          <picture><source data-theme-dark="" media="(prefers-color-scheme: dark)" srcset="/assets/img/phenotypes/shap_beeswarm.dark.webp" width="1200" height="504"><img src="/assets/img/phenotypes/shap_beeswarm.light.webp" width="1200" height="504" data-i18n-alt="phenotypes.cls.shap.alt" alt="SHAP beeswarm: twelve feature names on the left, one row of coloured dots per feature along a horizontal SHAP value axis from about -1.1 to 1.4. The top rows, cell_channel_1_shannon_entropy and cell_channel_1_channel_2_M2_correlation_85, spread widest in both directions; lower rows cluster near zero." loading="lazy" decoding="async"></picture>
+          <figcaption data-i18n="phenotypes.cls.shap.caption2">SHAP values of spaCR's XGBoost model for 256 held-out cells from 3 wells (C02, D02, H01), top 12 of 76 features by mean |SHAP|; each dot is a cell coloured by its feature value (dark low, yellow high), and positive values push toward the GRA14 class (well-grouped 5-fold accuracy 0.853, ROC AUC 0.922 on 1,277 cells).</figcaption>
         </figure>
         <figure class="wide">
-          <img src="/assets/img/phenotypes/xgb_feature_importance.webp" width="1200" height="737" data-i18n-alt="phenotypes.cls.importance.alt" alt="Horizontal grey bar chart of the 15 most important measurement features, longest bar at the top for cell_channel_1_channel_2_M2_correlation_85 (about 0.20), then cell_channel_1_shannon_entropy (about 0.13), with the remaining bars below 0.06." loading="lazy" decoding="async">
+          <picture><source data-theme-dark="" media="(prefers-color-scheme: dark)" srcset="/assets/img/phenotypes/shap_waterfall_cell.dark.webp" width="1200" height="549"><img src="/assets/img/phenotypes/shap_waterfall_cell.light.webp" width="1200" height="549" data-i18n-alt="phenotypes.cls.shapcell.alt2" alt="SHAP waterfall for one cell: ten horizontal arrows, red pushing right and blue pushing left, from the expected value 0.178 at the bottom to f(x) = 1.545 at the top; cell_channel_1_shannon_entropy adds the largest positive contribution." loading="lazy" decoding="async"></picture>
+          <figcaption data-i18n="phenotypes.cls.shapcell.caption2">Per-cell SHAP explanation of one held-out GRA14-well cell (plate 1, well C02, field 1, object 35): the model's base value of 0.178 log-odds plus the feature contributions gives 1.545, a GRA14 probability of 0.82.</figcaption>
+        </figure>
+        <figure class="wide">
+          <picture><source data-theme-dark="" media="(prefers-color-scheme: dark)" srcset="/assets/img/phenotypes/xgb_feature_importance.dark.webp" width="1200" height="737"><img src="/assets/img/phenotypes/xgb_feature_importance.light.webp" width="1200" height="737" data-i18n-alt="phenotypes.cls.importance.alt2" alt="Horizontal grey bar chart of the 15 most important measurement features, longest bar at the top for cell_channel_1_channel_2_M2_correlation_85 (about 0.20), then cell_channel_1_shannon_entropy (about 0.13)." loading="lazy" decoding="async"></picture>
           <figcaption data-i18n="phenotypes.cls.importance.caption">Top 15 of 76 features by XGBoost importance for the model trained on 1,021 control cells from 13 wells; cell_channel_1_channel_2_M2_correlation_85 ranks first (0.196), then cell_channel_1_shannon_entropy (0.133).</figcaption>
         </figure>
         </div>
+      </div>
       </div>
     </div>
   </section>
@@ -345,20 +332,20 @@
       </ul>
       <div class="grid two results">
         <figure>
-          <img src="/assets/img/examples/dose_response.webp" width="1170" height="792" data-i18n-alt="assays.dose.alt" alt="Dose-response curves of median cell count for five compounds, SNX-2112 highlighted with its EC50" loading="lazy" decoding="async">
+          <picture><source data-theme-dark="" media="(prefers-color-scheme: dark)" srcset="/assets/img/examples/dose_response.dark.webp" width="1170" height="792"><img src="/assets/img/examples/dose_response.light.webp" width="1170" height="792" data-i18n-alt="assays.dose.alt" alt="Dose-response curves of median cell count for five compounds, SNX-2112 highlighted with its EC50" loading="lazy" decoding="async"></picture>
           <figcaption data-i18n="assays.dose.caption">Dose-Response: four-parameter logistic fits for the 5 of 58 compounds with a bounded EC50; SNX-2112 EC50 0.299 µM (95% CI 0.279–0.319). Data: <a href="https://huggingface.co/datasets/einarolafsson/spacr-example-dose">spacr-example-dose</a>, 1,536 wells, 4 plates.</figcaption>
         </figure>
         <figure>
-          <img src="/assets/img/examples/control_chart.webp" width="1200" height="747" data-i18n-alt="assays.control.alt" alt="Control chart of DMSO-well median cell count across 24 plates with control limits and flagged plates" loading="lazy" decoding="async">
+          <picture><source data-theme-dark="" media="(prefers-color-scheme: dark)" srcset="/assets/img/examples/control_chart.dark.webp" width="1200" height="747"><img src="/assets/img/examples/control_chart.light.webp" width="1200" height="747" data-i18n-alt="assays.control.alt" alt="Control chart of DMSO-well median cell count across 24 plates with control limits and flagged plates" loading="lazy" decoding="async"></picture>
           <figcaption data-i18n="assays.control.caption">Control chart: DMSO-well median cell count across 24 plates; all 24 fall outside the limits after cell-line, time-point and seeding changes. Data: <a href="https://huggingface.co/datasets/einarolafsson/spacr-example-control-chart">spacr-example-control-chart</a>.</figcaption>
         </figure>
         <figure>
-          <img src="/assets/img/models/plaque-figure.webp" width="1024" height="1090" data-i18n-alt="assays.plaque.alt" alt="Crystal-violet plaque well with 99 plaques outlined in magenta" loading="lazy" decoding="async">
+          <picture><source data-theme-dark="" media="(prefers-color-scheme: dark)" srcset="/assets/img/models/plaque.dark.webp" width="1024" height="1011"><img src="/assets/img/models/plaque.light.webp" width="1024" height="1011" data-i18n-alt="assays.plaque.alt" alt="Crystal-violet plaque well with 99 plaques outlined in magenta" loading="lazy" decoding="async"></picture>
           <figcaption data-i18n="assays.plaque.caption">Plaque Assay: 99 plaques found by toxoplasma_plaque_v3 in a well from Cabral et al. 2024 (CC BY 4.0); 98 in the hand-drawn mask.</figcaption>
         </figure>
         <figure>
-          <img src="/assets/img/spacr/recruitment.webp" width="1200" height="464" data-i18n-alt="assays.recruitment.alt" alt="Bar plots of GFP-TSG101 recruitment for negative and positive control wells on four plates" loading="lazy" decoding="async">
-          <figcaption data-i18n="assays.recruitment.caption">Recruitment: GFP-TSG101 vacuole-to-cytoplasm ratio in SAG1 (negative) and GRA14 (positive) control wells on four plates; plate means p = 8.4 × 10⁻⁵.</figcaption>
+          <picture><source data-theme-dark="" media="(prefers-color-scheme: dark)" srcset="/assets/img/spacr/recruitment.dark.webp" width="1200" height="464"><img src="/assets/img/spacr/recruitment.light.webp" width="1200" height="464" data-i18n-alt="assays.recruitment.alt" alt="Bar plots of GFP-TSG101 recruitment for negative and positive control wells on four plates" loading="lazy" decoding="async"></picture>
+          <figcaption data-i18n="assays.recruitment.caption2">Recruitment: GFP-TSG101 vacuole-to-cytoplasm ratio in SAG1 (negative) and GRA14 (positive) control wells on four plates, 16 wells each, recomputed with spaCR from the public plate measurements: plate means 1.31 against 1.09, p = 8.6 × 10⁻⁵ (t-test, n = 4; the preprint reports 8.4 × 10⁻⁵). Data: <a href="https://huggingface.co/datasets/einarolafsson/spacr-example-screen">spacr-example-screen</a>.</figcaption>
         </figure>
       </div>
     </div>

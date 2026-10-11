@@ -6,10 +6,10 @@
   "tools/screen/env.sh tools/screen/export_volcano.py"
  ],
  "function": "spacr.ml.perform_regression (after spacr.settings.get_perform_regression_default_settings)",
- "spacr_commit": "b0952ec3af1cad78e5f2c4159bc2e7ccb3e24bd0",
- "spacr_worktree": "/mnt/wd4tb/spacr-worktrees/claude-n687-v3",
+ "spacr_commit": "0e244094ca7b78e04a03e5688ad8ffa6cd3fd6a1",
+ "spacr_worktree": "/mnt/wd4tb/spacr-worktrees/claude-n687-v4",
  "python": "3.12.13",
- "seconds": 114.5,
+ "seconds": 311.2,
  "dataset": "einarolafsson/spacr-example-screen (4 plates); tables from the spaCR example-data release (github.com/EinarOlafsson/spacr/releases/tag/example-data) via spacr.example_data.fetch",
  "settings_source": "einarolafsson/spacr-example-hit settings/regression.json (sha256 6f65a40c08ea316266a115c41770563585ba669b5fbe5cd75af36535cf517c49); inputs swapped to the four plates, regression_type ols, regression_qc False",
  "inputs": {
@@ -228,46 +228,46 @@
   "_regression_resources": [
    {
     "stage": "reading the input tables",
-    "rss": 1165807616,
+    "rss": 1171476480,
     "gpu": null,
-    "tree_memory_bytes": 851122176,
+    "tree_memory_bytes": 849078272,
     "tree_memory_measure": "pss",
     "tree_process_count": 1
    },
    {
     "stage": "placing the results folder",
-    "rss": 1362882560,
+    "rss": 1386876928,
     "gpu": null,
-    "tree_memory_bytes": 1044405248,
+    "tree_memory_bytes": 1060331520,
     "tree_memory_measure": "pss",
     "tree_process_count": 1
    },
    {
     "stage": "reading the counts",
-    "rss": 1532014592,
+    "rss": 1541246976,
     "gpu": null,
-    "tree_memory_bytes": 1202376704,
+    "tree_memory_bytes": 1164836864,
     "tree_memory_measure": "pss",
     "tree_process_count": 1
    },
    {
     "stage": "fitting the model",
-    "rss": 1554944000,
+    "rss": 1559048192,
     "gpu": null,
-    "tree_memory_bytes": 1225189376,
+    "tree_memory_bytes": 1152109568,
     "tree_memory_measure": "pss",
     "tree_process_count": 1
    },
    {
     "stage": "the fit has returned",
-    "rss": 1966112768,
+    "rss": 1907384320,
     "gpu": null,
-    "tree_memory_bytes": 1596684288,
+    "tree_memory_bytes": 1517145088,
     "tree_memory_measure": "pss",
     "tree_process_count": 1
    }
   ],
-  "_regression_folder": "/mnt/wd4tb/scratch/n687v3/ols/run/screen4/results/ols_1",
+  "_regression_folder": "/mnt/wd4tb/scratch/n687v3/ols/run/screen4/results/ols_2",
   "_regression_exclusions": {
    "fraction_threshold": 636285,
    "fraction_threshold_of": 642551,
@@ -276,11 +276,11 @@
    "wells_unpaired_scores": 0
   },
   "_regression_diagnostics": {
-   "design_identifiability_pdf": "/mnt/wd4tb/scratch/n687v3/ols/run/screen4/results/ols_1/diagnostics/design_identifiability_ols.pdf",
-   "design_diagnostics_pdf": "/mnt/wd4tb/scratch/n687v3/ols/run/screen4/results/ols_1/diagnostics/design_diagnostics_ols.pdf",
-   "collinear_guide_pairs": "/mnt/wd4tb/scratch/n687v3/ols/run/screen4/results/ols_1/diagnostics/collinear_guide_pairs_ols.csv",
-   "residual_diagnostics_pdf": "/mnt/wd4tb/scratch/n687v3/ols/run/screen4/results/ols_1/diagnostics/residual_diagnostics_ols.pdf",
-   "diagnostic_summary": "/mnt/wd4tb/scratch/n687v3/ols/run/screen4/results/ols_1/diagnostics/diagnostic_summary_ols.csv"
+   "design_identifiability_pdf": "/mnt/wd4tb/scratch/n687v3/ols/run/screen4/results/ols_2/diagnostics/design_identifiability_ols.pdf",
+   "design_diagnostics_pdf": "/mnt/wd4tb/scratch/n687v3/ols/run/screen4/results/ols_2/diagnostics/design_diagnostics_ols.pdf",
+   "collinear_guide_pairs": "/mnt/wd4tb/scratch/n687v3/ols/run/screen4/results/ols_2/diagnostics/collinear_guide_pairs_ols.csv",
+   "residual_diagnostics_pdf": "/mnt/wd4tb/scratch/n687v3/ols/run/screen4/results/ols_2/diagnostics/residual_diagnostics_ols.pdf",
+   "diagnostic_summary": "/mnt/wd4tb/scratch/n687v3/ols/run/screen4/results/ols_2/diagnostics/diagnostic_summary_ols.csv"
   }
  },
  "export": {

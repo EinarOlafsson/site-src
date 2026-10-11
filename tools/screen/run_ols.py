@@ -48,7 +48,7 @@ model_plate_position False, positive_control_id 239740, negative_control_id
 The full settings dict is in run_record_ols.json.
 """
 import sys
-sys.path.insert(0, '/mnt/wd4tb/spacr-worktrees/claude-n687-v3')
+sys.path.insert(0, '/mnt/wd4tb/spacr-worktrees/claude-n687-v4')
 import hashlib, json, os, platform, subprocess, time
 from pathlib import Path
 
@@ -57,7 +57,7 @@ DATA = S / 'dl' / 'example_data'
 SHIPPED = S / 'dl' / 'hit' / 'settings' / 'regression.json'
 RUN = S / 'run' / 'screen4'
 RECORD = Path(__file__).resolve().parent / 'run_record_ols.json'
-WT = '/mnt/wd4tb/spacr-worktrees/claude-n687-v3'
+WT = '/mnt/wd4tb/spacr-worktrees/claude-n687-v4'
 
 
 def sha(path):

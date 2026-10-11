@@ -21,7 +21,7 @@ Thresholds, as spaCR draws them:
 Run: tools/screen/env.sh tools/screen/export_volcano.py
 """
 import sys
-sys.path.insert(0, '/mnt/wd4tb/spacr-worktrees/claude-n687-v3')
+sys.path.insert(0, '/mnt/wd4tb/spacr-worktrees/claude-n687-v4')
 import json, math
 from pathlib import Path
 import numpy as np

@@ -1,636 +1,946 @@
 {
- "spacr_commit": "b0952ec3af1cad78e5f2c4159bc2e7ccb3e24bd0",
- "spacr_worktree": "/mnt/wd4tb/spacr-worktrees/claude-n687-v3",
- "python": "/home/olafsson/anaconda3/envs/spacr/bin/python 3.12.13",
- "environment": "tools/phenotypes/env.sh (CUDA_VISIBLE_DEVICES='', QT_QPA_PLATFORM=offscreen, MPLBACKEND=Agg, isolated HOME/SPACR_HOME/MPLCONFIGDIR/TORCH_HOME/HF_HOME under /mnt/wd4tb/scratch/n687v3/phenotypes/state, OMP_NUM_THREADS=8, tools/run_capped.sh 24G, python -I -u)",
- "device": "CPU only (no GPU used)",
- "hf_dataset_revisions_at_record_time": {
-  "einarolafsson/spacr-example-screen": "ec328b0f411c0ea46ceccb51aa867028b59af202",
-  "einarolafsson/spacr-example-hit": "f141d22022e41461e170c95ef986b14cc48bb6b6"
- },
+ "spacr_commit": "0e244094ca7b78e04a03e5688ad8ffa6cd3fd6a1",
+ "spacr_worktree": "/mnt/wd4tb/spacr-worktrees/claude-n687-v4",
+ "note": "Round 4: every step re-run on this commit (classification, ML/CV, SHAP, importance, saliency, UMAP).",
+ "environment": "tools/phenotypes/env.sh: CUDA_VISIBLE_DEVICES='', QT_QPA_PLATFORM=offscreen, MPLBACKEND=Agg, isolated HOME/SPACR_HOME/MPLCONFIGDIR/TORCH_HOME/HF_HOME, OMP_NUM_THREADS=8, tools/run_capped.sh 24G, python -I -u",
  "inputs": {
-  "spacr-example-hit measurements/measurements.db": {
+  "spacr-example-hit measurements.db": {
    "path": "/mnt/wd4tb/scratch/n687/pipeline/data/hit/measurements/measurements.db",
-   "sha256": "eafa69d184e801f3b190aae4206b09facbd108532eeccaa71a5f347f0338f8c4"
+   "sha256": "41c1df8587194dbe59727e5a9e62a01210e9e9de602226e5572a4ea829c5521d",
+   "hf_revision": "f141d22022e41461e170c95ef986b14cc48bb6b6"
   },
-  "spacr-example-hit spacr-example-hit.tar": {
-   "path": "/mnt/wd4tb/scratch/n687/examples/data/spacr-example-hit/spacr-example-hit.tar",
-   "sha256": "da6fcbb5c282cc24080cd20a468c8fc334c898715e74b36179cd064245cbd2fd",
-   "hf_revision_of_download": "f141d22022e41461e170c95ef986b14cc48bb6b6"
+  "spacr-example-screen plate1-measurements.tar": {
+   "path": "/mnt/wd4tb/scratch/n687v3/phenotypes/dl/screen_meas/plate1-measurements.tar",
+   "sha256": "85e879f828ef62e12be1cc691da9f47f7392eab24b903dc48db18a36c6e940a1",
+   "hf_revision": "ec328b0f411c0ea46ceccb51aa867028b59af202"
   },
-  "spacr-example-screen plate1-data.tar crops (columns c1, c2)": {
-   "n_files": 1851,
-   "dir": "/mnt/wd4tb/scratch/n687v3/phenotypes/dl/crops",
-   "manifest_sha256": "78e80985b3a29bb34ba1390275ffb05ab0972bbacc2b3dff6b985d9d843580b2",
-   "note": "sha256 of the sorted lines \"<columnID>/<file> <sha256>\"; fetched by HTTP range reads of the tar (tools/phenotypes/fetch_crops.py), only png_list members of the hit cut"
+  "spacr-example-screen plate1-data.tar crops, control columns": {
+   "n": 1851,
+   "manifest_sha256": "78e80985b3a29bb34ba1390275ffb05ab0972bbacc2b3dff6b985d9d843580b2"
   },
-  "torchvision mobilenet_v3_small ImageNet weights": {
-   "file": "mobilenet_v3_small-047dcff4.pth",
+  "spacr-example-screen plate1-data.tar crops, UMAP gallery candidates": {
+   "n": 48,
+   "manifest_sha256": "a5daf18b145021467cdd8f990df3d8e332254ece4f23cad47235ae59b3488ca6"
+  },
+  "torchvision mobilenet_v3_small weights": {
    "sha256": "047dcff4addef86ea5bc2eff13c9614dc11f47ab1160d0a71a25e7db994f4e1f"
   }
  },
  "commands": [
   "cd /mnt/firecuda2/Claude/scratch/site-v3/tools/phenotypes",
   "./env.sh fetch_crops.py c1 c2",
+  "./env.sh fetch_measurements.py",
   "./env.sh make_ml.py",
   "./env.sh make_ml_figures.py",
   "OMP_NUM_THREADS=8 ./env.sh make_deep.py 8",
   "./env.sh make_deep_figures.py",
-  "./env.sh make_cnn_metrics.py",
-  "./env.sh write_manifest.py"
+  "./env.sh make_r4.py",
+  "./env.sh make_umap.py embed",
+  "./env.sh fetch_crops.py --paths /mnt/wd4tb/scratch/n687v3/phenotypes/r4/umap/umap_record.json /mnt/wd4tb/scratch/n687v3/phenotypes/dl/umap_crops",
+  "./env.sh make_umap.py draw",
+  "./env.sh write_manifest_r4.py"
  ],
- "steps": {
-  "fetch_crops": {
-   "seconds": 659,
-   "files": 1851
+ "xgboost": {
+  "function": "spacr.ml.generate_ml_scores",
+  "settings": {
+   "src": "/mnt/wd4tb/scratch/n687v3/phenotypes/work/ml_src",
+   "model_type_ml": "xgboost",
+   "channel_of_interest": 1,
+   "location_column": "columnID",
+   "positive_control_id": "c2",
+   "negative_control_id": "c1",
+   "heatmap_feature": "predictions",
+   "cross_validation": false,
+   "test_size": 0.2,
+   "cv_group_by": "well",
+   "n_estimators": 1000,
+   "learning_rate": 0.001,
+   "reg_alpha": 0.1,
+   "reg_lambda": 1.0,
+   "n_repeats": 10,
+   "top_features": 30,
+   "n_jobs": 8,
+   "verbose": true
   },
-  "xgboost": {
-   "function": "spacr.ml.generate_ml_scores",
-   "settings": {
-    "src": "/mnt/wd4tb/scratch/n687v3/phenotypes/work/ml_src",
-    "model_type_ml": "xgboost",
-    "channel_of_interest": 1,
-    "location_column": "columnID",
-    "positive_control_id": "c2",
-    "negative_control_id": "c1",
-    "heatmap_feature": "predictions",
-    "cross_validation": false,
-    "test_size": 0.2,
-    "cv_group_by": "well",
-    "n_estimators": 1000,
-    "learning_rate": 0.001,
-    "reg_alpha": 0.1,
-    "reg_lambda": 1.0,
-    "n_repeats": 10,
-    "top_features": 30,
-    "n_jobs": 8,
-    "verbose": true
-   },
-   "seconds": 96.6685905456543,
-   "split_report": {
-    "group_by": "well",
-    "requested_fraction": 0.2,
-    "cell_fraction": 0.2004698512137823,
-    "group_fraction": 0.1875,
-    "train_cells": 1021,
-    "test_cells": 256,
-    "train_groups": 13,
-    "test_groups": 3,
-    "total_groups": 16,
-    "rule": "StratifiedGroupKFold(5) over 16 well groups; no group appears on both sides"
-   },
-   "xgb_params": {
-    "eval_metric": "logloss",
-    "learning_rate": 0.001,
-    "n_estimators": 1000,
-    "random_state": 42,
-    "reg_alpha": 0.1,
-    "reg_lambda": 1.0
-   },
-   "feature_importances_type": "xgboost default (gain for tree boosters)",
-   "features_used": [
-    "cell_channel_1_centroid_weighted-0",
-    "cell_channel_1_centroid_weighted-1",
-    "cell_channel_1_centroid_weighted_local-0",
-    "cell_channel_1_centroid_weighted_local-1",
-    "cell_channel_1_max_intensity",
-    "cell_channel_1_mean_intensity",
-    "cell_channel_1_min_intensity",
-    "cell_channel_1_percentile_25",
-    "cell_channel_1_percentile_50",
-    "cell_channel_1_percentile_75",
-    "cell_channel_1_shannon_entropy",
-    "cell_channel_1_cell_channel_1_blur",
-    "cell_channel_0_channel_1_Pearson_correlation",
-    "cell_channel_1_channel_2_Pearson_correlation",
-    "cell_channel_1_channel_2_M2_correlation_85",
-    "cell_channel_1_channel_3_Pearson_correlation",
-    "cytoplasm_channel_1_max_intensity",
-    "cytoplasm_channel_1_mean_intensity",
-    "cytoplasm_channel_1_percentile_50",
-    "cytoplasm_channel_1_percentile_75",
-    "cytoplasm_channel_1_percentile_85",
-    "cytoplasm_channel_1_percentile_95",
-    "cytoplasm_channel_1_cytoplasm_channel_1_blur",
-    "cytoplasm_channel_0_channel_1_Pearson_correlation",
-    "cytoplasm_channel_1_channel_2_Pearson_correlation",
-    "cytoplasm_channel_1_channel_3_Pearson_correlation",
-    "nucleus_channel_1_centroid_weighted-1",
-    "nucleus_channel_1_centroid_weighted_local-0",
-    "nucleus_channel_1_centroid_weighted_local-1",
-    "nucleus_channel_1_max_intensity",
-    "nucleus_channel_1_mean_intensity",
-    "nucleus_channel_1_min_intensity",
-    "nucleus_channel_1_percentile_25",
-    "nucleus_channel_1_percentile_50",
-    "nucleus_channel_1_periphery_mean",
-    "nucleus_channel_1_periphery_percentile_5",
-    "nucleus_channel_1_periphery_percentile_95",
-    "nucleus_channel_1_outside_percentile_5",
-    "nucleus_channel_1_outside_percentile_95",
-    "nucleus_channel_1_nucleus_channel_1_blur",
-    "nucleus_rad_dist_channel_1_bin_0",
-    "nucleus_rad_dist_channel_1_bin_1",
-    "nucleus_rad_dist_channel_1_bin_2",
-    "nucleus_rad_dist_channel_1_bin_3",
-    "nucleus_rad_dist_channel_1_bin_4",
-    "nucleus_rad_dist_channel_1_bin_5",
-    "nucleus_channel_0_channel_1_Pearson_correlation",
-    "nucleus_channel_1_channel_2_Pearson_correlation",
-    "nucleus_channel_1_channel_2_M2_correlation_85",
-    "nucleus_channel_1_channel_3_Pearson_correlation",
-    "pathogen_channel_1_centroid_weighted-1",
-    "pathogen_channel_1_centroid_weighted_local-0",
-    "pathogen_channel_1_centroid_weighted_local-1",
-    "pathogen_channel_1_max_intensity",
-    "pathogen_channel_1_mean_intensity",
-    "pathogen_channel_1_min_intensity",
-    "pathogen_channel_1_percentile_25",
-    "pathogen_channel_1_percentile_50",
-    "pathogen_channel_1_percentile_95",
-    "pathogen_channel_1_shannon_entropy",
-    "pathogen_channel_1_homogeneity_distance_32",
-    "pathogen_channel_1_periphery_mean",
-    "pathogen_channel_1_periphery_percentile_5",
-    "pathogen_channel_1_periphery_percentile_95",
-    "pathogen_channel_1_outside_mean",
-    "pathogen_channel_1_outside_percentile_5",
-    "pathogen_channel_1_outside_percentile_95",
-    "pathogen_channel_1_pathogen_channel_1_blur",
-    "pathogen_rad_dist_channel_1_bin_1",
-    "pathogen_rad_dist_channel_1_bin_2",
-    "pathogen_rad_dist_channel_1_bin_3",
-    "pathogen_rad_dist_channel_1_bin_4",
-    "pathogen_rad_dist_channel_1_bin_5",
-    "pathogen_channel_0_channel_1_Pearson_correlation",
-    "pathogen_channel_1_channel_2_Pearson_correlation",
-    "pathogen_channel_1_channel_3_Pearson_correlation"
+  "seconds": 583.7067840099335,
+  "split_report": {
+   "group_by": "well",
+   "requested_fraction": 0.2,
+   "cell_fraction": 0.2004698512137823,
+   "group_fraction": 0.1875,
+   "train_cells": 1021,
+   "test_cells": 256,
+   "train_groups": 13,
+   "test_groups": 3,
+   "total_groups": 16,
+   "rule": "StratifiedGroupKFold(5) over 16 well groups; no group appears on both sides"
+  },
+  "n_features": 76,
+  "single_split_held_out": {
+   "accuracy": 0.9765625,
+   "roc_auc": 0.9988712522045855,
+   "average_precision": 0.999484580304328,
+   "confusion_counts": [
+    [
+     76,
+     5
+    ],
+    [
+     1,
+     174
+    ]
    ],
-   "single_split_metrics_on_256_held_out_cells": {
-    "accuracy": 0.9765625,
-    "roc_auc": 0.9988712522045855,
-    "average_precision": 0.999484580304328,
-    "confusion_counts": [
-     [
-      76,
-      5
-     ],
-     [
-      1,
-      174
-     ]
-    ],
-    "test_wells": [
-     "plate1_r3_c2",
-     "plate1_r4_c2",
-     "plate1_r8_c1"
-    ],
-    "n_test_neg": 81,
-    "n_test_pos": 175
-   },
-   "well_grouped_5fold_oof": {
-    "folds": [
-     {
-      "fold": 1,
-      "val_wells": [
-       "plate1_r6_c1",
-       "plate1_r7_c2"
-      ],
-      "n_val": 180,
-      "auc": 0.9198750000000001
-     },
-     {
-      "fold": 2,
-      "val_wells": [
-       "plate1_r1_c1",
-       "plate1_r4_c1",
-       "plate1_r8_c2"
-      ],
-      "n_val": 222,
-      "auc": 0.8862547698303158
-     },
-     {
-      "fold": 3,
-      "val_wells": [
-       "plate1_r3_c2",
-       "plate1_r4_c2",
-       "plate1_r5_c1",
-       "plate1_r7_c1"
-      ],
-      "n_val": 310,
-      "auc": 0.9854179894179894
-     },
-     {
-      "fold": 4,
-      "val_wells": [
-       "plate1_r2_c1",
-       "plate1_r2_c2",
-       "plate1_r3_c1",
-       "plate1_r6_c2"
-      ],
-      "n_val": 311,
-      "auc": 0.9505529027393818
-     },
-     {
-      "fold": 5,
-      "val_wells": [
-       "plate1_r1_c2",
-       "plate1_r5_c2",
-       "plate1_r8_c1"
-      ],
-      "n_val": 254,
-      "auc": 0.9789481196032255
-     }
-    ],
-    "n_cells": 1277,
-    "n_wells": 16,
-    "n_neg": 547,
-    "n_pos": 730,
-    "accuracy": 0.8527799530148786,
-    "roc_auc": 0.9216924194235054,
-    "average_precision": 0.913442787370436,
-    "confusion_counts": [
-     [
-      445,
-      102
-     ],
-     [
-      86,
-      644
-     ]
-    ]
-   },
-   "shap": {
-    "note": "SHAP: this model has categorical splits, so it is explained with feature_perturbation='tree_path_dependent' -- which conditions on the tree's own splits rather than on an independent background.",
-    "top12": [
-     {
-      "feature": "cell_channel_1_shannon_entropy",
-      "mean_abs_shap": 0.7738106059259735
-     },
-     {
-      "feature": "cell_channel_1_channel_2_M2_correlation_85",
-      "mean_abs_shap": 0.5192347130796406
-     },
-     {
-      "feature": "nucleus_rad_dist_channel_1_bin_0",
-      "mean_abs_shap": 0.08525924058631063
-     },
-     {
-      "feature": "cytoplasm_channel_1_channel_2_Pearson_correlation",
-      "mean_abs_shap": 0.05654224022600829
-     },
-     {
-      "feature": "pathogen_channel_1_channel_3_Pearson_correlation",
-      "mean_abs_shap": 0.04390373367038336
-     },
-     {
-      "feature": "pathogen_channel_1_shannon_entropy",
-      "mean_abs_shap": 0.026525672149546153
-     },
-     {
-      "feature": "pathogen_channel_1_percentile_95",
-      "mean_abs_shap": 0.024380167506478756
-     },
-     {
-      "feature": "pathogen_channel_1_channel_2_Pearson_correlation",
-      "mean_abs_shap": 0.017121738339810122
-     },
-     {
-      "feature": "cell_channel_1_channel_2_Pearson_correlation",
-      "mean_abs_shap": 0.01402871647245263
-     },
-     {
-      "feature": "nucleus_channel_1_periphery_mean",
-      "mean_abs_shap": 0.01236586412824181
-     },
-     {
-      "feature": "cytoplasm_channel_1_cytoplasm_channel_1_blur",
-      "mean_abs_shap": 0.012117641392705991
-     },
-     {
-      "feature": "cell_channel_1_max_intensity",
-      "mean_abs_shap": 0.011688782564078792
-     }
-    ],
-    "waterfall_cell": {
-     "prcfo": "plate1_r3_c2_f1_o35",
-     "prc": "plate1_r3_c2",
-     "label": 1,
-     "probability_gra14": 0.8242601752281189,
-     "base_value": 0.17800427973270416,
-     "f_x": 1.5454807854305272
-    }
-   },
-   "figures_seconds": 47.202982664108276
+   "test_wells": [
+    "plate1_r3_c2",
+    "plate1_r4_c2",
+    "plate1_r8_c1"
+   ]
   },
-  "cnn": {
-   "dataset_function": "spacr.io.generate_training_dataset",
-   "dataset_settings": {
-    "src": "/mnt/wd4tb/scratch/n687v3/phenotypes/work/deep_src",
-    "dataset_mode": "metadata",
-    "class_metadata": [
-     [
-      "c1"
+  "well_grouped_5fold_oof": {
+   "folds": [
+    {
+     "fold": 1,
+     "val_wells": [
+      "plate1_r6_c1",
+      "plate1_r7_c2"
      ],
-     [
-      "c2"
-     ]
+     "n_val": 180,
+     "auc": 0.9198750000000001
+    },
+    {
+     "fold": 2,
+     "val_wells": [
+      "plate1_r1_c1",
+      "plate1_r4_c1",
+      "plate1_r8_c2"
+     ],
+     "n_val": 222,
+     "auc": 0.8862547698303158
+    },
+    {
+     "fold": 3,
+     "val_wells": [
+      "plate1_r3_c2",
+      "plate1_r4_c2",
+      "plate1_r5_c1",
+      "plate1_r7_c1"
+     ],
+     "n_val": 310,
+     "auc": 0.9854179894179894
+    },
+    {
+     "fold": 4,
+     "val_wells": [
+      "plate1_r2_c1",
+      "plate1_r2_c2",
+      "plate1_r3_c1",
+      "plate1_r6_c2"
+     ],
+     "n_val": 311,
+     "auc": 0.9505529027393818
+    },
+    {
+     "fold": 5,
+     "val_wells": [
+      "plate1_r1_c2",
+      "plate1_r5_c2",
+      "plate1_r8_c1"
+     ],
+     "n_val": 254,
+     "auc": 0.9789481196032255
+    }
+   ],
+   "n_cells": 1277,
+   "n_wells": 16,
+   "n_neg": 547,
+   "n_pos": 730,
+   "accuracy": 0.8527799530148786,
+   "roc_auc": 0.9216924194235054,
+   "average_precision": 0.913442787370436,
+   "confusion_counts": [
+    [
+     445,
+     102
     ],
-    "metadata_type_by": "columnID",
-    "test_split": 0.25,
-    "cv_group_by": "well",
-    "balance_to_smallest": true,
-    "random_seed": 42,
-    "crop_source": "png",
-    "path_string": "cell_png"
+    [
+     86,
+     644
+    ]
+   ]
+  },
+  "shap_note": "SHAP: this model has categorical splits, so it is explained with feature_perturbation='tree_path_dependent' -- which conditions on the tree's own splits rather than on an independent background.",
+  "shap_top12": [
+   {
+    "feature": "cell_channel_1_shannon_entropy",
+    "mean_abs_shap": 0.7738106059259735
    },
-   "train_function": "spacr.deep_spacr.train_test_model",
-   "train_settings": {
-    "src": "/mnt/wd4tb/scratch/n687v3/phenotypes/work/deep_src/datasets/training",
-    "train": true,
-    "test": true,
-    "class_folder_names": [
-     "c1",
+   {
+    "feature": "cell_channel_1_channel_2_M2_correlation_85",
+    "mean_abs_shap": 0.5192347130796406
+   },
+   {
+    "feature": "nucleus_rad_dist_channel_1_bin_0",
+    "mean_abs_shap": 0.08525924058631063
+   },
+   {
+    "feature": "cytoplasm_channel_1_channel_2_Pearson_correlation",
+    "mean_abs_shap": 0.05654224022600829
+   },
+   {
+    "feature": "pathogen_channel_1_channel_3_Pearson_correlation",
+    "mean_abs_shap": 0.04390373367038336
+   },
+   {
+    "feature": "pathogen_channel_1_shannon_entropy",
+    "mean_abs_shap": 0.026525672149546153
+   },
+   {
+    "feature": "pathogen_channel_1_percentile_95",
+    "mean_abs_shap": 0.024380167506478756
+   },
+   {
+    "feature": "pathogen_channel_1_channel_2_Pearson_correlation",
+    "mean_abs_shap": 0.017121738339810122
+   },
+   {
+    "feature": "cell_channel_1_channel_2_Pearson_correlation",
+    "mean_abs_shap": 0.01402871647245263
+   },
+   {
+    "feature": "nucleus_channel_1_periphery_mean",
+    "mean_abs_shap": 0.01236586412824181
+   },
+   {
+    "feature": "cytoplasm_channel_1_cytoplasm_channel_1_blur",
+    "mean_abs_shap": 0.012117641392705991
+   },
+   {
+    "feature": "cell_channel_1_max_intensity",
+    "mean_abs_shap": 0.011688782564078792
+   }
+  ],
+  "waterfall_cell": {
+   "prcfo": "plate1_r3_c2_f1_o35",
+   "prc": "plate1_r3_c2",
+   "label": 1,
+   "probability_gra14": 0.8242601752281189,
+   "base_value": 0.17800427973270416,
+   "f_x": 1.5454807854305272
+  },
+  "top_features": [
+   {
+    "feature": "cell_channel_1_channel_2_M2_correlation_85",
+    "importance": 0.19648361206054688
+   },
+   {
+    "feature": "cell_channel_1_shannon_entropy",
+    "importance": 0.13277341425418854
+   },
+   {
+    "feature": "nucleus_rad_dist_channel_1_bin_0",
+    "importance": 0.06040018051862717
+   },
+   {
+    "feature": "cytoplasm_channel_1_channel_2_Pearson_correlation",
+    "importance": 0.04667948558926582
+   },
+   {
+    "feature": "pathogen_channel_1_shannon_entropy",
+    "importance": 0.0391048789024353
+   },
+   {
+    "feature": "pathogen_channel_1_outside_mean",
+    "importance": 0.02755133993923664
+   },
+   {
+    "feature": "pathogen_channel_1_outside_percentile_5",
+    "importance": 0.02653730846941471
+   },
+   {
+    "feature": "cell_channel_1_channel_3_Pearson_correlation",
+    "importance": 0.02289590798318386
+   },
+   {
+    "feature": "pathogen_channel_1_percentile_95",
+    "importance": 0.022476598620414734
+   },
+   {
+    "feature": "pathogen_channel_1_max_intensity",
+    "importance": 0.021689537912607193
+   },
+   {
+    "feature": "cytoplasm_channel_1_cytoplasm_channel_1_blur",
+    "importance": 0.020173320546746254
+   },
+   {
+    "feature": "pathogen_channel_1_channel_3_Pearson_correlation",
+    "importance": 0.019181454554200172
+   },
+   {
+    "feature": "cell_channel_1_mean_intensity",
+    "importance": 0.017687633633613586
+   },
+   {
+    "feature": "cell_channel_1_cell_channel_1_blur",
+    "importance": 0.016413651406764984
+   },
+   {
+    "feature": "pathogen_channel_1_channel_2_Pearson_correlation",
+    "importance": 0.01597898080945015
+   }
+  ],
+  "figures_seconds": 173.8533067703247
+ },
+ "cnn": {
+  "dataset_settings": {
+   "src": "/mnt/wd4tb/scratch/n687v3/phenotypes/work/deep_src",
+   "dataset_mode": "metadata",
+   "class_metadata": [
+    [
+     "c1"
+    ],
+    [
      "c2"
-    ],
-    "model_type": "mobilenet_v3_small",
-    "init_weights": true,
-    "optimizer_type": "adamw",
-    "schedule": "cosine",
-    "loss_type": "auto",
-    "normalize": true,
-    "image_size": 224,
-    "batch_size": 32,
-    "epochs": 8,
-    "learning_rate": 0.0001,
-    "weight_decay": 1e-05,
-    "dropout_rate": 0.1,
-    "val_split": 0.1,
-    "gradient_accumulation_steps": 1,
-    "train_channels": [
-     "r",
-     "g",
-     "b"
-    ],
-    "augment": true,
-    "use_checkpoint": false,
-    "n_jobs": 4,
-    "plot": false,
-    "tensorboard": false,
-    "intermedeate_save": false,
-    "cv_group_by": "well",
-    "random_seed": 42,
-    "verbose": true
-   },
-   "images": {
-    "train": {
-     "c1": 609,
-     "c2": 604
-    },
-    "test": {
-     "c1": 200,
-     "c2": 205
-    },
-    "note": "balanced to 809 per class; 4 of 16 wells to test/ (C01, G01, B02, E02); 2 further wells held out of train/ as validation by generate_loaders; augment=True expands train 8x (dihedral)"
-   },
-   "checkpoint": "/mnt/wd4tb/scratch/n687v3/phenotypes/work/deep_src/datasets/training/model/mobilenet_v3_small/rgb/epochs_8/mobilenet_v3_small_best_channels_rgb.pth",
-   "seconds_dataset": 13.65326189994812,
-   "seconds_train_and_test": 1242.6829648017883,
-   "test_metrics": {
-    "n_test": 405,
-    "accuracy": 0.9012345679012346,
-    "roc_auc": 0.9684878048780488,
-    "average_precision": 0.9699693981301258,
-    "confusion_counts": [
-     [
-      184,
-      16
-     ],
-     [
-      24,
-      181
-     ]
-    ],
-    "test_wells": [
-     "B02",
-     "C01",
-     "E02",
-     "G01"
     ]
+   ],
+   "metadata_type_by": "columnID",
+   "test_split": 0.25,
+   "cv_group_by": "well",
+   "balance_to_smallest": true,
+   "random_seed": 42,
+   "crop_source": "png",
+   "path_string": "cell_png"
+  },
+  "train_settings": {
+   "src": "/mnt/wd4tb/scratch/n687v3/phenotypes/work/deep_src/datasets/training",
+   "train": true,
+   "test": true,
+   "class_folder_names": [
+    "c1",
+    "c2"
+   ],
+   "model_type": "mobilenet_v3_small",
+   "init_weights": true,
+   "optimizer_type": "adamw",
+   "schedule": "cosine",
+   "loss_type": "auto",
+   "normalize": true,
+   "image_size": 224,
+   "batch_size": 32,
+   "epochs": 8,
+   "learning_rate": 0.0001,
+   "weight_decay": 1e-05,
+   "dropout_rate": 0.1,
+   "val_split": 0.1,
+   "gradient_accumulation_steps": 1,
+   "train_channels": [
+    "r",
+    "g",
+    "b"
+   ],
+   "augment": true,
+   "use_checkpoint": false,
+   "n_jobs": 4,
+   "plot": false,
+   "tensorboard": false,
+   "intermedeate_save": false,
+   "cv_group_by": "well",
+   "random_seed": 42,
+   "verbose": true
+  },
+  "png_counts": {
+   "train": {
+    "c1": 503,
+    "c2": 710
    },
-   "example_crops": {
-    "c1": [
-     {
-      "file": "plate1_G01_4_34.png",
-      "prob_gra14": 4.772779789163906e-07
-     },
-     {
-      "file": "plate1_C01_2_62.png",
-      "prob_gra14": 8.613297950432752e-07
-     },
-     {
-      "file": "plate1_C01_2_65.png",
-      "prob_gra14": 8.837247946757998e-07
-     },
-     {
-      "file": "plate1_C01_3_23.png",
-      "prob_gra14": 1.3928520274930634e-06
-     },
-     {
-      "file": "plate1_C01_4_60.png",
-      "prob_gra14": 1.7122307554018334e-06
-     },
-     {
-      "file": "plate1_G01_2_9.png",
-      "prob_gra14": 1.7176638493765495e-06
-     },
-     {
-      "file": "plate1_G01_3_94.png",
-      "prob_gra14": 2.3380312086374033e-06
-     },
-     {
-      "file": "plate1_C01_3_30.png",
-      "prob_gra14": 2.8714662221318576e-06
-     },
-     {
-      "file": "plate1_G01_4_57.png",
-      "prob_gra14": 7.045352504064795e-06
-     }
+   "test": {
+    "c1": 306,
+    "c2": 99
+   }
+  },
+  "note": "train/ is further split by generate_loaders into train and validation by well (2 of 12 wells to validation)",
+  "checkpoint": "/mnt/wd4tb/scratch/n687v3/phenotypes/work/deep_src/datasets/training/model/mobilenet_v3_small/rgb/epochs_8/mobilenet_v3_small_best_channels_rgb.pth",
+  "seconds_dataset": 24.422879219055176,
+  "seconds_train_and_test": 5807.227449417114,
+  "test": {
+   "n_test": 405,
+   "n_test_neg": 306,
+   "n_test_pos": 99,
+   "test_wells": [
+    "A01",
+    "C02",
+    "F01",
+    "H01"
+   ],
+   "accuracy": 0.908641975308642,
+   "roc_auc": 0.9576483792170066,
+   "average_precision": 0.9177797475587214,
+   "confusion_counts": [
+    [
+     278,
+     28
     ],
-    "c2": [
-     {
-      "file": "plate1_B02_2_37.png",
-      "prob_gra14": 0.9999998807907104
-     },
-     {
-      "file": "plate1_E02_4_68.png",
-      "prob_gra14": 0.9999997615814209
-     },
-     {
-      "file": "plate1_B02_4_20.png",
-      "prob_gra14": 0.9999995231628418
-     },
-     {
-      "file": "plate1_E02_4_3.png",
-      "prob_gra14": 0.9999994039535522
-     },
-     {
-      "file": "plate1_B02_4_42.png",
-      "prob_gra14": 0.9999992847442627
-     },
-     {
-      "file": "plate1_E02_3_35.png",
-      "prob_gra14": 0.9999983310699463
-     },
-     {
-      "file": "plate1_B02_3_36.png",
-      "prob_gra14": 0.9999983310699463
-     },
-     {
-      "file": "plate1_B02_1_45.png",
-      "prob_gra14": 0.9999982118606567
-     },
-     {
-      "file": "plate1_B02_2_28.png",
-      "prob_gra14": 0.9999978542327881
-     }
+    [
+     9,
+     90
     ]
-   },
-   "attribution": {
-    "files": [
-     "plate1_G01_4_34.png",
-     "plate1_C01_2_62.png",
-     "plate1_C01_2_65.png",
-     "plate1_C01_3_23.png",
-     "plate1_C01_4_60.png",
-     "plate1_B02_2_37.png",
-     "plate1_E02_4_68.png",
-     "plate1_B02_4_20.png",
-     "plate1_E02_4_3.png",
-     "plate1_B02_4_42.png"
-    ],
-    "labels": [
-     0,
-     0,
-     0,
-     0,
-     0,
-     1,
-     1,
-     1,
-     1,
-     1
-    ],
-    "prob_gra14": [
-     4.772779789163906e-07,
-     8.613297950432752e-07,
-     8.837247946757998e-07,
-     1.3928520274930634e-06,
-     1.7122307554018334e-06,
-     0.9999998807907104,
-     0.9999997615814209,
-     0.9999995231628418,
-     0.9999994039535522,
-     0.9999992847442627
-    ],
-    "smoothgrad": {
-     "method": "saliency",
-     "smoothgrad_samples": 16,
-     "smoothgrad_sigma": 0.15,
-     "predicted": [
-      0,
-      0,
-      0,
-      0,
-      0,
-      1,
-      1,
-      1,
-      1,
-      1
-     ]
+   ]
+  },
+  "example_crops": {
+   "c1": [
+    {
+     "file": "plate1_F01_2_89.png",
+     "prob_gra14": 1.076898712426555e-07
     },
-    "gradcam": {
-     "method": "gradcam",
-     "target_layer": "default (last convolution)",
-     "predicted": [
-      0,
-      0,
-      0,
-      0,
-      0,
-      1,
-      1,
-      1,
-      1,
-      1
-     ]
+    {
+     "file": "plate1_H01_4_86.png",
+     "prob_gra14": 1.653104817478379e-07
     },
-    "background_share": [
-     {
-      "file": "plate1_G01_4_34.png",
-      "background_pixel_fraction": 0.4644052933673469,
-      "smoothgrad_mass_on_background": 0.5581545233726501,
-      "gradcam_mass_on_background": 0.5138716101646423
-     },
-     {
-      "file": "plate1_C01_2_62.png",
-      "background_pixel_fraction": 0.3750597895408163,
-      "smoothgrad_mass_on_background": 0.5018720030784607,
-      "gradcam_mass_on_background": 0.40556761622428894
-     },
-     {
-      "file": "plate1_C01_2_65.png",
-      "background_pixel_fraction": 0.44583067602040816,
-      "smoothgrad_mass_on_background": 0.6008439064025879,
-      "gradcam_mass_on_background": 0.4740011394023895
-     },
-     {
-      "file": "plate1_C01_3_23.png",
-      "background_pixel_fraction": 0.1255779655612245,
-      "smoothgrad_mass_on_background": 0.19443878531455994,
-      "gradcam_mass_on_background": 0.1808668076992035
-     },
-     {
-      "file": "plate1_C01_4_60.png",
-      "background_pixel_fraction": 0.5409359056122449,
-      "smoothgrad_mass_on_background": 0.5771738290786743,
-      "gradcam_mass_on_background": 0.5313522815704346
-     },
-     {
-      "file": "plate1_B02_2_37.png",
-      "background_pixel_fraction": 0.5220224808673469,
-      "smoothgrad_mass_on_background": 0.5976725816726685,
-      "gradcam_mass_on_background": 0.03927931562066078
-     },
-     {
-      "file": "plate1_E02_4_68.png",
-      "background_pixel_fraction": 0.3881736288265306,
-      "smoothgrad_mass_on_background": 0.4676705002784729,
-      "gradcam_mass_on_background": 0.08165574073791504
-     },
-     {
-      "file": "plate1_B02_4_20.png",
-      "background_pixel_fraction": 0.5816525829081632,
-      "smoothgrad_mass_on_background": 0.6428021788597107,
-      "gradcam_mass_on_background": 0.1289798468351364
-     },
-     {
-      "file": "plate1_E02_4_3.png",
-      "background_pixel_fraction": 0.35580755739795916,
-      "smoothgrad_mass_on_background": 0.4902278780937195,
-      "gradcam_mass_on_background": 0.05339551344513893
-     },
-     {
-      "file": "plate1_B02_4_42.png",
-      "background_pixel_fraction": 0.3530173788265306,
-      "smoothgrad_mass_on_background": 0.4749484658241272,
-      "gradcam_mass_on_background": 0.11353299766778946
-     }
-    ]
+    {
+     "file": "plate1_F01_3_95.png",
+     "prob_gra14": 1.9594666866851185e-07
+    },
+    {
+     "file": "plate1_H01_4_60.png",
+     "prob_gra14": 3.72345624555237e-07
+    },
+    {
+     "file": "plate1_F01_3_80.png",
+     "prob_gra14": 4.643032696094451e-07
+    },
+    {
+     "file": "plate1_F01_3_11.png",
+     "prob_gra14": 6.440300239773933e-07
+    },
+    {
+     "file": "plate1_F01_2_76.png",
+     "prob_gra14": 8.285643389172037e-07
+    },
+    {
+     "file": "plate1_H01_4_63.png",
+     "prob_gra14": 1.0389162525825668e-06
+    },
+    {
+     "file": "plate1_H01_1_62.png",
+     "prob_gra14": 1.031648594107537e-06
+    }
+   ],
+   "c2": [
+    {
+     "file": "plate1_C02_4_29.png",
+     "prob_gra14": 1.0
+    },
+    {
+     "file": "plate1_C02_2_7.png",
+     "prob_gra14": 0.9999994039535522
+    },
+    {
+     "file": "plate1_C02_1_14.png",
+     "prob_gra14": 0.999998927116394
+    },
+    {
+     "file": "plate1_C02_4_70.png",
+     "prob_gra14": 0.9999986886978149
+    },
+    {
+     "file": "plate1_C02_3_27.png",
+     "prob_gra14": 0.9999983310699463
+    },
+    {
+     "file": "plate1_C02_3_28.png",
+     "prob_gra14": 0.9999977350234985
+    },
+    {
+     "file": "plate1_C02_3_9.png",
+     "prob_gra14": 0.9999971389770508
+    },
+    {
+     "file": "plate1_C02_1_58.png",
+     "prob_gra14": 0.9999961853027344
+    },
+    {
+     "file": "plate1_C02_2_74.png",
+     "prob_gra14": 0.9999947547912598
+    }
+   ]
+  }
+ },
+ "saliency": {
+  "function": "spacr.attribution.AttributionMapGenerator(method='saliency', smoothgrad_samples=32, smoothgrad_sigma=0.15)",
+  "backend": "captum Saliency (absolute input gradient of the predicted-class logit), SmoothGrad-averaged over 32 noisy copies",
+  "vanilla_checked_with": "AttributionMapGenerator(method='saliency') without SmoothGrad",
+  "checkpoint": "/mnt/wd4tb/scratch/n687v3/phenotypes/work/deep_src/datasets/training/model/mobilenet_v3_small/rgb/epochs_8/mobilenet_v3_small_best_channels_rgb.pth",
+  "per_cell": [
+   {
+    "file": "plate1_F01_2_89.png",
+    "class": "SAG1",
+    "predicted": 0,
+    "cell_pixel_fraction": 0.5730428890306123,
+    "smoothgrad_share_inside_cell": 0.49189749360084534,
+    "vanilla_share_inside_cell": 0.32173672318458557
    },
-   "figures_seconds": 11.746797800064087,
-   "note": "A first attempt with resnet18 (augment 8x, 6 epochs) was stopped after 32 min on the shared, loaded CPU; MobileNetV3-small replaced it. Validation accuracy 0.891 at epoch 7 (best by accuracy); train accuracy 1.000, so spaCR flagged overfitting."
+   {
+    "file": "plate1_H01_4_86.png",
+    "class": "SAG1",
+    "predicted": 0,
+    "cell_pixel_fraction": 0.9352877869897959,
+    "smoothgrad_share_inside_cell": 0.9268383383750916,
+    "vanilla_share_inside_cell": 0.6883566975593567
+   },
+   {
+    "file": "plate1_F01_3_95.png",
+    "class": "SAG1",
+    "predicted": 0,
+    "cell_pixel_fraction": 0.6980827487244898,
+    "smoothgrad_share_inside_cell": 0.5952433943748474,
+    "vanilla_share_inside_cell": 0.3561266362667084
+   },
+   {
+    "file": "plate1_H01_4_60.png",
+    "class": "SAG1",
+    "predicted": 0,
+    "cell_pixel_fraction": 0.7511559311224489,
+    "smoothgrad_share_inside_cell": 0.6634727716445923,
+    "vanilla_share_inside_cell": 0.47399792075157166
+   },
+   {
+    "file": "plate1_F01_3_80.png",
+    "class": "SAG1",
+    "predicted": 0,
+    "cell_pixel_fraction": 0.9528659119897959,
+    "smoothgrad_share_inside_cell": 0.9314886331558228,
+    "vanilla_share_inside_cell": 0.8238115906715393
+   },
+   {
+    "file": "plate1_C02_4_29.png",
+    "class": "GRA14",
+    "predicted": 1,
+    "cell_pixel_fraction": 0.5006576849489796,
+    "smoothgrad_share_inside_cell": 0.3942795395851135,
+    "vanilla_share_inside_cell": 0.17926065623760223
+   },
+   {
+    "file": "plate1_C02_2_7.png",
+    "class": "GRA14",
+    "predicted": 1,
+    "cell_pixel_fraction": 0.7408322704081632,
+    "smoothgrad_share_inside_cell": 0.6399829983711243,
+    "vanilla_share_inside_cell": 0.5191861987113953
+   },
+   {
+    "file": "plate1_C02_1_14.png",
+    "class": "GRA14",
+    "predicted": 1,
+    "cell_pixel_fraction": 0.555305325255102,
+    "smoothgrad_share_inside_cell": 0.4597221910953522,
+    "vanilla_share_inside_cell": 0.23036997020244598
+   },
+   {
+    "file": "plate1_C02_4_70.png",
+    "class": "GRA14",
+    "predicted": 1,
+    "cell_pixel_fraction": 0.5995296556122449,
+    "smoothgrad_share_inside_cell": 0.5224596261978149,
+    "vanilla_share_inside_cell": 0.3057326674461365
+   },
+   {
+    "file": "plate1_C02_3_27.png",
+    "class": "GRA14",
+    "predicted": 1,
+    "cell_pixel_fraction": 0.5726841517857143,
+    "smoothgrad_share_inside_cell": 0.4757072925567627,
+    "vanilla_share_inside_cell": 0.3507985770702362
+   }
+  ],
+  "display": "display only: |SmoothGrad| blurred with a Gaussian of sigma 2 px, scaled between its 40th and 99.5th percentile over pixels at least 8 px inside the cell, drawn as magma heat (alpha = scaled value^0.8) over the dimmed grey crop and only inside the cell (crop mask eroded 2 px)"
+ },
+ "umap": {
+  "db": "/mnt/wd4tb/scratch/n687v3/phenotypes/dl/screen_meas/measurements/measurements.db",
+  "cells_in_merged_table": 60816,
+  "sample": 5000,
+  "sample_seed": 0,
+  "features": [
+   "nucleus_prcfo_count",
+   "pathogen_prcfo_count",
+   "cell_area",
+   "pathogen_area",
+   "pathogen_channel_2_mean_intensity",
+   "cell_channel_2_mean_intensity"
+  ],
+  "preprocessing": "log1p then z-score per feature",
+  "umap": {
+   "n_neighbors": 30,
+   "min_dist": 0.1,
+   "metric": "euclidean",
+   "reduction_method": "umap",
+   "random_seed": 0
+  },
+  "dbscan_sweep": [
+   {
+    "eps": 0.3,
+    "min_samples": 50,
+    "clusters": 14,
+    "noise": 0.7804
+   },
+   {
+    "eps": 0.4,
+    "min_samples": 50,
+    "clusters": 23,
+    "noise": 0.167
+   },
+   {
+    "eps": 0.5,
+    "min_samples": 50,
+    "clusters": 8,
+    "noise": 0.01
+   },
+   {
+    "eps": 0.6,
+    "min_samples": 50,
+    "clusters": 6,
+    "noise": 0.0002
+   },
+   {
+    "eps": 0.8,
+    "min_samples": 50,
+    "clusters": 4,
+    "noise": 0.0
+   }
+  ],
+  "dbscan": {
+   "eps": 0.6,
+   "min_samples": 50
+  },
+  "clusters": 6,
+  "noise_fraction": 0.0002,
+  "silhouette_assigned": 0.47947993874549866,
+  "composition": {
+   "1": {
+    "n": 2529,
+    "nuclei": {
+     "1": 2528,
+     "2": 1
+    },
+    "pathogen_objects": {
+     "1": 2525,
+     "2": 4
+    },
+    "median_nuclei": 1.0,
+    "median_pathogen_objects": 1.0
+   },
+   "2": {
+    "n": 146,
+    "nuclei": {
+     "1": 144,
+     "2": 2
+    },
+    "pathogen_objects": {
+     "1": 141,
+     "2": 4,
+     "3": 1
+    },
+    "median_nuclei": 1.0,
+    "median_pathogen_objects": 1.0
+   },
+   "3": {
+    "n": 1131,
+    "nuclei": {
+     "1": 1131
+    },
+    "pathogen_objects": {
+     "2": 641,
+     "3": 277,
+     "4": 112,
+     "5": 51,
+     "6": 22,
+     "7": 13,
+     "8": 7,
+     "9": 2,
+     "10": 4,
+     "12": 2
+    },
+    "median_nuclei": 1.0,
+    "median_pathogen_objects": 2.0
+   },
+   "4": {
+    "n": 468,
+    "nuclei": {
+     "2": 458,
+     "3": 8,
+     "4": 2
+    },
+    "pathogen_objects": {
+     "1": 461,
+     "2": 7
+    },
+    "median_nuclei": 2.0,
+    "median_pathogen_objects": 1.0
+   },
+   "5": {
+    "n": 502,
+    "nuclei": {
+     "2": 499,
+     "3": 3
+    },
+    "pathogen_objects": {
+     "2": 210,
+     "3": 102,
+     "4": 80,
+     "5": 44,
+     "6": 27,
+     "7": 15,
+     "8": 14,
+     "9": 7,
+     "10": 1,
+     "11": 1,
+     "13": 1
+    },
+    "median_nuclei": 2.0,
+    "median_pathogen_objects": 3.0
+   },
+   "6": {
+    "n": 223,
+    "nuclei": {
+     "3": 166,
+     "4": 37,
+     "5": 11,
+     "6": 4,
+     "7": 3,
+     "8": 1,
+     "9": 1
+    },
+    "pathogen_objects": {
+     "1": 57,
+     "2": 47,
+     "3": 34,
+     "4": 35,
+     "5": 12,
+     "6": 8,
+     "7": 11,
+     "8": 5,
+     "9": 1,
+     "10": 3,
+     "11": 2,
+     "12": 2,
+     "13": 3,
+     "16": 1,
+     "17": 1,
+     "26": 1
+    },
+    "median_nuclei": 3.0,
+    "median_pathogen_objects": 3.0
+   }
+  },
+  "candidates": {
+   "1": [
+    "data/single_nucleus/single_pathogen/plate1_F20/cell_png/plate1_F20_9_4.png",
+    "data/single_nucleus/single_pathogen/plate1_H08/cell_png/plate1_H08_13_103.png",
+    "data/single_nucleus/single_pathogen/plate1_I08/cell_png/plate1_I08_7_56.png",
+    "data/single_nucleus/single_pathogen/plate1_D05/cell_png/plate1_D05_6_15.png",
+    "data/single_nucleus/single_pathogen/plate1_G16/cell_png/plate1_G16_12_70.png",
+    "data/single_nucleus/single_pathogen/plate1_P04/cell_png/plate1_P04_9_16.png",
+    "data/single_nucleus/single_pathogen/plate1_F04/cell_png/plate1_F04_10_19.png",
+    "data/single_nucleus/single_pathogen/plate1_C03/cell_png/plate1_C03_10_84.png"
+   ],
+   "2": [
+    "data/single_nucleus/single_pathogen/plate1_K03/cell_png/plate1_K03_4_10.png",
+    "data/single_nucleus/single_pathogen/plate1_C02/cell_png/plate1_C02_1_56.png",
+    "data/single_nucleus/single_pathogen/plate1_D01/cell_png/plate1_D01_10_25.png",
+    "data/single_nucleus/single_pathogen/plate1_E03/cell_png/plate1_E03_1_57.png",
+    "data/single_nucleus/single_pathogen/plate1_G01/cell_png/plate1_G01_14_82.png",
+    "data/single_nucleus/multiple_pathogens/plate1_A07/cell_png/plate1_A07_14_27.png",
+    "data/single_nucleus/single_pathogen/plate1_G16/cell_png/plate1_G16_5_7.png",
+    "data/single_nucleus/single_pathogen/plate1_M13/cell_png/plate1_M13_1_42.png"
+   ],
+   "3": [
+    "data/single_nucleus/multiple_pathogens/plate1_L23/cell_png/plate1_L23_7_3.png",
+    "data/single_nucleus/multiple_pathogens/plate1_K02/cell_png/plate1_K02_8_57.png",
+    "data/single_nucleus/multiple_pathogens/plate1_L02/cell_png/plate1_L02_11_128.png",
+    "data/single_nucleus/multiple_pathogens/plate1_H19/cell_png/plate1_H19_4_91.png",
+    "data/single_nucleus/multiple_pathogens/plate1_O19/cell_png/plate1_O19_15_30.png",
+    "data/single_nucleus/multiple_pathogens/plate1_D02/cell_png/plate1_D02_15_30.png",
+    "data/single_nucleus/multiple_pathogens/plate1_G02/cell_png/plate1_G02_4_70.png",
+    "data/single_nucleus/multiple_pathogens/plate1_O03/cell_png/plate1_O03_8_80.png"
+   ],
+   "4": [
+    "data/multiple_nucleus/single_pathogen/plate1_O23/cell_png/plate1_O23_8_314.png",
+    "data/multiple_nucleus/single_pathogen/plate1_D14/cell_png/plate1_D14_16_86.png",
+    "data/multiple_nucleus/single_pathogen/plate1_I02/cell_png/plate1_I02_8_9.png",
+    "data/multiple_nucleus/single_pathogen/plate1_G02/cell_png/plate1_G02_10_4.png",
+    "data/multiple_nucleus/single_pathogen/plate1_O09/cell_png/plate1_O09_9_34.png",
+    "data/multiple_nucleus/single_pathogen/plate1_N01/cell_png/plate1_N01_7_13.png",
+    "data/multiple_nucleus/single_pathogen/plate1_I08/cell_png/plate1_I08_11_84.png",
+    "data/multiple_nucleus/single_pathogen/plate1_N15/cell_png/plate1_N15_5_82.png"
+   ],
+   "5": [
+    "data/multiple_nucleus/multiple_pathogens/plate1_M07/cell_png/plate1_M07_4_29.png",
+    "data/multiple_nucleus/multiple_pathogens/plate1_E02/cell_png/plate1_E02_6_68.png",
+    "data/multiple_nucleus/multiple_pathogens/plate1_P03/cell_png/plate1_P03_10_107.png",
+    "data/multiple_nucleus/multiple_pathogens/plate1_F02/cell_png/plate1_F02_2_22.png",
+    "data/multiple_nucleus/multiple_pathogens/plate1_F04/cell_png/plate1_F04_1_60.png",
+    "data/multiple_nucleus/multiple_pathogens/plate1_F04/cell_png/plate1_F04_9_58.png",
+    "data/multiple_nucleus/multiple_pathogens/plate1_D11/cell_png/plate1_D11_14_20.png",
+    "data/multiple_nucleus/multiple_pathogens/plate1_G02/cell_png/plate1_G02_3_48.png"
+   ],
+   "6": [
+    "data/multiple_nucleus/multiple_pathogens/plate1_O23/cell_png/plate1_O23_8_64.png",
+    "data/multiple_nucleus/multiple_pathogens/plate1_E06/cell_png/plate1_E06_11_23.png",
+    "data/multiple_nucleus/multiple_pathogens/plate1_G05/cell_png/plate1_G05_1_38.png",
+    "data/multiple_nucleus/multiple_pathogens/plate1_D03/cell_png/plate1_D03_15_87.png",
+    "data/multiple_nucleus/multiple_pathogens/plate1_B07/cell_png/plate1_B07_2_23.png",
+    "data/multiple_nucleus/multiple_pathogens/plate1_B02/cell_png/plate1_B02_14_47.png",
+    "data/multiple_nucleus/multiple_pathogens/plate1_N10/cell_png/plate1_N10_2_110.png",
+    "data/multiple_nucleus/multiple_pathogens/plate1_E01/cell_png/plate1_E01_7_4.png"
+   ]
+  },
+  "seconds": 288.80597043037415,
+  "gallery": {
+   "1": [
+    "plate1_D05_6_15.png",
+    "plate1_F20_9_4.png",
+    "plate1_I08_7_56.png",
+    "plate1_C03_10_84.png"
+   ],
+   "2": [
+    "plate1_A07_14_27.png",
+    "plate1_K03_4_10.png",
+    "plate1_G16_5_7.png",
+    "plate1_E03_1_57.png"
+   ],
+   "3": [
+    "plate1_L23_7_3.png",
+    "plate1_O03_8_80.png",
+    "plate1_H19_4_91.png",
+    "plate1_K02_8_57.png"
+   ],
+   "4": [
+    "plate1_O23_8_314.png",
+    "plate1_I02_8_9.png",
+    "plate1_D14_16_86.png",
+    "plate1_N01_7_13.png"
+   ],
+   "5": [
+    "plate1_M07_4_29.png",
+    "plate1_P03_10_107.png",
+    "plate1_F04_1_60.png",
+    "plate1_F04_9_58.png"
+   ],
+   "6": [
+    "plate1_G05_1_38.png",
+    "plate1_D03_15_87.png",
+    "plate1_N10_2_110.png",
+    "plate1_B07_2_23.png"
+   ]
+  }
+ },
+ "images": {
+  "class_example_crops": {
+   "dark": {
+    "file": "class_example_crops.dark.webp",
+    "width": 1200,
+    "height": 650,
+    "bytes": 84546,
+    "mode": "RGBA",
+    "sha256": "5b4aeb777cfd270225334d270e300ec2ebdcde120d975f421d0a72a146e7dd9b"
+   },
+   "light": {
+    "file": "class_example_crops.light.webp",
+    "width": 1200,
+    "height": 650,
+    "bytes": 83932,
+    "mode": "RGBA",
+    "sha256": "c19e85b07d9c9a15d5fd4dc4b3f901d56638c6045550af6105549b4ed64d4364"
+   }
+  },
+  "saliency_maps": {
+   "dark": {
+    "file": "saliency_maps.dark.webp",
+    "width": 1200,
+    "height": 933,
+    "bytes": 98364,
+    "mode": "RGBA",
+    "sha256": "dcc87cc45b904299ae61e1b8b68193a56004e89dd69dc01975ed5d7a41a4cdde"
+   },
+   "light": {
+    "file": "saliency_maps.light.webp",
+    "width": 1200,
+    "height": 933,
+    "bytes": 81196,
+    "mode": "RGBA",
+    "sha256": "83435dbe0f3c3150254a4d1ed81f57663a02850b8f8dee140606e821060bb9c9"
+   }
+  },
+  "shap_beeswarm": {
+   "dark": {
+    "file": "shap_beeswarm.dark.webp",
+    "width": 1200,
+    "height": 504,
+    "bytes": 49586,
+    "mode": "RGBA",
+    "sha256": "f2e0fdf2a62add2388a8d356c08879a364df79ef52232f2c29ed32dd73e7a83b"
+   },
+   "light": {
+    "file": "shap_beeswarm.light.webp",
+    "width": 1200,
+    "height": 504,
+    "bytes": 50206,
+    "mode": "RGBA",
+    "sha256": "2b6f6717dfee0ab5f3b281968af04512bd31416a682c1fe2f8f8c34e77316a17"
+   }
+  },
+  "shap_waterfall_cell": {
+   "dark": {
+    "file": "shap_waterfall_cell.dark.webp",
+    "width": 1200,
+    "height": 549,
+    "bytes": 89690,
+    "mode": "RGB",
+    "sha256": "b86520bd2f9f8a65a731663eb983aaf697e850abd26ed411902fc438891275cb"
+   },
+   "light": {
+    "file": "shap_waterfall_cell.light.webp",
+    "width": 1200,
+    "height": 549,
+    "bytes": 85034,
+    "mode": "RGB",
+    "sha256": "d3b8aca6eec8bcca1c9a895ccaaacdea8ae69a845777d5cb009bbbfc738fd07e"
+   }
+  },
+  "xgb_feature_importance": {
+   "dark": {
+    "file": "xgb_feature_importance.dark.webp",
+    "width": 1200,
+    "height": 737,
+    "bytes": 97534,
+    "mode": "RGB",
+    "sha256": "31aa52a79193304a12f3536d73b0953af320a742b8bf683101416a1c6f71a4ff"
+   },
+   "light": {
+    "file": "xgb_feature_importance.light.webp",
+    "width": 1200,
+    "height": 737,
+    "bytes": 95278,
+    "mode": "RGB",
+    "sha256": "e815faed9d994bb2173e7c2ed54bc4e5d3c3ce727582d30059e5dcac4e467566"
+   }
+  },
+  "umap": {
+   "dark": {
+    "file": "umap.dark.webp",
+    "width": 1200,
+    "height": 700,
+    "bytes": 93380,
+    "mode": "RGBA",
+    "sha256": "fe3a1d89da07014d07caecb7fabefbe9664940b23cffaf9a218bbaca18360183"
+   },
+   "light": {
+    "file": "umap.light.webp",
+    "width": 1200,
+    "height": 700,
+    "bytes": 95146,
+    "mode": "RGBA",
+    "sha256": "df5a57d0c72e3c78d3b63f84c2a10b374aef506d0930c6068c65f481346d9756"
+   }
   }
  }
 }

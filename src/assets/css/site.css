@@ -514,16 +514,16 @@ html.tabs-on .panel-sec { padding-top: var(--s6); }
 /* OLS volcano (assets/js/volcano.js) */
 .volcano { --vol-called: #e07a3f; --vol-hit: #ff8a3d; --vol-other: var(--text-dim); margin: 0; }
 :root[data-theme="light"] .volcano { --vol-called: #d55e00; --vol-hit: #b34700; }
-.volcano-plot { position: relative; width: 100%; min-height: 300px; }
+.volcano-plot { position: relative; width: 100%; min-height: 300px; background: var(--bg); border-radius: var(--radius); }
 .volcano-svg { display: block; width: 100%; height: auto; overflow: visible; font-family: var(--font); }
 .volcano-svg .vol-grid { stroke: var(--line); stroke-width: 1; }
-.volcano-svg .vol-axis { stroke: var(--line-strong); stroke-width: 1; }
+.volcano-svg .vol-axis { stroke: var(--text); stroke-width: 1; }
 .volcano-svg .vol-zero { stroke: var(--line-strong); stroke-width: 1; }
-.volcano-svg .vol-fdr { stroke: var(--text-dim); stroke-width: 1; stroke-dasharray: 5 4; }
-.volcano-svg .vol-cut { stroke: var(--text-dim); stroke-width: 1; stroke-dasharray: 1.5 3; }
-.volcano-svg .vol-tick { fill: var(--text-dim); font-size: 12px; font-variant-numeric: tabular-nums; }
+.volcano-svg .vol-fdr { stroke: var(--text); stroke-width: 1; stroke-dasharray: 5 4; }
+.volcano-svg .vol-cut { stroke: var(--text); stroke-width: 1; stroke-dasharray: 1.5 3; }
+.volcano-svg .vol-tick { fill: var(--text); font-size: 12px; font-variant-numeric: tabular-nums; }
 .volcano-svg .vol-label { fill: var(--text); font-size: 13px; }
-.volcano-svg .vol-note { fill: var(--text-dim); font-size: 12px; }
+.volcano-svg .vol-note { fill: var(--text); font-size: 12px; }
 .volcano-svg .vol-tag { fill: var(--text); font-size: 12px; paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round; }
 .volcano-svg .vol-tag.hit { font-weight: 700; font-size: 13px; }
 .volcano-svg .pt { fill: var(--vol-other); fill-opacity: 0.45; stroke: none; outline: none; }
@@ -538,7 +538,7 @@ html.tabs-on .panel-sec { padding-top: var(--s6); }
 .volcano-tip[hidden] { display: none; }
 .volcano-tip > span { display: flex; justify-content: space-between; gap: 12px; font-variant-numeric: tabular-nums; }
 .volcano-tip .k { color: var(--text-dim); }
-.volcano-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: var(--s1) 0 0; padding: 0; list-style: none; font-size: 13px; color: var(--text-dim); }
+.volcano-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: var(--s1) 0 0; padding: 0; list-style: none; font-size: 13px; color: var(--text); }
 .volcano-legend li::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: 0; background: var(--vol-other); opacity: 0.6; }
 .volcano-legend .hit::before { background: var(--vol-hit); opacity: 1; width: 11px; height: 11px; }
 .volcano-legend .called::before { background: var(--vol-called); opacity: 1; }
@@ -606,18 +606,9 @@ html[data-fx="blobs"] .fx-css {
     radial-gradient(30vmax 24vmax at 60% 85%, color-mix(in srgb, #00cec8 12%, transparent), transparent 70%),
     var(--bg);
 }
-html[data-fx="aurora"] .fx-css {
-  background:
-    radial-gradient(90vmax 30vmax at 50% 0%, color-mix(in srgb, #00cec8 14%, transparent), transparent 70%),
-    radial-gradient(70vmax 24vmax at 30% 8%, color-mix(in srgb, #3b82f6 14%, transparent), transparent 70%),
-    var(--bg);
-}
-html[data-fx="fractals"] .fx-css {
-  background:
-    radial-gradient(50vmax 40vmax at 65% 45%, color-mix(in srgb, #c02bff 12%, transparent), transparent 70%),
-    radial-gradient(40vmax 30vmax at 35% 60%, color-mix(in srgb, #00c8ff 10%, transparent), transparent 70%),
-    var(--bg);
-}
 .volcano { margin-top: var(--s6); }
 .results.stack { display: grid; gap: var(--s5); }
 .results.stack .grid.two { row-gap: var(--s5); }
+.results picture img, .wide picture img, .strip picture img, .ov-strip picture img { background: var(--bg); }
+.results.neutral img { background: #fff; padding: var(--s2); border: 1px solid var(--line-strong); box-sizing: border-box; }
+picture { display: block; }
