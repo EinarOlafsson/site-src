@@ -25,7 +25,9 @@
  * grains within the pointer radius are pulled towards the pointer, as in the
  * app. The vertex shader evaluates all of it, so the CPU only uploads time.
  *
- * Motion starts on its own shortly after load (or at the first interaction).
+ * Motion starts on its own shortly after load, or at the first interaction
+ * where WebGL is software-rendered or a frame takes over 25 ms (localStorage
+ * "fx-motion" = "always" skips that check, e.g. for tests).
  * Reduced motion: one still frame, no loop. Pause: the same, until resumed.
  * No WebGL: the CSS gradient in site.css stays visible.
  */
@@ -521,7 +523,16 @@
       start: start,
       use: function (slug) { use(slug); },
       boot: function (slug) { use(slug); },
-      current: function () { return themeSlug; }
+      current: function () { return themeSlug; },
+      slow: function () {
+        var r = "";
+        try { var dbg = gl.getExtension("WEBGL_debug_renderer_info"); if (dbg) r = String(gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) || ""); } catch (e) { r = ""; }
+        if (/swiftshader|llvmpipe|softpipe|software|basic render/i.test(r)) return true;
+        var t0 = performance.now();
+        draw(0);
+        try { gl.finish(); } catch (e) { /* timing only */ }
+        return performance.now() - t0 > 25;
+      }
     };
   }
 
@@ -596,6 +607,7 @@
     }
     events.forEach(function (n) { window.addEventListener(n, wake, { passive: true }); });
     setTimeout(function () {
+      if (woke || (store.get("fx-motion") !== "always" && field.slow())) return;
       if ("requestIdleCallback" in window) requestIdleCallback(wake, { timeout: 1000 }); else wake();
     }, 1200);
   }
