@@ -139,10 +139,10 @@
    "evidence": [
     {
      "quote": "For image analysis, the Python package spaCR (v.1.0.0)15 was used to segment cells and nuclei, and capture intensity and morphological measurements from each channel. Co-localization between ATP7A and the Golgi marker Giantin was quantified using Pearson’s correlation coefficient (PCC).",
-     "location": "Supplementary Materials (bioRxiv media-1.pdf), Methods, 'Immunofluorescence and confocal microscopy', PDF pages 11-12. Reference 15 (PDF page 19) is the spaCR EAF1 preprint, Olafsson EB et al. bioRxiv 2026. The main text names spaCR nowhere; its Acknowledgements thank Einar Ólafsson 'for his assistance with microscopy image analysis'. Not in the Crossref reference list, which covers the main text only."
+     "location": "Methods, 'Immunofluorescence and confocal microscopy', Supplementary Information (bioRxiv supplement media-1.pdf, PDF pages 11-12). Reference 15 (PDF page 19) is the spaCR EAF1 preprint, Olafsson EB et al. bioRxiv 2026. The main text names spaCR nowhere; its Acknowledgements thank Einar Ólafsson 'for his assistance with microscopy image analysis'. Not in the Crossref reference list, which covers the main text only."
     }
    ],
-   "checked_via": "bioRxiv Supplementary Materials PDF (pdftotext), bioRxiv full text (WebFetch), bioRxiv API, Crossref reference list, Europe PMC PPR1290465"
+   "checked_via": "bioRxiv supplement PDF media-1.pdf (pdftotext), bioRxiv full text (WebFetch), bioRxiv API, Crossref reference list, Europe PMC PPR1290465"
   }
  ],
  "also_known": [
