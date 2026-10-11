@@ -240,8 +240,6 @@
   "assays.dose.caption": "Dose-Response: fjögurra stika lógístískar aðfellur fyrir þau 5 af 58 efnum sem hafa afmarkað EC50; SNX-2112 EC50 0,299 µM (95 % öryggisbil 0,279–0,319). Gögn: <a href=\"https://huggingface.co/datasets/einarolafsson/spacr-example-dose\">spacr-example-dose</a>, 1.536 brunnar, 4 plötur.",
   "assays.control.alt": "Stýrikort af miðgildi frumufjölda í DMSO-brunnum á 24 plötum með stýrimörkum og flögguðum plötum",
   "assays.control.caption": "Stýrikort: miðgildi frumufjölda í DMSO-brunnum á 24 plötum; allar 24 lenda utan markanna eftir breytingar á frumulínu, tímapunkti og sáningu. Gögn: <a href=\"https://huggingface.co/datasets/einarolafsson/spacr-example-control-chart\">spacr-example-control-chart</a>.",
-  "assays.plaque.alt": "Skellubrunnur litaður með kristalfjólubláu þar sem 99 skellur eru afmarkaðar með blárauðu",
-  "assays.plaque.caption": "Plaque Assay: 99 skellur sem toxoplasma_plaque_v3 fann í brunni úr Cabral et al. 2024 (CC BY 4.0); 98 í handteiknuðu grímunni.",
   "assays.recruitment.alt": "Súlurit af söfnun GFP-TSG101 í neikvæðum og jákvæðum viðmiðunarbrunnum á fjórum plötum",
   "assays.recruitment.caption2": "Recruitment: hlutfall GFP-TSG101 í safabólu og umfrymi í viðmiðunarbrunnum með SAG1 (neikvætt) og GRA14 (jákvætt) á fjórum plötum, 16 brunnar á hverri, endurreiknað með spaCR úr opinberum mælingum platnanna: meðaltöl platna 1,31 á móti 1,09, p = 8,6 × 10⁻⁵ (t-próf, n = 4; forprentið gefur upp 8,4 × 10⁻⁵). Gögn: <a href=\"https://huggingface.co/datasets/einarolafsson/spacr-example-screen\">spacr-example-screen</a>.",
   "papers.title": "Greinar sem nota spaCR",
@@ -349,9 +347,7 @@
   "showcase.plaque.alt.f7a75b": "Grátónamynd af brunni lituðum með kristalfjólubláu, með ljósum skellum í dökku frumueinlagi",
   "showcase.label.well": "Brunnur",
   "showcase.class.plaques": "Skellur",
-  "showcase.note.0a40ea": "Sjálfgefið skellulíkan í líkanasafninu frá 2026-10-10. 98 skellur í handteiknuðu grímunni; F1 0,964 við IoU 0,5 í þessum brunni",
   "showcase.value.f51613": "Kristalfjólublátt, grátónar",
   "showcase.value.4e249c": "Cabral G, et al. Microbiol Spectrum 2024, Fig. 2",
-  "showcase.fact.dataset": "Gagnasafn",
-  "showcase.value.6b9573": "toxoplasma-plaque-dataset (frátekið frá þjálfun v3)"
+  "showcase.fact.dataset": "Gagnasafn"
 }

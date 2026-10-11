@@ -1,0 +1,955 @@
+{
+ "generated": "2026-10-11",
+ "spacr_commit": "6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf",
+ "note": "Numbers are copied from the cited sources and rounded to 3 decimals; null means the source does not record the metric. 'vanilla' holds the comparison named in baseline_label.",
+ "groups": [
+  {
+   "id": "pv",
+   "title": "Parasitophorous vacuole segmentation",
+   "motivation": "Stock Cellpose-SAM (cpsam_v2) misses or misdraws many Toxoplasma parasitophorous vacuoles. On the 11 anchor wells held out since round 1 it scores F1 0.765 at IoU 0.5 and AJI 0.505, against F1 0.860 and 0.854 and AJI 0.803 and 0.776 for v3 and v4. On 50 held-out fields that include published-figure crops, stock scores 0.559 and v5 0.792.",
+   "motivation_sources": [
+    "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r6/tree/a8295df3a122a4d84bad2497bdf3cc803d54cb0d",
+    "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r7/blob/555ef917ef02cd6b7561545f4b9d1fa62bd8c54a/scorecard.json",
+    "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r8/blob/239f65f160acddca415d2f687dca7f1b3f916b32/qc/comparison_vs_published.json"
+   ],
+   "models": [
+    {
+     "key": "toxoplasma_pv_v1",
+     "display": "Toxoplasma PV v1",
+     "version": "v1",
+     "base": "cpsam_v2",
+     "status": "superseded",
+     "status_quote": "Superseded. Toxoplasma PV v2 (round 5) is trained on 556 images against this model's 229 and is 5-fold cross-validated. (model card)",
+     "repo_url": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam",
+     "test": {
+      "size": "11 held-out in-house wells",
+      "objects": null,
+      "source": "the 11 in-house wells held out since round 1, scored at IoU 0.5"
+     },
+     "metrics": {
+      "f1_50": {
+       "finetuned": 0.864,
+       "vanilla": 0.713
+      },
+      "f1_75": null,
+      "ap": {
+       "finetuned": 0.575,
+       "vanilla": 0.322
+      },
+      "precision": {
+       "finetuned": 0.843,
+       "vanilla": null
+      },
+      "recall": {
+       "finetuned": 0.886,
+       "vanilla": null
+      },
+      "aji": {
+       "finetuned": 0.809,
+       "vanilla": 0.426
+      },
+      "dice": {
+       "finetuned": 0.837,
+       "vanilla": null
+      },
+      "map50": null,
+      "map50_95": null
+     },
+     "baseline_label": "stock cpsam_v2",
+     "note": "Accuracy falls sharply above IoU 0.8; suited to counting and area rather than precise morphometry.",
+     "sources": [
+      "https://github.com/EinarOlafsson/spacr/blob/6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf/spacr/model_zoo.py",
+      "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam/tree/25aa82e37486e80ff0d778e0c55bed33ae4e9558"
+     ],
+     "ap_label": "mAP over IoU 0.5 to 0.9"
+    },
+    {
+     "key": "toxoplasma_pv_v2",
+     "display": "Toxoplasma PV v2 (round 5)",
+     "version": "v2",
+     "base": "cpsam_v2",
+     "status": "superseded",
+     "status_quote": "the PV project still promotes round 5 (zoo note on toxoplasma_pv_v3); the zoo opens the PV family on its newest non-alternative version, toxoplasma_pv_v4",
+     "repo_url": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r5",
+     "test": {
+      "size": "619 curated pairs, 5-fold cross-validation",
+      "objects": null,
+      "source": "mean over 5 cross-validation folds; stock cpsam_v2 was not scored on these folds"
+     },
+     "metrics": {
+      "f1_50": {
+       "finetuned": 0.817,
+       "vanilla": null
+      },
+      "f1_75": null,
+      "ap": {
+       "finetuned": 0.556,
+       "vanilla": null
+      },
+      "precision": {
+       "finetuned": 0.829,
+       "vanilla": null
+      },
+      "recall": {
+       "finetuned": 0.809,
+       "vanilla": null
+      },
+      "aji": {
+       "finetuned": 0.714,
+       "vanilla": null
+      },
+      "dice": {
+       "finetuned": 0.802,
+       "vanilla": null
+      },
+      "map50": null,
+      "map50_95": null
+     },
+     "baseline_label": "stock cpsam_v2 (not scored on the cross-validation folds)",
+     "note": "F1 0.817 +/- 0.036 over five folds; the card's stock row (F1 0.713) is on the 11 in-house held-out wells, a different set.",
+     "sources": [
+      "https://github.com/EinarOlafsson/spacr/blob/6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf/spacr/model_zoo.py",
+      "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r5/tree/9c7cf1424ffeb2b3489f34a371c7fede2e42420a"
+     ],
+     "ap_label": "mAP over IoU 0.5 to 0.9"
+    },
+    {
+     "key": "toxoplasma_pv_v3",
+     "display": "Toxoplasma PV v3 (round 6)",
+     "version": "v3",
+     "base": "cpsam_v2",
+     "status": "superseded",
+     "status_quote": "NEWEST IS NOT BEST HERE: round 6 does not beat round 2 on the anchor wells -- 0.8602 against 0.8648 -- and the PV project still promotes round 5 (zoo note)",
+     "repo_url": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r6",
+     "test": {
+      "size": "11 anchor wells (10 with objects scored)",
+      "objects": 683,
+      "source": "the 11 in-house anchor wells held out since round 1; no PV round has trained on them"
+     },
+     "metrics": {
+      "f1_50": {
+       "finetuned": 0.86,
+       "vanilla": 0.765
+      },
+      "f1_75": null,
+      "ap": {
+       "finetuned": 0.506,
+       "vanilla": 0.362
+      },
+      "precision": {
+       "finetuned": 0.847,
+       "vanilla": 0.754
+      },
+      "recall": {
+       "finetuned": 0.874,
+       "vanilla": 0.776
+      },
+      "aji": {
+       "finetuned": 0.803,
+       "vanilla": 0.505
+      },
+      "dice": {
+       "finetuned": 0.906,
+       "vanilla": 0.643
+      },
+      "map50": null,
+      "map50_95": null
+     },
+     "baseline_label": "stock cpsam_v2",
+     "note": "First PV round whose checkpoint was chosen on a held-out validation set (108 fields) instead of on the test wells.",
+     "sources": [
+      "https://github.com/EinarOlafsson/spacr/blob/6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf/spacr/model_zoo.py",
+      "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r6/tree/a8295df3a122a4d84bad2497bdf3cc803d54cb0d",
+      "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r6/blob/a8295df3a122a4d84bad2497bdf3cc803d54cb0d/qc/summary.json"
+     ],
+     "ap_label": "mAP over IoU 0.5 to 0.9"
+    },
+    {
+     "key": "toxoplasma_pv_v4",
+     "display": "Toxoplasma PV v4 (round 7)",
+     "version": "v4",
+     "base": "cpsam_v2",
+     "status": "default",
+     "status_quote": "prefer toxoplasma_pv_v4 (zoo note on toxoplasma_pv_v5); the zoo opens a family on its newest version that is not an alternative",
+     "repo_url": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r7",
+     "test": {
+      "size": "11 anchor wells (10 with objects scored)",
+      "objects": 683,
+      "source": "the 11 in-house anchor wells held out since round 1; no PV round has trained on them"
+     },
+     "metrics": {
+      "f1_50": {
+       "finetuned": 0.854,
+       "vanilla": 0.765
+      },
+      "f1_75": null,
+      "ap": {
+       "finetuned": 0.492,
+       "vanilla": 0.362
+      },
+      "precision": {
+       "finetuned": 0.849,
+       "vanilla": 0.754
+      },
+      "recall": {
+       "finetuned": 0.858,
+       "vanilla": 0.776
+      },
+      "aji": {
+       "finetuned": 0.776,
+       "vanilla": 0.505
+      },
+      "dice": {
+       "finetuned": 0.891,
+       "vanilla": 0.643
+      },
+      "map50": null,
+      "map50_95": null
+     },
+     "baseline_label": "stock cpsam_v2",
+     "note": "On 20 held-out fields of the new plate it was trained on it scores F1 0.748 against 0.899 for round 6; prefer toxoplasma_pv_v3 on that plate.",
+     "sources": [
+      "https://github.com/EinarOlafsson/spacr/blob/6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf/spacr/model_zoo.py",
+      "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r7/tree/555ef917ef02cd6b7561545f4b9d1fa62bd8c54a",
+      "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r7/blob/555ef917ef02cd6b7561545f4b9d1fa62bd8c54a/scorecard.json"
+     ],
+     "ap_label": "mAP over IoU 0.5 to 0.9"
+    },
+    {
+     "key": "toxoplasma_pv_v5",
+     "display": "Toxoplasma PV v5 (round 8, alternative)",
+     "version": "v5",
+     "base": "cpsam_v2",
+     "status": "alternative",
+     "status_quote": "Alternative, not the recommended default. On the only fair comparison available it ties the published round 7 model (toxoplasma_pv_v4). (model card)",
+     "repo_url": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r8",
+     "test": {
+      "size": "50 held-out fields (36 lab, 14 published-figure crops)",
+      "objects": 3530,
+      "source": "test split grouped by whole acquisition and whole paper"
+     },
+     "metrics": {
+      "f1_50": {
+       "finetuned": 0.792,
+       "vanilla": 0.559
+      },
+      "f1_75": null,
+      "ap": null,
+      "precision": {
+       "finetuned": 0.753,
+       "vanilla": 0.463
+      },
+      "recall": {
+       "finetuned": 0.835,
+       "vanilla": 0.703
+      },
+      "aji": null,
+      "dice": null,
+      "map50": null,
+      "map50_95": null
+     },
+     "baseline_label": "stock cpsam_v2",
+     "note": "35 of the 50 test fields were in round 7's training or validation set; on the 15 it never saw, v5 scores F1 0.536 against v4's 0.525.",
+     "sources": [
+      "https://github.com/EinarOlafsson/spacr/blob/6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf/spacr/model_zoo.py",
+      "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r8/tree/239f65f160acddca415d2f687dca7f1b3f916b32",
+      "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r8/blob/239f65f160acddca415d2f687dca7f1b3f916b32/qc/comparison_vs_published.json"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "plaque",
+   "title": "Plaque segmentation",
+   "motivation": "Stock Cellpose-SAM scores F1 0.300 (cpsam) and 0.373 (cpsam_v2) at IoU 0.5 on 263 held-out crystal violet plaque fields, against 0.815 for v4 and 0.844 for v3. On Bio-Rad Gel Doc wells stock scores 0.000, the earlier v2 model 0.013, v4 0.804 and v3 0.913.",
+   "motivation_sources": [
+    "https://github.com/EinarOlafsson/spacr/blob/6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf/features/data/model_compare_2026-10-10/plaque_compare.json",
+    "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam-r6/tree/c12c0e269389e3b336ec2daa5918566c0b686f28"
+   ],
+   "models": [
+    {
+     "key": "toxoplasma_plaque_v1",
+     "display": "Toxoplasma Plaque v1",
+     "version": "v1",
+     "base": "cpsam",
+     "status": "superseded",
+     "status_quote": "toxoplasma_plaque_v3 is the default plaque model since 2026-10-10 (zoo note); this entry still says: PREFER THIS ONE FOR MICROSCOPE-ONLY WORK",
+     "repo_url": "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam",
+     "test": {
+      "size": "184 wells, 3-fold cross-validation (in-domain)",
+      "objects": null,
+      "source": "in-house crystal violet plaque wells, held out per fold"
+     },
+     "metrics": {
+      "f1_50": {
+       "finetuned": 0.856,
+       "vanilla": 0.718
+      },
+      "f1_75": null,
+      "ap": null,
+      "precision": {
+       "finetuned": 0.832,
+       "vanilla": 0.704
+      },
+      "recall": {
+       "finetuned": 0.881,
+       "vanilla": 0.732
+      },
+      "aji": null,
+      "dice": null,
+      "map50": null,
+      "map50_95": null
+     },
+     "baseline_label": "round 1 (the retired earlier plaque model); stock not recorded",
+     "note": "F1 0.806 on a held-out literature set (3-fold cross-validated, SD 0.020); round 3 trades precision for recall on that set.",
+     "sources": [
+      "https://github.com/EinarOlafsson/spacr/blob/6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf/spacr/model_zoo.py",
+      "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam/tree/39224bed4cca03327d5afc189c71c4859629a04d",
+      "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam/blob/39224bed4cca03327d5afc189c71c4859629a04d/final_metrics.csv"
+     ]
+    },
+    {
+     "key": "toxoplasma_plaque_v2",
+     "display": "Toxoplasma Plaque v2 (round 5)",
+     "version": "v2",
+     "base": "cpsam_v2",
+     "status": "superseded",
+     "status_quote": "no longer the default: toxoplasma_plaque_v3 replaced it on 2026-10-10 (zoo note); the default is now toxoplasma_plaque_v4 (model cards)",
+     "repo_url": "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam-r5",
+     "test": {
+      "size": "263 held-out fields",
+      "objects": 12792,
+      "source": "3 held-out Bio-Rad Gel Doc plates plus the round-5 evaluation split; no compared model trained on them"
+     },
+     "metrics": {
+      "f1_50": {
+       "finetuned": 0.798,
+       "vanilla": 0.373
+      },
+      "f1_75": null,
+      "ap": null,
+      "precision": {
+       "finetuned": 0.805,
+       "vanilla": 0.339
+      },
+      "recall": {
+       "finetuned": 0.792,
+       "vanilla": 0.414
+      },
+      "aji": null,
+      "dice": null,
+      "map50": null,
+      "map50_95": null
+     },
+     "baseline_label": "stock cpsam_v2 (same fields, Cellpose evaluation scorer)",
+     "note": "The only plaque model trained on phone-camera wells (F1 0.415 there against round 3's 0.249); scores 0.013 on Gel Doc wells.",
+     "sources": [
+      "https://github.com/EinarOlafsson/spacr/blob/6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf/spacr/model_zoo.py",
+      "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam-r5/tree/e1cdae2ffdd279616ffa83b9e1790d55dc86514a",
+      "https://github.com/EinarOlafsson/spacr/blob/6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf/features/data/model_compare_2026-10-10/plaque_compare.json"
+     ]
+    },
+    {
+     "key": "toxoplasma_plaque_v3",
+     "display": "Toxoplasma Plaque v3 (Gel Doc r5)",
+     "version": "v3",
+     "base": "cpsam",
+     "status": "alternative",
+     "status_quote": "Alternative since 2026-10-11; the default until then (model card and zoo)",
+     "repo_url": "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam-r5-geldoc",
+     "test": {
+      "size": "263 held-out fields",
+      "objects": 12792,
+      "source": "3 held-out Bio-Rad Gel Doc plates plus the round-5 evaluation split; no compared model trained on them"
+     },
+     "metrics": {
+      "f1_50": {
+       "finetuned": 0.844,
+       "vanilla": 0.3
+      },
+      "f1_75": null,
+      "ap": null,
+      "precision": {
+       "finetuned": 0.848,
+       "vanilla": 0.223
+      },
+      "recall": {
+       "finetuned": 0.841,
+       "vanilla": 0.458
+      },
+      "aji": null,
+      "dice": null,
+      "map50": null,
+      "map50_95": null
+     },
+     "baseline_label": "stock cpsam (same fields, Cellpose evaluation scorer)",
+     "note": "Scores higher than v4 on every source of the 263 fields (Gel Doc 0.913 against 0.804); it was the default from 2026-10-10 to 2026-10-11.",
+     "sources": [
+      "https://github.com/EinarOlafsson/spacr/blob/6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf/spacr/model_zoo.py",
+      "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam-r5-geldoc/tree/aed1d1f7ba07da7e53ee05621420a2687a7c5d48",
+      "https://github.com/EinarOlafsson/spacr/blob/6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf/features/data/model_compare_2026-10-10/plaque_compare.json",
+      "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam-r5-geldoc/blob/aed1d1f7ba07da7e53ee05621420a2687a7c5d48/scorecard.json"
+     ]
+    },
+    {
+     "key": "toxoplasma_plaque_v4",
+     "display": "Toxoplasma Plaque v4 (round 6, cpsam_v2)",
+     "version": "v4",
+     "base": "cpsam_v2",
+     "status": "default",
+     "status_quote": "spaCR's default plaque model since 2026-10-11, chosen by the maintainer because spaCR models build on cpsam_v2 (model card and zoo)",
+     "repo_url": "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam-r6",
+     "test": {
+      "size": "263 held-out fields",
+      "objects": 12792,
+      "source": "3 held-out Bio-Rad Gel Doc plates plus the round-5 evaluation split; no compared model trained on them; scored through spacr.plaque.segment_plaque_image"
+     },
+     "metrics": {
+      "f1_50": {
+       "finetuned": 0.815,
+       "vanilla": 0.844
+      },
+      "f1_75": null,
+      "ap": null,
+      "precision": {
+       "finetuned": 0.825,
+       "vanilla": null
+      },
+      "recall": {
+       "finetuned": 0.806,
+       "vanilla": null
+      },
+      "aji": null,
+      "dice": null,
+      "map50": null,
+      "map50_95": null
+     },
+     "baseline_label": "toxoplasma_plaque_v3 (same fields, spaCR plaque pipeline scorer)",
+     "note": "Stock cpsam_v2 scores 0.373 on the same fields with the Cellpose evaluation scorer; literature crops stay hard (F1 0.530).",
+     "sources": [
+      "https://github.com/EinarOlafsson/spacr/blob/6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf/spacr/model_zoo.py",
+      "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam-r6/tree/c12c0e269389e3b336ec2daa5918566c0b686f28",
+      "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam-r6/blob/c12c0e269389e3b336ec2daa5918566c0b686f28/qc/pipeline_check_vs_v3.json",
+      "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam-r6/blob/c12c0e269/README.md"
+     ],
+     "by_source": {
+      "title": "F1 at IoU 0.5 by test source (263 held-out fields)",
+      "columns": [
+       "All 263",
+       "Gel Doc",
+       "Literature holdout",
+       "Round 4 review",
+       "PMC staged"
+      ],
+      "rows": [
+       [
+        "v4",
+        [
+         0.815,
+         0.804,
+         0.53,
+         0.845,
+         0.686
+        ]
+       ],
+       [
+        "v3",
+        [
+         0.844,
+         0.913,
+         0.543,
+         0.867,
+         0.736
+        ]
+       ],
+       [
+        "v2",
+        [
+         0.799,
+         0.013,
+         0.508,
+         0.86,
+         0.708
+        ]
+       ]
+      ],
+      "note": "v4 scores below v3 on every source; it is the default because spaCR's models build on cpsam_v2 (model card).",
+      "source": "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam-r6/blob/c12c0e269/README.md"
+     }
+    }
+   ]
+  },
+  {
+   "id": "wells",
+   "title": "Plaque-well detection",
+   "motivation": "The plaque module first finds each well in a plate image or published figure and then segments plaques inside it; the detected well also gives the diameter that makes plaque areas comparable across microscopes. Stock YOLO has no plaque-well class, so each detector is compared with the one before it: on 129 held-out test images v2 scores mAP50 0.946 against v1's 0.884, with 49 false boxes on no-well images against 152.",
+   "motivation_sources": [
+    "https://github.com/EinarOlafsson/spacr/blob/6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf/spacr/model_zoo.py",
+    "https://huggingface.co/einarolafsson/toxoplasma-plaque-well-detector-yolo26/tree/c15a1f03207adcbd3e32c64f21175781170fa4fa"
+   ],
+   "models": [
+    {
+     "key": "toxoplasma_well_detector_v1",
+     "display": "Toxoplasma Plaque Well Detector v1",
+     "version": "v1",
+     "base": "yolo11n",
+     "status": "superseded",
+     "status_quote": "on that shared set this model scores mAP50 0.8838 against v2's 0.9457, so v2 is the better detector (zoo note)",
+     "repo_url": "https://huggingface.co/einarolafsson/toxoplasma-plaque-well-detector-yolo11",
+     "test": {
+      "size": "held-out split of 562 images (190 with no well)",
+      "objects": null,
+      "source": "its own held-out split, which the zoo notes is easier than the set v2 is measured on"
+     },
+     "metrics": {
+      "f1_50": null,
+      "f1_75": null,
+      "ap": null,
+      "precision": {
+       "finetuned": 0.987,
+       "vanilla": null
+      },
+      "recall": {
+       "finetuned": 0.987,
+       "vanilla": null
+      },
+      "aji": null,
+      "dice": null,
+      "map50": {
+       "finetuned": 0.993,
+       "vanilla": null
+      },
+      "map50_95": {
+       "finetuned": 0.886,
+       "vanilla": null
+      }
+     },
+     "baseline_label": "none recorded (stock YOLO has no plaque-well class)",
+     "note": "Kept because the published plaque corpus was measured with these weights; on v2's test set it scores mAP50 0.884.",
+     "sources": [
+      "https://github.com/EinarOlafsson/spacr/blob/6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf/spacr/model_zoo.py",
+      "https://huggingface.co/einarolafsson/toxoplasma-plaque-well-detector-yolo11/tree/cf5b56ddfb558426f3d59815289d9ba1a7c9dac1"
+     ]
+    },
+    {
+     "key": "toxoplasma_well_detector_v2",
+     "display": "Toxoplasma Plaque Well Detector v2",
+     "version": "v2",
+     "base": "yolo26n",
+     "status": "default",
+     "status_quote": "figure_detector: Default 'toxoplasma_well_detector_v2' (spacr/settings.py)",
+     "repo_url": "https://huggingface.co/einarolafsson/toxoplasma-plaque-well-detector-yolo26",
+     "test": {
+      "size": "129 test images (84 with no well)",
+      "objects": 297,
+      "source": "plate images and literature figures, split by PMC article; never used for training or model selection"
+     },
+     "metrics": {
+      "f1_50": null,
+      "f1_75": null,
+      "ap": null,
+      "precision": {
+       "finetuned": 0.891,
+       "vanilla": 0.861
+      },
+      "recall": {
+       "finetuned": 0.944,
+       "vanilla": 0.909
+      },
+      "aji": null,
+      "dice": null,
+      "map50": {
+       "finetuned": 0.946,
+       "vanilla": 0.884
+      },
+      "map50_95": {
+       "finetuned": 0.834,
+       "vanilla": 0.763
+      }
+     },
+     "baseline_label": "previous version (well detector v1, YOLO11n) on the same test set",
+     "note": "Cuts false boxes on no-well images from 152 to 49 on the shared test set.",
+     "sources": [
+      "https://github.com/EinarOlafsson/spacr/blob/6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf/spacr/model_zoo.py",
+      "https://huggingface.co/einarolafsson/toxoplasma-plaque-well-detector-yolo26/tree/c15a1f03207adcbd3e32c64f21175781170fa4fa",
+      "https://huggingface.co/einarolafsson/toxoplasma-plaque-well-detector-yolo26/blob/c15a1f03207adcbd3e32c64f21175781170fa4fa/qc/test_metrics.json",
+      "https://github.com/EinarOlafsson/spacr/blob/6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf/spacr/settings.py"
+     ]
+    },
+    {
+     "key": "toxoplasma_well_detector_v3",
+     "display": "Toxoplasma Well Detector v3 (YOLO11 Gel Doc candidate)",
+     "version": "v3",
+     "base": "yolo11n",
+     "status": "candidate",
+     "status_quote": "Candidate, not promoted: clean incumbent-validation mAP50-95 regresses. (zoo note)",
+     "repo_url": "https://huggingface.co/einarolafsson/toxoplasma-plaque-well-detector-yolo11-v4-geldoc",
+     "test": {
+      "size": "73 clean validation images",
+      "objects": 191,
+      "source": "incumbent validation images after removing exact and canonical-figure duplicates; validation data, not an independent test"
+     },
+     "metrics": {
+      "f1_50": null,
+      "f1_75": null,
+      "ap": null,
+      "precision": {
+       "finetuned": 0.97,
+       "vanilla": 0.963
+      },
+      "recall": {
+       "finetuned": 0.998,
+       "vanilla": 0.988
+      },
+      "aji": null,
+      "dice": null,
+      "map50": {
+       "finetuned": 0.994,
+       "vanilla": 0.992
+      },
+      "map50_95": {
+       "finetuned": 0.884,
+       "vanilla": 0.893
+      }
+     },
+     "baseline_label": "previous version (well detector v1, the YOLO11n incumbent) on the same validation images",
+     "note": "On 3 Gel Doc validation plates mAP50-95 rises from 0.895 to 0.931; both models recover the expected well count on all 3.",
+     "sources": [
+      "https://github.com/EinarOlafsson/spacr/blob/6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf/spacr/model_zoo.py",
+      "https://huggingface.co/einarolafsson/toxoplasma-plaque-well-detector-yolo11-v4-geldoc/tree/a31e978758b7f8f4d98b6007d3d6e52e874cd618",
+      "https://huggingface.co/einarolafsson/toxoplasma-plaque-well-detector-yolo11-v4-geldoc/blob/a31e978758b7f8f4d98b6007d3d6e52e874cd618/scorecard.json"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "crosschannel",
+   "title": "Cross-channel models",
+   "motivation": "Cross-channel models predict one object type from another channel's image, so a stain can be left out and its channel used for another marker: cells from Hoechst alone, nuclei from a cell mask alone, and Toxoplasma vacuoles from either. Stock cpsam_v2 does not do this: on held-out fields its F1 at IoU 0.5 is 0.301, 0.201, 0.022 and 0.002 against 0.870, 0.888, 0.606 and 0.569 for the four trained models.",
+   "motivation_sources": [
+    "https://huggingface.co/einarolafsson/cross-channel-cell-from-hoechst-cpsam/tree/397320ba0471ae9752ee3b36acc79788fbc0ad79",
+    "https://huggingface.co/einarolafsson/cross-channel-nuclei-from-cellmask-cpsam/tree/04d1784878261494a5a43e2cc4851d985b49024b",
+    "https://huggingface.co/einarolafsson/toxoplasma-from-cellmask-cpsam/tree/4169ff46e3b31d9743920c492e33d8c1685f02a4",
+    "https://huggingface.co/einarolafsson/toxoplasma-from-hoechst-cpsam/tree/ce4177fa614ce5ab761fe4ffb0f928e158581304"
+   ],
+   "models": [
+    {
+     "key": "cell_from_hoechst_v1",
+     "display": "Cross-channel cell-from-hoechst",
+     "version": "v1",
+     "base": "cpsam_v2",
+     "status": "default",
+     "status_quote": "only version in the zoo",
+     "repo_url": "https://huggingface.co/einarolafsson/cross-channel-cell-from-hoechst-cpsam",
+     "test": {
+      "size": "451 held-out fields",
+      "objects": 45098,
+      "source": "well-grouped held-out split (no well on both sides), hosts HFF, HeLa and THP1; the split also selected the checkpoint"
+     },
+     "metrics": {
+      "f1_50": {
+       "finetuned": 0.87,
+       "vanilla": 0.301
+      },
+      "f1_75": {
+       "finetuned": 0.786,
+       "vanilla": 0.064
+      },
+      "ap": {
+       "finetuned": 0.559,
+       "vanilla": 0.058
+      },
+      "precision": {
+       "finetuned": 0.944,
+       "vanilla": 0.309
+      },
+      "recall": {
+       "finetuned": 0.806,
+       "vanilla": 0.294
+      },
+      "aji": {
+       "finetuned": 0.799,
+       "vanilla": 0.351
+      },
+      "dice": {
+       "finetuned": 0.895,
+       "vanilla": 0.524
+      },
+      "map50": null,
+      "map50_95": null
+     },
+     "baseline_label": "stock cpsam_v2",
+     "note": "Precision 0.944 against recall 0.806: it misses cells rather than inventing them.",
+     "sources": [
+      "https://github.com/EinarOlafsson/spacr/blob/6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf/spacr/model_zoo.py",
+      "https://huggingface.co/einarolafsson/cross-channel-cell-from-hoechst-cpsam/tree/397320ba0471ae9752ee3b36acc79788fbc0ad79",
+      "https://huggingface.co/einarolafsson/cross-channel-cell-from-hoechst-cpsam/blob/397320ba0471ae9752ee3b36acc79788fbc0ad79/qc/comparison_vs_stock.csv",
+      "https://huggingface.co/einarolafsson/cross-channel-cell-from-hoechst-cpsam/blob/397320ba0471ae9752ee3b36acc79788fbc0ad79/qc/best_periou.csv",
+      "https://huggingface.co/einarolafsson/cross-channel-cell-from-hoechst-cpsam/blob/397320ba0471ae9752ee3b36acc79788fbc0ad79/qc/stock_cpsam_v2_periou.csv"
+     ],
+     "ap_label": "mAP over IoU thresholds"
+    },
+    {
+     "key": "nuclei_from_cellmask_v1",
+     "display": "Cross-channel nuclei-from-cellmask",
+     "version": "v1",
+     "base": "cpsam_v2",
+     "status": "default",
+     "status_quote": "only version in the zoo",
+     "repo_url": "https://huggingface.co/einarolafsson/cross-channel-nuclei-from-cellmask-cpsam",
+     "test": {
+      "size": "453 held-out fields",
+      "objects": 42487,
+      "source": "well-grouped held-out split (no well on both sides), hosts HFF, HeLa and THP1; the split also selected the checkpoint"
+     },
+     "metrics": {
+      "f1_50": {
+       "finetuned": 0.888,
+       "vanilla": 0.201
+      },
+      "f1_75": {
+       "finetuned": 0.743,
+       "vanilla": 0.019
+      },
+      "ap": {
+       "finetuned": 0.536,
+       "vanilla": 0.023
+      },
+      "precision": {
+       "finetuned": 0.932,
+       "vanilla": 0.199
+      },
+      "recall": {
+       "finetuned": 0.848,
+       "vanilla": 0.203
+      },
+      "aji": {
+       "finetuned": 0.792,
+       "vanilla": 0.286
+      },
+      "dice": {
+       "finetuned": 0.877,
+       "vanilla": 0.449
+      },
+      "map50": null,
+      "map50_95": null
+     },
+     "baseline_label": "stock cpsam_v2",
+     "note": "Predicts nuclei from cell morphology; expect lower accuracy on unusual or highly confluent morphologies.",
+     "sources": [
+      "https://github.com/EinarOlafsson/spacr/blob/6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf/spacr/model_zoo.py",
+      "https://huggingface.co/einarolafsson/cross-channel-nuclei-from-cellmask-cpsam/tree/04d1784878261494a5a43e2cc4851d985b49024b",
+      "https://huggingface.co/einarolafsson/cross-channel-nuclei-from-cellmask-cpsam/blob/04d1784878261494a5a43e2cc4851d985b49024b/qc/comparison_vs_stock.csv",
+      "https://huggingface.co/einarolafsson/cross-channel-nuclei-from-cellmask-cpsam/blob/04d1784878261494a5a43e2cc4851d985b49024b/qc/best_periou.csv",
+      "https://huggingface.co/einarolafsson/cross-channel-nuclei-from-cellmask-cpsam/blob/04d1784878261494a5a43e2cc4851d985b49024b/qc/stock_cpsam_v2_periou.csv"
+     ],
+     "ap_label": "mAP over IoU thresholds"
+    },
+    {
+     "key": "toxoplasma_from_cellmask_v1",
+     "display": "Toxoplasma from Cell Mask (cross-channel)",
+     "version": "v1",
+     "base": "cpsam_v2",
+     "status": "default",
+     "status_quote": "only version in the zoo",
+     "repo_url": "https://huggingface.co/einarolafsson/toxoplasma-from-cellmask-cpsam",
+     "test": {
+      "size": "463 held-out fields",
+      "objects": 6116,
+      "source": "well-grouped held-out split (no well on both sides), hosts HFF, HeLa and THP1, fields without parasites included; the split also selected the checkpoint"
+     },
+     "metrics": {
+      "f1_50": {
+       "finetuned": 0.606,
+       "vanilla": 0.022
+      },
+      "f1_75": null,
+      "ap": {
+       "finetuned": 0.25,
+       "vanilla": null
+      },
+      "precision": {
+       "finetuned": 0.843,
+       "vanilla": null
+      },
+      "recall": {
+       "finetuned": 0.473,
+       "vanilla": null
+      },
+      "aji": {
+       "finetuned": 0.494,
+       "vanilla": 0.008
+      },
+      "dice": {
+       "finetuned": 0.61,
+       "vanilla": 0.02
+      },
+      "map50": null,
+      "map50_95": null
+     },
+     "baseline_label": "stock cpsam_v2",
+     "note": "Per host F1: HeLa 0.711, HFF 0.557, THP1 0.465.",
+     "sources": [
+      "https://github.com/EinarOlafsson/spacr/blob/6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf/spacr/model_zoo.py",
+      "https://huggingface.co/einarolafsson/toxoplasma-from-cellmask-cpsam/tree/4169ff46e3b31d9743920c492e33d8c1685f02a4",
+      "https://huggingface.co/einarolafsson/toxoplasma-from-cellmask-cpsam/blob/4169ff46e3b31d9743920c492e33d8c1685f02a4/evaluation/metrics.csv"
+     ],
+     "ap_label": "mAP over IoU thresholds"
+    },
+    {
+     "key": "toxoplasma_from_hoechst_v1",
+     "display": "Toxoplasma from Hoechst (cross-channel)",
+     "version": "v1",
+     "base": "cpsam_v2",
+     "status": "default",
+     "status_quote": "only version in the zoo",
+     "repo_url": "https://huggingface.co/einarolafsson/toxoplasma-from-hoechst-cpsam",
+     "test": {
+      "size": "463 held-out fields",
+      "objects": 6116,
+      "source": "well-grouped held-out split (no well on both sides), hosts HFF, HeLa and THP1, fields without parasites included; the split also selected the checkpoint"
+     },
+     "metrics": {
+      "f1_50": {
+       "finetuned": 0.569,
+       "vanilla": 0.002
+      },
+      "f1_75": null,
+      "ap": {
+       "finetuned": 0.17,
+       "vanilla": null
+      },
+      "precision": {
+       "finetuned": 0.654,
+       "vanilla": null
+      },
+      "recall": {
+       "finetuned": 0.503,
+       "vanilla": null
+      },
+      "aji": {
+       "finetuned": 0.421,
+       "vanilla": 0.006
+      },
+      "dice": {
+       "finetuned": 0.546,
+       "vanilla": 0.016
+      },
+      "map50": null,
+      "map50_95": null
+     },
+     "baseline_label": "stock cpsam_v2",
+     "note": "The Hoechst route is harder than the cell-mask route; compare Toxoplasma from Cell Mask.",
+     "sources": [
+      "https://github.com/EinarOlafsson/spacr/blob/6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf/spacr/model_zoo.py",
+      "https://huggingface.co/einarolafsson/toxoplasma-from-hoechst-cpsam/tree/ce4177fa614ce5ab761fe4ffb0f928e158581304",
+      "https://huggingface.co/einarolafsson/toxoplasma-from-hoechst-cpsam/blob/ce4177fa614ce5ab761fe4ffb0f928e158581304/evaluation/metrics.csv"
+     ],
+     "ap_label": "mAP over IoU thresholds"
+    }
+   ]
+  },
+  {
+   "id": "livecell",
+   "title": "Live-cell segmentation",
+   "motivation": "Segments unstained cells in phase contrast, brightfield and DIC images. On test datasets stock cpsam_v2 was not trained on, F1 at IoU 0.5 is 0.960 against 0.885 for stock; over all 2,199 test fields it is 0.694 against 0.738, because stock was trained on LIVECell and scores higher on it.",
+   "motivation_sources": [
+    "https://huggingface.co/einarolafsson/live-cell-segmentation-cpsam/tree/9b8b759eaf01318c61eeec77bb85455feff9de1b"
+   ],
+   "models": [
+    {
+     "key": "live-cell-v1",
+     "display": "Live cell v1 (phase, brightfield, DIC)",
+     "version": "v1",
+     "base": "cpsam_v2",
+     "status": "default",
+     "status_quote": "only version in the zoo; the card states it does not replace stock on LIVECell phase-contrast images",
+     "repo_url": "https://huggingface.co/einarolafsson/live-cell-segmentation-cpsam",
+     "test": {
+      "size": "2,199 test fields from 14 public datasets",
+      "objects": 362707,
+      "source": "transmitted-light test split grouped by acquisition (phase contrast, brightfield, DIC)"
+     },
+     "metrics": {
+      "f1_50": {
+       "finetuned": 0.694,
+       "vanilla": 0.738
+      },
+      "f1_75": null,
+      "ap": {
+       "finetuned": 0.773,
+       "vanilla": 0.737
+      },
+      "precision": null,
+      "recall": null,
+      "aji": null,
+      "dice": null,
+      "map50": null,
+      "map50_95": null
+     },
+     "baseline_label": "stock cpsam_v2",
+     "note": "On test datasets stock cpsam_v2 was not trained on, F1 0.960 against 0.885; stock was trained on LIVECell and scores higher there.",
+     "sources": [
+      "https://github.com/EinarOlafsson/spacr/blob/6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf/spacr/model_zoo.py",
+      "https://huggingface.co/einarolafsson/live-cell-segmentation-cpsam/tree/9b8b759eaf01318c61eeec77bb85455feff9de1b",
+      "https://huggingface.co/einarolafsson/live-cell-segmentation-cpsam/blob/9b8b759eaf01318c61eeec77bb85455feff9de1b/qc/test_by_modality.csv"
+     ],
+     "ap_label": "AP at IoU 0.5"
+    }
+   ]
+  },
+  {
+   "id": "other",
+   "title": "Other",
+   "motivation": "The colony detector (alpha) counts bacterial and fungal colonies on plate photos for colony counting. On 39 held-out plates with 30-300 colonies its median count error is 2.4% against 16.5% for spaCR's thresholding counter.",
+   "motivation_sources": [
+    "https://huggingface.co/datasets/einarolafsson/models/blob/d559f7c48c281b605c29b6f125c68fda4fc43f10/colony_detector/v1/README.md"
+   ],
+   "models": [
+    {
+     "key": "colony_yolo11n_makrai_v1",
+     "display": "Colony Detector v1 (alpha)",
+     "version": "v1",
+     "base": "yolo11n",
+     "status": "alpha",
+     "status_quote": "Colony Detector v1 (alpha) (zoo display name); listed under ALPHA_FEATURES in spacr/settings.py",
+     "repo_url": "https://huggingface.co/datasets/einarolafsson/models/tree/d559f7c48c281b605c29b6f125c68fda4fc43f10/colony_detector/v1",
+     "test": {
+      "size": "39 held-out plates with 30-300 colonies",
+      "objects": null,
+      "source": "smartphone plate photos of 24 bacterial and fungal species (Makrai et al. 2023, Scientific Data, CC BY 4.0)"
+     },
+     "metrics": {
+      "f1_50": null,
+      "f1_75": null,
+      "ap": null,
+      "precision": null,
+      "recall": null,
+      "aji": null,
+      "dice": null,
+      "map50": null,
+      "map50_95": null,
+      "median_count_error_pct": {
+       "finetuned": 2.4,
+       "vanilla": 16.5
+      },
+      "plates_within_5pct": {
+       "finetuned": 69,
+       "vanilla": null
+      },
+      "plates_within_10pct": {
+       "finetuned": 87,
+       "vanilla": null
+      }
+     },
+     "baseline_label": "spaCR's classical thresholding colony counter on the same plates",
+     "note": "One dataset and one split; confluent swarming colonies remain hard.",
+     "sources": [
+      "https://github.com/EinarOlafsson/spacr/blob/6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf/spacr/model_zoo.py",
+      "https://huggingface.co/datasets/einarolafsson/models/blob/d559f7c48c281b605c29b6f125c68fda4fc43f10/colony_detector/v1/README.md"
+     ]
+    }
+   ]
+  }
+ ]
+}

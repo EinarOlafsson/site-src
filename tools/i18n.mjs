@@ -160,7 +160,34 @@ export const FIXED = {
   "papers.rel.uses": "Uses spaCR",
   "papers.preprint_tag": "preprint",
   "papers.preprint": "Preprint: {value}",
-  "papers.image": "Image: {value}"
+  "papers.image": "Image: {value}",
+  "mc.version": "Version",
+  "mc.base": "Base model",
+  "mc.test": "Held-out test set",
+  "mc.status": "Status",
+  "mc.finetuned": "This model",
+  "mc.vanilla": "Stock Cellpose-SAM",
+  "mc.baseline": "Baseline",
+  "mc.not_recorded": "not recorded",
+  "mc.card": "Model card",
+  "mc.default": "default",
+  "mc.alternative": "alternative",
+  "mc.candidate": "candidate",
+  "mc.superseded": "earlier version",
+  "mc.alpha": "alpha",
+  "mc.metric.f1_50": "F1 at IoU 0.5",
+  "mc.metric.f1_75": "F1 at IoU 0.75",
+  "mc.metric.ap": "Average precision",
+  "mc.metric.precision": "Precision",
+  "mc.metric.recall": "Recall",
+  "mc.metric.aji": "AJI",
+  "mc.metric.dice": "Dice",
+  "mc.metric.map50": "mAP at IoU 0.5",
+  "mc.metric.map50_95": "mAP at IoU 0.5 to 0.95",
+  "mc.metric.median_count_error_pct": "Median count error",
+  "mc.metric.plates_within_5pct": "Plates within 5%",
+  "mc.metric.plates_within_10pct": "Plates within 10%",
+  "mc.default_from": "Default in spaCR ({value})"
 };
 
 export const UI_KEYS = Object.keys(FIXED).filter((k) => k.startsWith("ui."));
@@ -186,11 +213,37 @@ export function showcaseKeys(sc) {
   return out;
 }
 
+// Strings that come from data/models.json (group titles, motivations, notes, labels).
+export function modelKeys(mj) {
+  const out = [];
+  const add = (k, v) => { if (v && !out.some(([x]) => x === k)) out.push([k, v]); };
+  for (const g of mj.groups || []) {
+    add(dataKey(`mc.group.${g.id}.title`, g.title), g.title);
+    add(dataKey(`mc.group.${g.id}.motivation`, g.motivation), g.motivation);
+    for (const m of g.models || []) {
+      if (m.note) add(dataKey("mc.note", m.note), m.note);
+      if (m.test && m.test.source) add(dataKey("mc.testsrc", m.test.source), m.test.source);
+      if (m.test && m.test.size) add(dataKey("mc.testsize", m.test.size), m.test.size);
+      if (m.baseline_label) add(dataKey("mc.baselabel", m.baseline_label), m.baseline_label);
+      if (m.ap_label) add(dataKey("mc.aplabel", m.ap_label), m.ap_label);
+      if (m.by_source) {
+        add(dataKey("mc.bstitle", m.by_source.title), m.by_source.title);
+        if (m.by_source.note) add(dataKey("mc.bsnote", m.by_source.note), m.by_source.note);
+        for (const c of m.by_source.columns) add(dataKey("mc.bscol", c), c);
+      }
+    }
+  }
+  return out;
+}
+
 // withShowcase: only pages that render the model showcase carry its strings.
 export function generatedStrings(dataDir, withShowcase = true) {
   if (!withShowcase) return Object.entries(FIXED);
   const sc = JSON.parse(fs.readFileSync(path.join(dataDir, "showcase.json"), "utf8"));
-  return [...Object.entries(FIXED), ...showcaseKeys(sc)];
+  let mk = [];
+  const mp = path.join(dataDir, "models.json");
+  if (fs.existsSync(mp)) mk = modelKeys(JSON.parse(fs.readFileSync(mp, "utf8")));
+  return [...Object.entries(FIXED), ...showcaseKeys(sc), ...mk];
 }
 
 // English reference for a page: template keys, then generated keys.

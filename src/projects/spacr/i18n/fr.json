@@ -240,8 +240,6 @@
   "assays.dose.caption": "Dose-Response : ajustements logistiques à quatre paramètres pour les 5 composés sur 58 dont l’EC50 est bornée ; EC50 de SNX-2112 : 0,299 µM (IC à 95 % 0,279–0,319). Données : <a href=\"https://huggingface.co/datasets/einarolafsson/spacr-example-dose\">spacr-example-dose</a>, 1 536 puits, 4 plaques.",
   "assays.control.alt": "Carte de contrôle du nombre médian de cellules dans les puits DMSO sur 24 plaques, avec les limites de contrôle et les plaques signalées",
   "assays.control.caption": "Carte de contrôle : nombre médian de cellules dans les puits DMSO sur 24 plaques ; les 24 sortent des limites après des changements de lignée cellulaire, de point temporel et d’ensemencement. Données : <a href=\"https://huggingface.co/datasets/einarolafsson/spacr-example-control-chart\">spacr-example-control-chart</a>.",
-  "assays.plaque.alt": "Puits de plages de lyse coloré au cristal violet, avec 99 plages contourées en magenta",
-  "assays.plaque.caption": "Plaque Assay : 99 plages de lyse détectées par toxoplasma_plaque_v3 dans un puits de Cabral et al. 2024 (CC BY 4.0) ; 98 dans le masque dessiné à la main.",
   "assays.recruitment.alt": "Diagrammes en barres du recrutement de GFP-TSG101 dans les puits témoins négatifs et positifs sur quatre plaques",
   "assays.recruitment.caption2": "Recruitment : rapport vacuole/cytoplasme de GFP-TSG101 dans les puits témoins SAG1 (négatif) et GRA14 (positif) sur quatre plaques, 16 puits dans chaque cas, recalculé avec spaCR à partir des mesures publiques des plaques : moyennes par plaque 1,31 contre 1,09, p = 8,6 × 10⁻⁵ (test t, n = 4 ; la prépublication rapporte 8,4 × 10⁻⁵). Données : <a href=\"https://huggingface.co/datasets/einarolafsson/spacr-example-screen\">spacr-example-screen</a>.",
   "papers.title": "Articles utilisant spaCR",
@@ -349,9 +347,7 @@
   "showcase.plaque.alt.f7a75b": "Image en niveaux de gris d’un puits coloré au cristal violet, avec des plages claires dans un tapis cellulaire sombre",
   "showcase.label.well": "Puits",
   "showcase.class.plaques": "Plages de lyse",
-  "showcase.note.0a40ea": "Le modèle de plages de lyse par défaut de la bibliothèque de modèles depuis le 2026-10-10. 98 plages dans le masque dessiné à la main ; F1 0,964 à IoU 0,5 sur ce puits",
   "showcase.value.f51613": "Cristal violet, niveaux de gris",
   "showcase.value.4e249c": "Cabral G, et al. Microbiol Spectrum 2024, Fig. 2",
-  "showcase.fact.dataset": "Jeu de données",
-  "showcase.value.6b9573": "toxoplasma-plaque-dataset (exclu de l’entraînement de v3)"
+  "showcase.fact.dataset": "Jeu de données"
 }

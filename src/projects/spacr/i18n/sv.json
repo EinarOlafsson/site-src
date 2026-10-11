@@ -240,8 +240,6 @@
   "assays.dose.caption": "Dose-Response: logistiska anpassningar med fyra parametrar för de 5 av 58 substanser som har ett avgränsat EC50; SNX-2112 EC50 0,299 µM (95 % KI 0,279–0,319). Data: <a href=\"https://huggingface.co/datasets/einarolafsson/spacr-example-dose\">spacr-example-dose</a>, 1 536 brunnar, 4 plattor.",
   "assays.control.alt": "Styrdiagram över mediant cellantal i DMSO-brunnar på 24 plattor med kontrollgränser och flaggade plattor",
   "assays.control.caption": "Styrdiagram: mediant cellantal i DMSO-brunnar på 24 plattor; alla 24 hamnar utanför gränserna efter byten av cellinje, tidpunkt och sådd. Data: <a href=\"https://huggingface.co/datasets/einarolafsson/spacr-example-control-chart\">spacr-example-control-chart</a>.",
-  "assays.plaque.alt": "Plackbrunn färgad med kristallviolett med 99 plack markerade i magenta",
-  "assays.plaque.caption": "Plaque Assay: 99 plack hittade av toxoplasma_plaque_v3 i en brunn från Cabral et al. 2024 (CC BY 4.0); 98 i den handritade masken.",
   "assays.recruitment.alt": "Stapeldiagram över rekrytering av GFP-TSG101 i negativa och positiva kontrollbrunnar på fyra plattor",
   "assays.recruitment.caption2": "Recruitment: kvoten mellan GFP-TSG101 i vakuol och cytoplasma i kontrollbrunnar med SAG1 (negativ) och GRA14 (positiv) på fyra plattor, 16 brunnar vardera, omräknad med spaCR från de offentliga plattmätningarna: plattmedelvärden 1,31 mot 1,09, p = 8,6 × 10⁻⁵ (t-test, n = 4; preprinten anger 8,4 × 10⁻⁵). Data: <a href=\"https://huggingface.co/datasets/einarolafsson/spacr-example-screen\">spacr-example-screen</a>.",
   "papers.title": "Artiklar som använder spaCR",
@@ -349,9 +347,7 @@
   "showcase.plaque.alt.f7a75b": "Gråskalebild av en brunn färgad med kristallviolett, med ljusa plack i ett mörkt monolager",
   "showcase.label.well": "Brunn",
   "showcase.class.plaques": "Plack",
-  "showcase.note.0a40ea": "Standardmodell för plack i modellsamlingen sedan 2026-10-10. 98 plack i den handritade masken; F1 0,964 vid IoU 0,5 i denna brunn",
   "showcase.value.f51613": "Kristallviolett, gråskala",
   "showcase.value.4e249c": "Cabral G, et al. Microbiol Spectrum 2024, Fig. 2",
-  "showcase.fact.dataset": "Datamängd",
-  "showcase.value.6b9573": "toxoplasma-plaque-dataset (undanhållen från träningen av v3)"
+  "showcase.fact.dataset": "Datamängd"
 }

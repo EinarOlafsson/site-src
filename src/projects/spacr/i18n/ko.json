@@ -240,8 +240,6 @@
   "assays.dose.caption": "Dose-Response: 화합물 58개 중 EC50이 유계인 5개에 대한 4-모수 로지스틱 적합. SNX-2112 EC50 0.299 µM(95% CI 0.279–0.319). 데이터: <a href=\"https://huggingface.co/datasets/einarolafsson/spacr-example-dose\">spacr-example-dose</a>, 웰 1,536개, 플레이트 4장.",
   "assays.control.alt": "플레이트 24장에 걸친 DMSO 웰 세포 수 중앙값의 관리도. 관리 한계와 표시된 플레이트 포함",
   "assays.control.caption": "관리도: 플레이트 24장에 걸친 DMSO 웰 세포 수 중앙값. 세포주, 시점, 접종 조건이 바뀐 뒤 24장 모두 관리 한계를 벗어납니다. 데이터: <a href=\"https://huggingface.co/datasets/einarolafsson/spacr-example-control-chart\">spacr-example-control-chart</a>.",
-  "assays.plaque.alt": "플라크 99개가 자홍색 윤곽선으로 표시된 크리스탈 바이올렛 플라크 웰",
-  "assays.plaque.caption": "Plaque Assay: Cabral et al. 2024(CC BY 4.0)의 웰 하나에서 toxoplasma_plaque_v3가 찾은 플라크 99개. 손으로 그린 마스크에서는 98개.",
   "assays.recruitment.alt": "플레이트 네 장의 음성 및 양성 대조군 웰에서 GFP-TSG101 모집을 나타낸 막대 그래프",
   "assays.recruitment.caption2": "Recruitment: 플레이트 네 장의 SAG1(음성) 및 GRA14(양성) 대조군 웰(각 16개)에서 GFP-TSG101 액포 대 세포질 비율을 공개 플레이트 측정값으로부터 spaCR로 다시 계산: 플레이트 평균 1.31 대 1.09, p = 8.6 × 10⁻⁵(t-검정, n = 4; 프리프린트 보고값 8.4 × 10⁻⁵). 데이터: <a href=\"https://huggingface.co/datasets/einarolafsson/spacr-example-screen\">spacr-example-screen</a>.",
   "papers.title": "spaCR을 사용한 논문",
@@ -349,9 +347,7 @@
   "showcase.plaque.alt.f7a75b": "어두운 단층 세포 사이에 옅은 플라크가 있는 크리스탈 바이올렛 염색 웰의 회색조 이미지",
   "showcase.label.well": "웰",
   "showcase.class.plaques": "플라크",
-  "showcase.note.0a40ea": "2026-10-10부터 모델 라이브러리의 기본 플라크 모델. 손으로 그린 마스크의 플라크 98개. 이 웰에서 IoU 0.5 기준 F1 0.964",
   "showcase.value.f51613": "크리스탈 바이올렛, 회색조",
   "showcase.value.4e249c": "Cabral G, et al. Microbiol Spectrum 2024, Fig. 2",
-  "showcase.fact.dataset": "데이터 세트",
-  "showcase.value.6b9573": "toxoplasma-plaque-dataset(v3 학습에서 제외)"
+  "showcase.fact.dataset": "데이터 세트"
 }

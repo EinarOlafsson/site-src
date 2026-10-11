@@ -201,12 +201,12 @@
     {
      "name": "Plaques",
      "color": "#FF00FF",
-     "count": 99,
-     "layer": "plaque-plaque.webp",
+     "count": 100,
+     "layer": "plaque-v4-plaque.webp",
      "model": {
-      "display": "toxoplasma_plaque_v3",
-      "url": "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam-r5-geldoc",
-      "note": "The default plaque model in the zoo since 2026-10-10. 98 plaques in the hand-drawn mask; F1 0.964 at IoU 0.5 on this well"
+      "display": "toxoplasma_plaque_v4 (round 6, cpsam_v2)",
+      "url": "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam-r6",
+      "note": "The default plaque model in spaCR since 2026-10-11. Model card: F1 0.815 on 263 held-out fields (v3 0.844). 98 plaques in the hand-drawn mask; F1 0.960 at IoU 0.5 on this well"
      }
     }
    ],
@@ -222,7 +222,7 @@
     ],
     [
      "Dataset",
-     "toxoplasma-plaque-dataset (held out from v3 training)",
+     "toxoplasma-plaque-dataset (held out from v4 training)",
      "https://huggingface.co/datasets/einarolafsson/toxoplasma-plaque-dataset"
     ],
     [
@@ -232,7 +232,7 @@
     [
      "Figure",
      "With caption and checksums",
-     "/assets/img/models/plaque-figure.webp"
+     "/assets/img/models/plaque-v4-figure.webp"
     ]
    ]
   }

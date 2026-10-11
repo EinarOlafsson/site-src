@@ -252,6 +252,87 @@ function showcaseVars(tr) {
   return { SHOWCASE_HTML: figs.join("\n"), SHOWCASE_SPACR: esc(tr(dataKey("models.note", sc.spacr_version))) };
 }
 
+// Model status at build time: spaCR's DEFAULT_* constants and the "(default)",
+// "(alternative)" or "(candidate)" marker of each zoo display name on nightly.
+async function zooStatus() {
+  const out = { defaults: {}, display: {} };
+  if (OFFLINE && !process.env.SITE_ZOO_ONLINE) return out;
+  // The contents API reads the branch head; raw.githubusercontent.com can serve a copy up to minutes old.
+  const gh = process.env.GITHUB_TOKEN ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` } : {};
+  const raw = async (f) => {
+    try {
+      const r = await fetch(`https://api.github.com/repos/EinarOlafsson/spacr/contents/spacr/${f}?ref=nightly`, { headers: { "User-Agent": "einarolafsson-site-build", Accept: "application/vnd.github.raw", ...gh } });
+      if (r.ok) return await r.text();
+      log("zoo:", f, `contents API HTTP ${r.status}, using raw.githubusercontent.com`);
+    } catch (e) { log("zoo:", f, e.message); }
+    return getText(`https://raw.githubusercontent.com/EinarOlafsson/spacr/nightly/spacr/${f}`).catch((e) => { log("zoo:", f, e.message); return ""; });
+  };
+  const [sub, zoo] = await Promise.all([raw("submodules.py"), raw("model_zoo.py")]);
+  for (const m of sub.matchAll(/^(DEFAULT_[A-Z_]*MODEL)\s*=\s*['"]([^'"]+)['"]/gm)) out.defaults[m[2]] = m[1];
+  const re = /["']key["']\s*:\s*["']([^"']+)["'][\s\S]*?["']display_name["']\s*:\s*["']([^"']+)["']/g;
+  for (const m of zoo.matchAll(re)) if (!(m[1] in out.display)) out.display[m[1]] = m[2];
+  log(`zoo: ${Object.keys(out.display).length} display names, defaults ${JSON.stringify(out.defaults)}`);
+  return out;
+}
+
+function fmt3(v) { return typeof v === "number" ? v.toFixed(3) : ""; }
+
+function modelsVars(tr, zs) {
+  const p = path.join(DATA, "models.json");
+  if (!fs.existsSync(p)) return { MODELS_HTML: "" };
+  const mj = readJSON(p);
+  const T = (prefix, text) => esc(tr(dataKey(prefix, text)));
+  const metricOrder = ["f1_50", "f1_75", "ap", "precision", "recall", "aji", "dice", "map50", "map50_95", "median_count_error_pct", "plates_within_5pct", "plates_within_10pct"];
+  const groups = (mj.groups || []).map((g) => {
+    const cards = (g.models || []).map((m) => {
+      const zkey = String(m.key).replace(/-/g, "_");
+      const def = zs.defaults[zkey];
+      const disp = zs.display[zkey] || "";
+      const marker = (disp.match(/\b(default|alternative|candidate)\b/i) || [])[1];
+      let status = def ? "default" : marker ? marker.toLowerCase() : (m.status || "");
+      if (!["default", "alternative", "candidate", "superseded", "alpha"].includes(status)) status = "";
+      const badge = status ? `<span class="mc-badge ${status}"${def ? ` title="${esc(tr("mc.default_from").replace("{value}", def))}"` : ""}>${esc(tr("mc." + status))}</span>` : "";
+      const rows = [];
+      for (const k of metricOrder) {
+        const v = m.metrics && m.metrics[k];
+        if (v === undefined) continue;
+        const ft = v && typeof v === "object" ? v.finetuned : v;
+        const va = v && typeof v === "object" ? v.vanilla : null;
+        if ((ft === null || ft === undefined) && (va === null || va === undefined)) continue;
+        const pct = /pct$/.test(k);
+        const bar = (x, cls) => typeof x === "number" ? `<span class="mc-bar ${cls}" style="--v:${Math.max(0, Math.min(1, pct ? x / 100 : x)).toFixed(3)}"></span><span class="mc-num">${pct ? x.toFixed(1) + "%" : fmt3(x)}</span>` : `<span class="mc-nr">${esc(tr("mc.not_recorded"))}</span>`;
+        const label = k === "ap" && m.ap_label ? T("mc.aplabel", m.ap_label) : esc(tr("mc.metric." + k));
+        rows.push(`<tr><th scope="row">${label}</th><td>${bar(ft, "ft")}</td><td>${typeof va === "number" ? bar(va, "va") : '<span class="mc-nr">–</span>'}</td></tr>`);
+      }
+      const baseLabel = m.baseline_label ? T("mc.baselabel", m.baseline_label) : esc(tr("mc.vanilla"));
+      const table = rows.length ? `<table class="mc-table"><thead><tr><td></td><th scope="col"><span class="mc-key ft"></span>${esc(tr("mc.finetuned"))}</th><th scope="col"><span class="mc-key va"></span>${baseLabel}</th></tr></thead><tbody>${rows.join("")}</tbody></table>` : `<p class="mc-nr">${esc(tr("mc.not_recorded"))}</p>`;
+      const test = m.test ? [m.test.size ? T("mc.testsize", m.test.size) : "", m.test.source ? T("mc.testsrc", m.test.source) : ""].filter(Boolean).join(" · ") : "";
+      return [
+        `          <article class="mc">`,
+        `            <header><h4>${esc(m.display)}</h4>${badge}</header>`,
+        `            <dl class="mc-facts"><div><dt>${esc(tr("mc.version"))}</dt><dd>${esc(m.version || "")}</dd></div><div><dt>${esc(tr("mc.base"))}</dt><dd>${esc(m.base || "")}</dd></div><div class="wide"><dt>${esc(tr("mc.test"))}</dt><dd>${test || esc(tr("mc.not_recorded"))}</dd></div></dl>`,
+        `            ${table}`,
+        m.by_source ? [
+          `            <div class="mc-src"><table class="mc-srctable"><caption>${T("mc.bstitle", m.by_source.title)}</caption>`,
+          `<thead><tr><td></td>${m.by_source.columns.map((c) => `<th scope="col">${T("mc.bscol", c)}</th>`).join("")}</tr></thead>`,
+          `<tbody>${m.by_source.rows.map(([n, vals]) => `<tr><th scope="row">${esc(n)}</th>${vals.map((v) => `<td>${fmt3(v)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`,
+          m.by_source.note ? `            <p class="mc-note">${T("mc.bsnote", m.by_source.note)}</p>` : ""].join("\n") : "",
+        m.note ? `            <p class="mc-note">${T("mc.note", m.note)}</p>` : "",
+        m.repo_url ? `            <p class="mc-link"><a href="${esc(m.repo_url)}">${esc(tr("mc.card"))}</a></p>` : "",
+        `          </article>`].filter(Boolean).join("\n");
+    });
+    return [
+      `        <div class="mc-group" role="group" aria-labelledby="mc-${esc(g.id)}">`,
+      `          <h3 id="mc-${esc(g.id)}">${T(`mc.group.${g.id}.title`, g.title)}</h3>`,
+      `          <p class="note mc-why">${T(`mc.group.${g.id}.motivation`, g.motivation)}</p>`,
+      `          <div class="mc-grid">`,
+      cards.join("\n"),
+      `          </div>`,
+      `        </div>`].join("\n");
+  });
+  return { MODELS_HTML: groups.join("\n") };
+}
+
 function shorten(q, n = 260) {
   const t = String(q).split(" [...] ")[0];
   return t.length <= n ? t : t.slice(0, t.lastIndexOf(" ", n)) + " …";
@@ -533,11 +614,12 @@ async function main() {
   if (meta.versionDoiVersion && meta.versionDoiVersion !== meta.version) {
     log(`note: Zenodo latest is ${meta.versionDoiVersion}, PyPI is ${meta.version}`);
   }
+  const zs = await zooStatus();
   const sp = await starplastMeta();
   log(`Starplast ${sp.version} (PyPI, ${sp.released}), Python ${sp.requiresPython}`);
   const stats = await statsVars(readJSON(path.join(DATA, "papers.json")).papers.length);
   const ASSET_VERSION = assetVersion();
-  const varsFor = (tr) => ({ ...spacrVars(meta, tr), ...showcaseVars(tr), ...papersVars(tr), ...stats, ...starplastVars(sp), ASSET_VERSION });
+  const varsFor = (tr) => ({ ...spacrVars(meta, tr), ...showcaseVars(tr), ...papersVars(tr), ...stats, ...starplastVars(sp), ...modelsVars(tr, zs), ASSET_VERSION });
   await refreshPaperCandidates();
 
   const i18nPages = new Map();
@@ -567,7 +649,8 @@ async function main() {
     publicText += out;
     if (!multi) continue;
     for (const lang of multi.langs) {
-      const tr = translator(lang.dict, multi.english, multi.warn);
+      const own = translator(lang.dict, multi.english, multi.warn);
+      const tr = (id) => (multi.english.has(id) ? own(id) : enTr(id));
       const known = [...multi.english].filter(([k, en]) => typeof lang.dict[k] === "string" && lang.dict[k].trim() && sameSignature(lang.dict[k], en) && (!/<[^>]*>/.test(lang.dict[k]) || /<[^>]*>/.test(en))).length;
       const vars = { ...varsFor(tr), ...langVars(multi.home, multi.langs, lang, tr), SPACR_LANGS: enVars.SPACR_LANGS };
       const html = render(tpl, page, vars, { lang, english: multi.english, home: multi.home, warn: multi.warn });

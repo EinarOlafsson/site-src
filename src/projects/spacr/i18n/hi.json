@@ -240,8 +240,6 @@
   "assays.dose.caption": "Dose-Response: 58 में से उन 5 यौगिकों के लिए चार-पैरामीटर लॉजिस्टिक फ़िट जिनका EC50 परिबद्ध है; SNX-2112 EC50 0.299 µM (95% CI 0.279–0.319)। डेटा: <a href=\"https://huggingface.co/datasets/einarolafsson/spacr-example-dose\">spacr-example-dose</a>, 1,536 वेल, 4 प्लेटें।",
   "assays.control.alt": "24 प्लेटों पर DMSO-वेल माध्यिका कोशिका गणना का नियंत्रण चार्ट, नियंत्रण सीमाओं और चिह्नित प्लेटों सहित",
   "assays.control.caption": "नियंत्रण चार्ट: 24 प्लेटों पर DMSO-वेल माध्यिका कोशिका गणना; कोशिका-लाइन, समय-बिंदु और सीडिंग में बदलाव के बाद सभी 24 सीमाओं से बाहर हैं। डेटा: <a href=\"https://huggingface.co/datasets/einarolafsson/spacr-example-control-chart\">spacr-example-control-chart</a>।",
-  "assays.plaque.alt": "क्रिस्टल-वायलेट प्लाक वेल जिसमें 99 प्लाक मैजेंटा रूपरेखा में हैं",
-  "assays.plaque.caption": "Plaque Assay: Cabral et al. 2024 (CC BY 4.0) के एक वेल में toxoplasma_plaque_v3 द्वारा पाए गए 99 प्लाक; हाथ से बने मास्क में 98।",
   "assays.recruitment.alt": "चार प्लेटों पर नेगेटिव और पॉज़िटिव कंट्रोल वेल के लिए GFP-TSG101 भर्ती के बार प्लॉट",
   "assays.recruitment.caption2": "Recruitment: चार प्लेटों पर SAG1 (नेगेटिव) और GRA14 (पॉज़िटिव) कंट्रोल वेल में GFP-TSG101 का रिक्तिका-से-कोशिकाद्रव्य अनुपात, प्रत्येक में 16 वेल, सार्वजनिक प्लेट मापों से spaCR द्वारा फिर से गणना किया गया: प्लेट माध्य 1.31 बनाम 1.09, p = 8.6 × 10⁻⁵ (t-परीक्षण, n = 4; प्रीप्रिंट 8.4 × 10⁻⁵ बताता है)। डेटा: <a href=\"https://huggingface.co/datasets/einarolafsson/spacr-example-screen\">spacr-example-screen</a>।",
   "papers.title": "spaCR का उपयोग करने वाले शोध-पत्र",
@@ -349,9 +347,7 @@
   "showcase.plaque.alt.f7a75b": "क्रिस्टल-वायलेट से रंगे वेल की ग्रेस्केल इमेज, गहरी एकल परत में हल्के प्लाक के साथ",
   "showcase.label.well": "वेल",
   "showcase.class.plaques": "प्लाक",
-  "showcase.note.0a40ea": "2026-10-10 से मॉडल लाइब्रेरी में डिफ़ॉल्ट प्लाक मॉडल। हाथ से बने मास्क में 98 प्लाक; इस वेल पर IoU 0.5 पर F1 0.964",
   "showcase.value.f51613": "क्रिस्टल वायलेट, ग्रेस्केल",
   "showcase.value.4e249c": "Cabral G, et al. Microbiol Spectrum 2024, Fig. 2",
-  "showcase.fact.dataset": "डेटा सेट",
-  "showcase.value.6b9573": "toxoplasma-plaque-dataset (v3 प्रशिक्षण से अलग रखा गया)"
+  "showcase.fact.dataset": "डेटा सेट"
 }

@@ -240,8 +240,6 @@
   "assays.dose.caption": "Dose-Response: ajustes logísticos de quatro parâmetros para os 5 de 58 compostos com EC50 delimitada; EC50 do SNX-2112 0,299 µM (IC de 95% 0,279–0,319). Dados: <a href=\"https://huggingface.co/datasets/einarolafsson/spacr-example-dose\">spacr-example-dose</a>, 1.536 poços, 4 placas.",
   "assays.control.alt": "Gráfico de controle da contagem mediana de células nos poços com DMSO em 24 placas, com limites de controle e placas sinalizadas",
   "assays.control.caption": "Gráfico de controle: contagem mediana de células nos poços com DMSO em 24 placas; todas as 24 ficam fora dos limites após mudanças de linhagem celular, ponto de tempo e semeadura. Dados: <a href=\"https://huggingface.co/datasets/einarolafsson/spacr-example-control-chart\">spacr-example-control-chart</a>.",
-  "assays.plaque.alt": "Poço de placas de lise corado com cristal violeta com 99 placas contornadas em magenta",
-  "assays.plaque.caption": "Plaque Assay: 99 placas de lise encontradas pelo toxoplasma_plaque_v3 em um poço de Cabral et al. 2024 (CC BY 4.0); 98 na máscara desenhada à mão.",
   "assays.recruitment.alt": "Gráficos de barras do recrutamento de GFP-TSG101 em poços de controle negativo e positivo em quatro placas",
   "assays.recruitment.caption2": "Recruitment: razão vacúolo/citoplasma de GFP-TSG101 em poços de controle com SAG1 (negativo) e GRA14 (positivo) em quatro placas, 16 poços em cada caso, recalculada com o spaCR a partir das medições públicas das placas: médias por placa 1,31 contra 1,09, p = 8,6 × 10⁻⁵ (teste t, n = 4; o preprint relata 8,4 × 10⁻⁵). Dados: <a href=\"https://huggingface.co/datasets/einarolafsson/spacr-example-screen\">spacr-example-screen</a>.",
   "papers.title": "Artigos que usam o spaCR",
@@ -349,9 +347,7 @@
   "showcase.plaque.alt.f7a75b": "Imagem em tons de cinza de um poço corado com cristal violeta com placas claras em uma monocamada escura",
   "showcase.label.well": "Poço",
   "showcase.class.plaques": "Placas de lise",
-  "showcase.note.0a40ea": "O modelo de placas de lise padrão da biblioteca de modelos desde 2026-10-10. 98 placas de lise na máscara desenhada à mão; F1 0,964 com IoU 0,5 neste poço",
   "showcase.value.f51613": "Cristal violeta, tons de cinza",
   "showcase.value.4e249c": "Cabral G, et al. Microbiol Spectrum 2024, Fig. 2",
-  "showcase.fact.dataset": "Conjunto de dados",
-  "showcase.value.6b9573": "toxoplasma-plaque-dataset (excluído do treinamento da v3)"
+  "showcase.fact.dataset": "Conjunto de dados"
 }

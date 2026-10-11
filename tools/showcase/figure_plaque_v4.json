@@ -1,0 +1,109 @@
+{
+ "figure": {
+  "id": "plaque",
+  "title": "Plaque assay: Toxoplasma plaques",
+  "input_label": "Well",
+  "text": "A crystal-violet plaque-assay well from a published figure. Plaques are segmented by spaCR's plaque model. This well was not used to train the model.",
+  "base": "plaque-raw.webp",
+  "alt": "Greyscale image of a crystal-violet stained well with pale plaques in a dark monolayer",
+  "width": 1024,
+  "height": 1011,
+  "classes": [
+   {
+    "name": "Plaques",
+    "color": "#FF00FF",
+    "count": 100,
+    "layer": "plaque-v4-plaque.webp",
+    "model": {
+     "display": "toxoplasma_plaque_v4 (round 6, cpsam_v2)",
+     "url": "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam-r6",
+     "note": "An alternative plaque model in the zoo, not the default (toxoplasma_plaque_v3 is the default). Card test set: F1 0.815 on 263 held-out fields (v3 0.844). 98 plaques in the hand-drawn mask; F1 0.96 at IoU 0.5 on this well"
+    }
+   }
+  ],
+  "facts": [
+   [
+    "Input",
+    "Crystal violet, greyscale"
+   ],
+   [
+    "Image",
+    "Cabral G, et al. Microbiol Spectrum 2024, Fig. 2",
+    "https://doi.org/10.1128/spectrum.01229-24"
+   ],
+   [
+    "Dataset",
+    "toxoplasma-plaque-dataset (held out from v4 training)",
+    "https://huggingface.co/datasets/einarolafsson/toxoplasma-plaque-dataset"
+   ],
+   [
+    "Licence",
+    "CC BY 4.0"
+   ],
+   [
+    "Figure",
+    "With caption and checksums",
+    "/assets/img/models/plaque-v4-figure.webp"
+   ]
+  ]
+ },
+ "assay_caption": "toxoplasma_plaque_v4 found 100 plaques against 98 hand-drawn (TP 95, FP 5, FN 3; F1 0.96 at IoU 0.5) on a held-out CC BY 4.0 well (Cabral et al. 2024); v3, the default, scores F1 0.964 (99 plaques) on the same well with the same call.",
+ "evidence": {
+  "zoo_default": "toxoplasma_plaque_v3 (spacr.submodules.DEFAULT_PLAQUE_MODEL at spaCR nightly f302d2ef2); v4 is registered as 'alternative, not the default'",
+  "runs": {
+   "v4_documented": {
+    "settings": {
+     "call": "spacr.plaque.segment_plaque_image",
+     "diameter": 30,
+     "flow_threshold": 0.4,
+     "CP_prob": 0
+    },
+    "seconds": 221.8,
+    "count": 100,
+    "tp": 95,
+    "fp": 5,
+    "fn": 3,
+    "precision": 0.95,
+    "recall": 0.969,
+    "f1_at_iou_0_5": 0.96,
+    "ap_at_iou_0_5": 0.922
+   },
+   "v4_prev_showcase_settings": {
+    "settings": {
+     "call": "CellposeModel.eval (as run_plaque_public.py)",
+     "normalize": true,
+     "flow_threshold": 0.4,
+     "cellprob_threshold": 0.0,
+     "min_size": 0,
+     "max_size_fraction": 0.95
+    },
+    "seconds": 191.5,
+    "count": 100,
+    "tp": 95,
+    "fp": 5,
+    "fn": 3,
+    "precision": 0.95,
+    "recall": 0.969,
+    "f1_at_iou_0_5": 0.96,
+    "ap_at_iou_0_5": 0.922
+   },
+   "v3_documented": {
+    "settings": {
+     "call": "spacr.plaque.segment_plaque_image",
+     "diameter": 30,
+     "flow_threshold": 0.4,
+     "CP_prob": 0
+    },
+    "seconds": 194.9,
+    "count": 99,
+    "tp": 95,
+    "fp": 4,
+    "fn": 3,
+    "precision": 0.96,
+    "recall": 0.969,
+    "f1_at_iou_0_5": 0.964,
+    "ap_at_iou_0_5": 0.931
+   }
+  }
+ }
+}

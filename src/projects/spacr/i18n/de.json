@@ -240,8 +240,6 @@
   "assays.dose.caption": "Dose-Response: logistische Anpassungen mit vier Parametern für die 5 von 58 Substanzen mit einem begrenzten EC50; SNX-2112 EC50 0,299 µM (95-%-KI 0,279–0,319). Daten: <a href=\"https://huggingface.co/datasets/einarolafsson/spacr-example-dose\">spacr-example-dose</a>, 1.536 Wells, 4 Platten.",
   "assays.control.alt": "Regelkarte der medianen Zellzahl in DMSO-Wells über 24 Platten mit Kontrollgrenzen und markierten Platten",
   "assays.control.caption": "Regelkarte: mediane Zellzahl in DMSO-Wells über 24 Platten; alle 24 liegen nach Wechseln von Zelllinie, Zeitpunkt und Aussaat außerhalb der Grenzen. Daten: <a href=\"https://huggingface.co/datasets/einarolafsson/spacr-example-control-chart\">spacr-example-control-chart</a>.",
-  "assays.plaque.alt": "Mit Kristallviolett gefärbtes Plaque-Well mit 99 magenta umrandeten Plaques",
-  "assays.plaque.caption": "Plaque Assay: 99 Plaques, von toxoplasma_plaque_v3 in einem Well aus Cabral et al. 2024 (CC BY 4.0) gefunden; 98 in der handgezeichneten Maske.",
   "assays.recruitment.alt": "Balkendiagramme der GFP-TSG101-Rekrutierung in Negativ- und Positivkontroll-Wells auf vier Platten",
   "assays.recruitment.caption2": "Recruitment: Verhältnis von GFP-TSG101 in Vakuole zu Zytoplasma in Kontroll-Wells mit SAG1 (negativ) und GRA14 (positiv) auf vier Platten, je 16 Wells, mit spaCR aus den öffentlichen Plattenmesswerten neu berechnet: Plattenmittelwerte 1,31 gegenüber 1,09, p = 8,6 × 10⁻⁵ (t-Test, n = 4; der Preprint gibt 8,4 × 10⁻⁵ an). Daten: <a href=\"https://huggingface.co/datasets/einarolafsson/spacr-example-screen\">spacr-example-screen</a>.",
   "papers.title": "Publikationen mit spaCR",
@@ -349,9 +347,7 @@
   "showcase.plaque.alt.f7a75b": "Graustufenbild eines mit Kristallviolett gefärbten Wells mit hellen Plaques in einem dunklen Monolayer",
   "showcase.label.well": "Well",
   "showcase.class.plaques": "Plaques",
-  "showcase.note.0a40ea": "Seit 2026-10-10 das Standard-Plaque-Modell im Modellzoo. 98 Plaques in der handgezeichneten Maske; F1 0,964 bei IoU 0,5 in diesem Well",
   "showcase.value.f51613": "Kristallviolett, Graustufen",
   "showcase.value.4e249c": "Cabral G, et al. Microbiol Spectrum 2024, Fig. 2",
-  "showcase.fact.dataset": "Datensatz",
-  "showcase.value.6b9573": "toxoplasma-plaque-dataset (vom Training von v3 zurückgehalten)"
+  "showcase.fact.dataset": "Datensatz"
 }

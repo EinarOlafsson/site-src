@@ -240,8 +240,6 @@
   "assays.dose.caption": "Dose-Response：58 种化合物中 EC50 有界的 5 种的四参数逻辑斯蒂拟合；SNX-2112 EC50 为 0.299 µM（95% CI 0.279–0.319）。数据：<a href=\"https://huggingface.co/datasets/einarolafsson/spacr-example-dose\">spacr-example-dose</a>，1,536 个孔，4 块板。",
   "assays.control.alt": "24 块板 DMSO 孔中位细胞数的控制图，带控制限和被标记的板",
   "assays.control.caption": "控制图：24 块板 DMSO 孔的中位细胞数；在细胞系、时间点和接种条件改变之后，全部 24 块板都落在控制限之外。数据：<a href=\"https://huggingface.co/datasets/einarolafsson/spacr-example-control-chart\">spacr-example-control-chart</a>。",
-  "assays.plaque.alt": "结晶紫染色的噬斑孔，99 个噬斑以品红色勾勒",
-  "assays.plaque.caption": "Plaque Assay：toxoplasma_plaque_v3 在 Cabral et al. 2024（CC BY 4.0）的一个孔中找到 99 个噬斑；手绘掩膜中为 98 个。",
   "assays.recruitment.alt": "四块板上阴性和阳性对照孔 GFP-TSG101 募集的柱状图",
   "assays.recruitment.caption2": "Recruitment：四块板上 SAG1（阴性）和 GRA14（阳性）对照孔中 GFP-TSG101 的空泡与细胞质比值，各 16 个孔，由 spaCR 根据公开的板测量数据重新计算：板均值 1.31 对 1.09，p = 8.6 × 10⁻⁵（t 检验，n = 4；预印本报告为 8.4 × 10⁻⁵）。数据：<a href=\"https://huggingface.co/datasets/einarolafsson/spacr-example-screen\">spacr-example-screen</a>。",
   "papers.title": "使用 spaCR 的论文",
@@ -349,9 +347,7 @@
   "showcase.plaque.alt.f7a75b": "结晶紫染色孔的灰度图像，深色单层细胞中有浅色噬斑",
   "showcase.label.well": "孔",
   "showcase.class.plaques": "噬斑",
-  "showcase.note.0a40ea": "自 2026-10-10 起为模型库中的默认噬斑模型。手绘掩膜中有 98 个噬斑；在该孔上 IoU 0.5 时 F1 为 0.964",
   "showcase.value.f51613": "结晶紫，灰度",
   "showcase.value.4e249c": "Cabral G, et al. Microbiol Spectrum 2024, Fig. 2",
-  "showcase.fact.dataset": "数据集",
-  "showcase.value.6b9573": "toxoplasma-plaque-dataset（未用于 v3 训练）"
+  "showcase.fact.dataset": "数据集"
 }
