@@ -159,8 +159,8 @@ export const FIXED = {
   "papers.rel.spacr-paper": "The spaCR paper",
   "papers.rel.uses": "Uses spaCR",
   "papers.preprint_tag": "preprint",
-  "papers.preprint": "Preprint",
-  "papers.image": "Image"
+  "papers.preprint": "Preprint: {value}",
+  "papers.image": "Image: {value}"
 };
 
 export const UI_KEYS = Object.keys(FIXED).filter((k) => k.startsWith("ui."));

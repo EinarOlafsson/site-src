@@ -259,9 +259,9 @@ function papersVars(tr) {
       visual,
       `          <span class="title">${esc(p.title)}</span>`,
       `          </a>`,
-      `          <span class="cite">${esc(p.authors_short)} ${esc(venue)}, ${esc(p.year)}${p.type === "preprint" ? ", " + esc(tr("papers.preprint_tag")) : ""}. <span class="rel">${esc(tr("papers.rel." + p.relation))}</span>${p.preprint ? `. ${esc(tr("papers.preprint"))}: <a href="https://doi.org/${esc(p.preprint.doi)}">${esc(p.preprint.venue)} ${esc(p.preprint.year)}</a>` : ""}</span>`,
+      `          <span class="cite">${esc(p.authors_short)} ${esc(venue)}, ${esc(p.year)}${p.type === "preprint" ? ", " + esc(tr("papers.preprint_tag")) : ""}. <span class="rel">${esc(tr("papers.rel." + p.relation))}</span>${p.preprint ? `. ${esc(tr("papers.preprint")).replace("{value}", `<a href="https://doi.org/${esc(p.preprint.doi)}">${esc(p.preprint.venue)} ${esc(p.preprint.year)}</a>`)}` : ""}</span>`,
       p.relation === "uses" && p.evidence && p.evidence[0] ? `          <blockquote class="evidence"><q>${esc(shorten(p.evidence[0].quote, 200))}</q><span class="where">${esc(p.evidence[0].location.split(" (")[0].split(". ")[0])}</span></blockquote>` : "",
-      t ? `          <span class="credit">${esc(tr("papers.image"))}: ${esc(t.attribution)}</span>` : "",
+      t ? `          <span class="credit">${esc(tr("papers.image")).replace("{value}", esc(t.attribution))}</span>` : "",
       `        </li>`].filter(Boolean).join("\n");
   });
   return { PAPERS_HTML: `        <ul class="papers">\n${items.join("\n")}\n        </ul>`, PAPERS_CHECKED: esc(pj.checked) };
