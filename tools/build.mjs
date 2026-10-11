@@ -470,6 +470,49 @@ function encrypt(plainFile, outDir) {
     { cwd: ROOT, stdio: ["ignore", "inherit", "inherit"], env: { ...process.env, STATICRYPT_PASSWORD: PASSWORD } });
 }
 
+// Protected-page words that are known false positives of the substring scan
+// below, and only these. Every other protected-only word is checked in every
+// built file, JSON and JavaScript included. Add a word here only with its reason.
+const LEAK_ALLOW = new Map([
+  // WebGL API: gl.getExtension(...) in assets/js/fx.js (the background themes).
+  ["extension", "gl.getExtension in assets/js/fx.js"],
+  // A Toxoplasma gene product description in assets/data/volcano.json (from spaCR's annotation).
+  ["assembly", "gene product text in assets/data/volcano.json"]
+]);
+
+// Files of dir that contain any of words (lower-case substring match).
+function scanLeaks(dir, words) {
+  const out = [];
+  for (const f of walk(dir)) {
+    const body = fs.readFileSync(f).toString("latin1").toLowerCase();
+    for (const w of words) if (body.includes(w)) out.push(`${path.relative(dir, f)}: ${w}`);
+  }
+  return out;
+}
+
+// Self-test: a protected-only word planted in a public .json value and inside a
+// camel-case .js identifier must both be caught. The fixture is written to a
+// temporary .stage-* folder (git-ignored) and removed; the word is never logged.
+function leakSelfTest(sentinels) {
+  const word = [...sentinels].find((w) => /^[a-z]{8,}$/.test(w) && !LEAK_ALLOW.has(w));
+  if (!word) throw new Error("leak self-test: no protected-only word to plant");
+  const dir = fs.mkdtempSync(path.join(ROOT, ".stage-leaktest-"));
+  try {
+    const cap = word[0].toUpperCase() + word.slice(1);
+    fs.writeFileSync(path.join(dir, "fixture.json"), JSON.stringify({ note: `public text ${word} public text` }));
+    fs.writeFileSync(path.join(dir, "fixture.js"), `var api = {}; api.get${cap}Value = function () { return 1; };\n`);
+    const hits = new Set(scanLeaks(dir, sentinels).map((l) => l.split(":")[0]));
+    if (!hits.has("fixture.json") || !hits.has("fixture.js")) {
+      console.error("[build] LEAK CHECK SELF-TEST FAILED: a planted protected word was not detected in " +
+        ["fixture.json", "fixture.js"].filter((f) => !hits.has(f)).join(" and "));
+      process.exit(4);
+    }
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+  log("leak check self-test passed: planted word caught in a .json value and a .js identifier");
+}
+
 function sentinelWords(plainHtml, publicText) {
   const text = plainHtml
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
@@ -477,8 +520,7 @@ function sentinelWords(plainHtml, publicText) {
     .replace(/<[^>]+>/g, " ")
     .replace(/&[a-z#0-9]+;/gi, " ");
   const words = new Set((text.match(/[A-Za-z][A-Za-z_-]{7,}/g) || []).map((w) => w.toLowerCase()));
-  const pubText = publicText + " " + publicText.replace(/([a-z])([A-Z])/g, "$1 $2");
-  const pub = new Set((pubText.match(/[A-Za-z][A-Za-z_-]{7,}/g) || []).map((w) => w.toLowerCase()));
+  const pub = new Set((publicText.match(/[A-Za-z][A-Za-z_-]{7,}/g) || []).map((w) => w.toLowerCase()));
   return [...words].filter((w) => !pub.has(w));
 }
 
@@ -530,7 +572,7 @@ async function main() {
       log(`i18n ${dir}/${lang.tag}/: ${known} of ${multi.english.size} strings translated${lang.status ? `, status "${lang.status}"` : ""}`);
     }
   }
-  for (const f of walk(DIST).filter((f) => /\.(css|js|json|svg|txt)$/.test(f))) publicText += fs.readFileSync(f, "utf8");
+  for (const f of walk(DIST).filter((f) => /\.(css|js|svg|txt)$/.test(f))) publicText += fs.readFileSync(f, "utf8");
 
   fs.rmSync(path.join(ROOT, ".stage"), { recursive: true, force: true });
   const tmp = fs.mkdtempSync(path.join(ROOT, ".stage-"));
@@ -561,11 +603,9 @@ async function main() {
     fs.rmSync(tmp, { recursive: true, force: true });
   }
 
-  const leaks = [];
-  for (const f of walk(DIST)) {
-    const body = fs.readFileSync(f).toString("latin1").toLowerCase();
-    for (const w of sentinels) if (body.includes(w)) leaks.push(`${path.relative(DIST, f)}: ${w}`);
-  }
+  for (const [w, why] of LEAK_ALLOW) if (sentinels.delete(w)) log(`leak check: "${w}" allowed (${why})`);
+  leakSelfTest(sentinels);
+  const leaks = scanLeaks(DIST, sentinels);
   if (leaks.length) {
     console.error("[build] LEAK CHECK FAILED: protected words found in dist/:\n  " + leaks.join("\n  "));
     process.exit(3);
