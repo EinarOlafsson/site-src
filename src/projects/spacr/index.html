@@ -172,7 +172,15 @@
     <div class="wrap">
       <div class="section-head">
         <h2 data-i18n="models.title">Published models</h2>
-        <p data-i18n="models.intro">Each figure shows one real image and the objects that spaCR's published models detect in it. Drag the divider to compare the input with the outlines, and use the check boxes to show or hide a class. Counts are objects in the image shown. {{SHOWCASE_SPACR}}.</p>
+        <p class="mc-sub" data-i18n="models.cards.title">Every model: held-out scores against stock Cellpose-SAM</p>
+        <p data-i18n="models.cards.intro">Each card copies its numbers from the model's Hugging Face card and spaCR's model zoo; nothing here is recomputed. The grey bar is the comparison the card records, usually stock Cellpose-SAM on the same held-out images. Which model is the default is read from spaCR's development branch when this site is built.</p>
+      </div>
+      <div class="mc-all">
+{{MODELS_HTML}}
+      </div>
+      <div class="mc-examples">
+        <h2 data-i18n="models.examples.title">The models on real images</h2>
+        <p class="note" data-i18n="models.intro">Each figure shows one real image and the objects that spaCR's published models detect in it. Drag the divider to compare the input with the outlines, and use the check boxes to show or hide a class. Counts are objects in the image shown. {{SHOWCASE_SPACR}}.</p>
       </div>
       <ul class="stats mini">
         <li><div class="tile"><b>{{STAT_MODELS}}</b><span data-i18n="stats.models">published models</span></div></li>
@@ -181,11 +189,6 @@
       </ul>
       <div class="showcase">
 {{SHOWCASE_HTML}}
-      </div>
-      <div class="mc-all">
-        <h2 class="mc-title" data-i18n="models.cards.title">Every model: held-out scores against stock Cellpose-SAM</h2>
-        <p class="note" data-i18n="models.cards.intro">Each card copies its numbers from the model's Hugging Face card and spaCR's model zoo; nothing here is recomputed. The grey bar is the comparison the card records, usually stock Cellpose-SAM on the same held-out images. Which model is the default is read from spaCR's development branch when this site is built.</p>
-{{MODELS_HTML}}
       </div>
       <p class="note" style="margin-top:48px" data-i18n="models.more">All models, with model cards, metrics and training data: <a href="https://einarolafsson.github.io/spacr/model_zoo.html">model zoo documentation</a> and <a href="https://huggingface.co/einarolafsson">Hugging Face</a>.</p>
     </div>

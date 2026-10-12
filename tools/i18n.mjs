@@ -168,6 +168,7 @@ export const FIXED = {
   "mc.finetuned": "This model",
   "mc.vanilla": "Stock Cellpose-SAM",
   "mc.baseline": "Baseline",
+  "mc.difference": "Difference",
   "mc.not_recorded": "not recorded",
   "mc.card": "Model card",
   "mc.default": "default",

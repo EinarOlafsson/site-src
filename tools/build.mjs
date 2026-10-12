@@ -377,11 +377,32 @@ function modelsVars(tr, zs) {
         rows.push(`<tr><th scope="row">${label}</th><td>${bar(ft, "ft")}</td><td>${typeof va === "number" ? bar(va, "va") : '<span class="mc-nr">–</span>'}</td></tr>`);
       }
       const baseLabel = m.baseline_label ? T("mc.baselabel", m.baseline_label) : esc(tr("mc.vanilla"));
+      const heroKey = ["f1_50", "map50", "median_count_error_pct", "ap"].find((k) => {
+        const v = m.metrics && m.metrics[k];
+        return typeof (v && typeof v === "object" ? v.finetuned : v) === "number";
+      });
+      let hero = "";
+      if (heroKey) {
+        const hv = m.metrics[heroKey];
+        const hft = typeof hv === "object" ? hv.finetuned : hv;
+        const hva = typeof hv === "object" && typeof hv.vanilla === "number" ? hv.vanilla : null;
+        const hpct = /pct$/.test(heroKey);
+        const hf = (x) => hpct ? x.toFixed(1) + "%" : fmt3(x);
+        const hlabel = heroKey === "ap" && m.ap_label ? T("mc.aplabel", m.ap_label) : esc(tr("mc.metric." + heroKey));
+        const diff = hva !== null && !hpct ? hft - hva : null;
+        hero = [
+          `            <div class="mc-hero"><b class="mc-big">${hf(hft)}</b><div class="mc-hero-txt">`,
+          `<span class="mc-hero-label">${hlabel}</span>`,
+          hva !== null ? `<span><span class="mc-key va"></span>${baseLabel}: ${hf(hva)}</span>` : "",
+          diff !== null ? `<span class="mc-diff">${esc(tr("mc.difference"))} ${diff >= 0 ? "+" : "\u2212"}${Math.abs(diff).toFixed(3)}</span>` : "",
+          `</div></div>`].join("");
+      }
       const table = rows.length ? `<table class="mc-table"><thead><tr><td></td><th scope="col"><span class="mc-key ft"></span>${esc(tr("mc.finetuned"))}</th><th scope="col"><span class="mc-key va"></span>${baseLabel}</th></tr></thead><tbody>${rows.join("")}</tbody></table>` : `<p class="mc-nr">${esc(tr("mc.not_recorded"))}</p>`;
       const test = m.test ? [m.test.size ? T("mc.testsize", m.test.size) : "", m.test.source ? T("mc.testsrc", m.test.source) : ""].filter(Boolean).join(" · ") : "";
       return [
         `          <article class="mc">`,
         `            <header><h4>${esc(m.display)}</h4>${badge}</header>`,
+        hero,
         `            <dl class="mc-facts"><div><dt>${esc(tr("mc.version"))}</dt><dd>${esc(m.version || "")}</dd></div><div><dt>${esc(tr("mc.base"))}</dt><dd>${esc(m.base || "")}</dd></div><div class="wide"><dt>${esc(tr("mc.test"))}</dt><dd>${test || esc(tr("mc.not_recorded"))}</dd></div></dl>`,
         `            ${table}`,
         m.by_source ? [
