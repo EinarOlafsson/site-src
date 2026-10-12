@@ -359,7 +359,9 @@ function modelsVars(tr, zs) {
     const detector = heroKey === "map50";
     const has = (k) => pair(m, k).ft !== null;
     const bars = detector ? ["map50", "map50_95", "recall"] : (has("aji") && has("dice") ? ["f1_50", "aji", "dice"] : ["f1_50", "precision", "recall"]);
-    const anyBase = bars.some((k) => pair(m, k).va !== null);
+    const cardRows = Array.isArray(m.card_rows) && m.card_rows.length ? m.card_rows : null;
+    const barSpecs = cardRows ? cardRows.map((r) => ({ k: "f1_50", lbl: tr("mc.s." + r.label), x: { ft: r.ft, va: typeof r.va === "number" ? r.va : null } })) : bars.map((k) => ({ k, lbl: shortMetric(m, k), x: pair(m, k) }));
+    const anyBase = barSpecs.some((b) => b.x.va !== null);
     const size = String((m.test && m.test.size) || "");
     const n = (size.match(/^[\d,]+/) || [])[0];
     const unit = /validation images/.test(size) ? "val_images" : ((size.match(/\b(wells|fields|images|plates)\b/) || [])[1]);
@@ -373,10 +375,9 @@ function modelsVars(tr, zs) {
         : `<span class="fc-delta ${d >= 0 ? "up" : "down"}">${d >= 0 ? "+" : "\u2212"}${Math.abs(d).toFixed(3)} ${esc(tr("mc.vs").replace("{value}", versus(m)))}</span>`;
       hero = `<span class="fc-big">${fmt(heroKey, h.ft)}</span><span class="fc-cap">${esc(shortMetric(m, heroKey))}${capSize ? " \u00b7 " + esc(capSize) : ""}</span>${chip}`;
     }
-    const barRows = bars.map((k, i) => {
-      const x = pair(m, k);
+    const barRows = barSpecs.map(({ k, lbl, x }, i) => {
       const track = x.ft === null ? "" : `<span class="fc-track"><span class="fc-b ft" style="--v:${frac(k, x.ft)}"></span>${x.va !== null ? `<span class="fc-b va" style="--v:${frac(k, x.va)}"></span>` : ""}</span>`;
-      return `<span class="fc-row" style="--i:${i}"><span class="fc-lbl">${esc(shortMetric(m, k))}</span>${track}<span class="fc-val">${x.ft !== null ? fmt(k, x.ft) : "\u2014"}</span></span>`;
+      return `<span class="fc-row" style="--i:${i}"><span class="fc-lbl">${esc(lbl)}</span>${track}<span class="fc-val">${x.ft !== null ? fmt(k, x.ft) : "\u2014"}</span></span>`;
     }).join("");
     const baseLegend = /^stock/i.test(String(m.baseline_label || "")) ? String(m.baseline_label).split(" ").slice(0, 2).join(" ") : versus(m);
     const front = [

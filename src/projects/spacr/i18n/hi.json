@@ -302,7 +302,6 @@
   "papers.preprint_tag": "प्रीप्रिंट",
   "papers.preprint": "प्रीप्रिंट: {value}",
   "papers.image": "इमेज: {value}",
-  "models.note.732e0d": "वेट spaCR की मॉडल लाइब्रेरी (नाइटली, 2026-10-10) से प्राप्त किए गए और CPU पर Cellpose 4.2.1.1 से चलाए गए",
   "showcase.hoechst.title.2d2e1f": "Hoechst इमेज: केंद्रक, मेज़बान कोशिकाएँ और Toxoplasma",
   "showcase.hoechst.text.0562fa": "Toxoplasma gondii से संक्रमित HeLa कोशिकाओं की एक Hoechst इमेज। मेज़बान कोशिकाओं और परजीवी रिक्तिकाओं का अनुमान दो spaCR क्रॉस-चैनल मॉडल केवल Hoechst चैनल से लगाते हैं। केंद्रक उसी चैनल पर मानक Cellpose-SAM से आते हैं।",
   "showcase.hoechst.alt.13cb46": "HeLa कोशिकाओं की Hoechst फ़्लोरेसेंस इमेज, चमकीले केंद्रक और धुँधले कोशिकाद्रव्य के साथ",

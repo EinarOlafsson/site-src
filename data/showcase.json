@@ -1,7 +1,7 @@
 {
  "generated": "2026-10-10",
- "note": "Weights resolved through spaCR's model zoo (nightly, 2026-10-10) and run with Cellpose 4.2.1.1 on CPU",
- "spacr_version": "Weights resolved through spaCR's model zoo (nightly, 2026-10-10) and run with Cellpose 4.2.1.1 on CPU",
+ "note": "Examples were run on CPU with spaCR's model zoo (nightly, 2026-10-12): Cellpose 4.2.1.1 for the segmentation models, Ultralytics YOLO for the well detector",
+ "spacr_version": "Examples were run on CPU with spaCR's model zoo (nightly, 2026-10-12): Cellpose 4.2.1.1 for the segmentation models, Ultralytics YOLO for the well detector",
  "figures": [
   {
    "id": "hoechst",

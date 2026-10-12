@@ -302,7 +302,6 @@
   "papers.preprint_tag": "preprint",
   "papers.preprint": "Preprint: {value}",
   "papers.image": "Imagen: {value}",
-  "models.note.732e0d": "Pesos obtenidos a través de la biblioteca de modelos de spaCR (nightly, 2026-10-10) y ejecutados con Cellpose 4.2.1.1 en CPU",
   "showcase.hoechst.title.2d2e1f": "Imagen de Hoechst: núcleos, células huésped y Toxoplasma",
   "showcase.hoechst.text.0562fa": "Una imagen de Hoechst de células HeLa infectadas con Toxoplasma gondii. Las células huésped y las vacuolas del parásito se predicen solo a partir del canal de Hoechst mediante dos modelos entre canales de spaCR. Los núcleos proceden de Cellpose-SAM sin modificar aplicado al mismo canal.",
   "showcase.hoechst.alt.13cb46": "Imagen de fluorescencia de Hoechst de células HeLa con núcleos brillantes y citoplasma tenue",

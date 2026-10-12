@@ -302,7 +302,6 @@
   "papers.preprint_tag": "Preprint",
   "papers.preprint": "Preprint: {value}",
   "papers.image": "Bild: {value}",
-  "models.note.732e0d": "Gewichte über den Modellzoo von spaCR bezogen (nightly, 2026-10-10) und mit Cellpose 4.2.1.1 auf der CPU ausgeführt",
   "showcase.hoechst.title.2d2e1f": "Hoechst-Bild: Zellkerne, Wirtszellen und Toxoplasma",
   "showcase.hoechst.text.0562fa": "Ein Hoechst-Bild von HeLa-Zellen, die mit Toxoplasma gondii infiziert sind. Wirtszellen und Parasitenvakuolen werden von zwei kanalübergreifenden Modellen von spaCR allein aus dem Hoechst-Kanal vorhergesagt. Die Zellkerne stammen vom Standardmodell Cellpose-SAM auf demselben Kanal.",
   "showcase.hoechst.alt.13cb46": "Hoechst-Fluoreszenzbild von HeLa-Zellen mit hellen Zellkernen und schwachem Zytoplasma",

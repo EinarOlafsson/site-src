@@ -302,7 +302,6 @@
   "papers.preprint_tag": "预印本",
   "papers.preprint": "预印本：{value}",
   "papers.image": "图像：{value}",
-  "models.note.732e0d": "权重通过 spaCR 模型库（每日构建版，2026-10-10）解析，并用 Cellpose 4.2.1.1 在 CPU 上运行",
   "showcase.hoechst.title.2d2e1f": "Hoechst 图像：细胞核、宿主细胞和 Toxoplasma",
   "showcase.hoechst.text.0562fa": "一张感染 Toxoplasma gondii 的 HeLa 细胞的 Hoechst 图像。宿主细胞和寄生虫空泡由两个 spaCR 跨通道模型仅根据 Hoechst 通道预测。细胞核来自在同一通道上运行的原版 Cellpose-SAM。",
   "showcase.hoechst.alt.13cb46": "HeLa 细胞的 Hoechst 荧光图像，细胞核明亮，细胞质暗淡",
