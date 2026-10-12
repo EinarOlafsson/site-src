@@ -426,8 +426,8 @@ def build(src, zoo, zoo_url, sha):
     k = "toxoplasma_well_detector_v2"
     tm = "qc/test_metrics.json"
     wm = lambda met, side: x.jpath(f"well_v2 {met} {side}", r, tm, [side, met])
-    w2 = model(k, zoo[k]["display_name"], "v2", "yolo26n", "default",
-               "figure_detector: Default 'toxoplasma_well_detector_v2' (spacr/settings.py)",
+    w2 = model(k, zoo[k]["display_name"], "v2", "yolo26n", "superseded",
+               "Previous version; the figure_detector setting still defaults to it: Default 'toxoplasma_well_detector_v2' (spacr/settings.py)",
                r, {"size": "129 test images (84 with no well)",
                    "objects": int(x.text("well_v2 test boxes", r, r"\|\s*test\s*\|\s*129\s*\|\s*(\d+)\s*\|")),
                    "source": "plate images and literature figures, split by PMC article; never used for training or model selection"},
@@ -445,8 +445,8 @@ def build(src, zoo, zoo_url, sha):
     k = "toxoplasma_well_detector_v3"
     sc = "scorecard.json"
     vt = lambda what, model_, col: x.table(what, r, r"^v3_clean$", col, nth=0 if model_ == "v3" else 1)
-    w3 = model(k, zoo[k]["display_name"], "v3", "yolo11n", "candidate",
-               "Candidate, not promoted: clean incumbent-validation mAP50-95 regresses. (zoo note)",
+    w3 = model(k, zoo[k]["display_name"], "v3", "yolo11n", "default",
+               "The default well detector since 2026-10-12, by the maintainer's choice. (zoo note)",
                r, {"size": "73 clean validation images",
                    "objects": int(x.jpath("well_v3 n_objects", r, sc, ["n_objects"])),
                    "source": "incumbent validation images after removing exact and canonical-figure duplicates; validation data, not an independent test"},
@@ -587,7 +587,8 @@ def main():
     zoo = zoo_records(zoo_dest)
     groups = build(src, zoo, zoo_url, sha)
     listed = {m["key"] for g in groups for m in g["models"]}
-    missing = [k for k in zoo if k not in listed and not (k == "live_cell_v1" and "live-cell-v1" in listed)]
+    missing = [k for k in zoo if k not in listed and not zoo[k].get("third_party")
+               and not (k == "live_cell_v1" and "live-cell-v1" in listed)]
     if missing:
         raise SystemExit(f"zoo keys missing from models.json: {missing}")
     data = {"generated": date.today().isoformat(), "spacr_commit": sha,
