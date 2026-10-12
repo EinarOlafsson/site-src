@@ -58,8 +58,12 @@ jobs:
           live=$(curl -fsS --retry 3 "https://einarolafsson.github.io/build.json?t=$(date +%s)" || echo '{}')
           live_v=$(echo "$live" | jq -r '.spacr.version // ""')
           live_tag=$(echo "$live" | jq -r '.spacr.release // ""')
-          sp=$(curl -fsS --retry 3 https://pypi.org/pypi/parascape/json | jq -r .info.version || echo "")
           live_sp=$(echo "$live" | jq -r '.parascape.version // ""')
+          sp=$(curl -fsS --retry 3 https://pypi.org/pypi/parascape/json | jq -r '.info.version // ""' || true)
+          if [ -z "$sp" ]; then
+            echo "ParaScape is not on PyPI yet; keeping the deployed version ${live_sp:-none}."
+            sp="$live_sp"
+          fi
           echo "PyPI $pypi, GitHub release $tag, ParaScape $sp; site shows $live_v / $live_tag / $live_sp"
           if [ "$pypi" != "$live_v" ] || [ "$tag" != "$live_tag" ] || [ "$sp" != "$live_sp" ]; then
             echo "build=true" >> "$GITHUB_OUTPUT"

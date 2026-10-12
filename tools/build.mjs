@@ -124,21 +124,31 @@ async function spacrMeta() {
 }
 
 // ParaScape facts from PyPI at build time: version, release date and Python range.
-// If PyPI has no parascape project, the facts of the deployed site are kept.
+// Without a parascape project on PyPI the build keeps the last-known version of the
+// deployed site (build.json), and before the first deploy reads the repository's pyproject.toml.
 async function parascapeMeta() {
   let j;
   try {
     j = await getJSON("https://pypi.org/pypi/parascape/json");
   } catch (e) {
-    const live = await getJSON(`https://einarolafsson.github.io/build.json?t=${Date.now()}`);
-    const page = await getText("https://einarolafsson.github.io/projects/parascape/").catch(() => "");
     const unesc = (s) => s.replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&amp;/g, "&");
+    const live = await getJSON(`https://einarolafsson.github.io/build.json?t=${Date.now()}`).catch(() => ({}));
     const v = live.parascape && live.parascape.version;
-    if (!v) {
-      const toml = await getText("https://raw.githubusercontent.com/EinarOlafsson/parascape/nightly/pyproject.toml");
+    if (v) {
+      const page = await getText("https://einarolafsson.github.io/projects/parascape/").catch(() => "");
+      log(`note: ${e.message}; keeping the deployed ParaScape ${v}`);
+      return {
+        version: v,
+        requiresPython: unesc((page.match(/Requires Python ([^,<]+),/) || [])[1] || ""),
+        released: (page.match(/Released <b>(\d{4}-\d{2}-\d{2})<\/b>/) || [])[1] || "",
+        pypiUrl: "https://pypi.org/project/parascape/"
+      };
+    }
+    for (const branch of ["nightly", "main"]) {
+      const toml = await getText(`https://raw.githubusercontent.com/EinarOlafsson/parascape/${branch}/pyproject.toml`).catch(() => "");
       const version = (toml.match(/^version\s*=\s*"([^"]+)"/m) || [])[1];
-      if (!version) throw e;
-      log(`note: ${e.message}; using ParaScape ${version} from the repository`);
+      if (!version) continue;
+      log(`note: ${e.message}; using ParaScape ${version} from the repository (${branch})`);
       return {
         version,
         requiresPython: (toml.match(/^requires-python\s*=\s*"([^"]+)"/m) || [])[1] || "",
@@ -146,13 +156,7 @@ async function parascapeMeta() {
         pypiUrl: "https://pypi.org/project/parascape/"
       };
     }
-    log(`note: ${e.message}; keeping the deployed ParaScape ${v}`);
-    return {
-      version: v,
-      requiresPython: unesc((page.match(/Requires Python ([^,<]+),/) || [])[1] || ""),
-      released: (page.match(/Released <b>(\d{4}-\d{2}-\d{2})<\/b>/) || [])[1] || "",
-      pypiUrl: `https://pypi.org/project/parascape/${v}/`
-    };
+    throw new Error(`${e.message}; no deployed ParaScape version and no readable pyproject.toml`);
   }
   const v = j.info.version;
   const files = (j.releases && j.releases[v]) || [];
