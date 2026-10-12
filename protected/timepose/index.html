@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+{{HEAD}}
+<title>TimePose</title>
+<meta name="robots" content="noindex">
+<style>
+:root { --tp-a: #7aa7ff; --tp-b: #f0a35e; --tp-c: #6cc3a0; }
+:root[data-theme="light"] { --tp-a: #1d5bd0; --tp-b: #b85a14; --tp-c: #1f7d58; }
+.tp-fig { display: grid; gap: var(--s5) var(--s4); grid-template-columns: minmax(0, 1fr); margin: 0 0 var(--s2); }
+@media (min-width: 900px) { .tp-fig { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.tp-fig h3 { font-size: 17px; margin: 0 0 var(--s2); }
+.tp-fig p { margin: var(--s2) 0 0; }
+.tp-fig svg { display: block; width: 100%; max-width: 400px; height: auto; font-family: var(--font); overflow: visible; }
+.tp-frame { fill: var(--surface); stroke: var(--line-strong); stroke-width: 1; }
+.tp-box { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+.tp-lbl { fill: var(--text); font-size: 14px; }
+.tp-i { font-style: italic; }
+.tp-txt { fill: var(--text-dim); font-size: 13px; }
+.tp-raw { fill: var(--text-dim); fill-opacity: 0.5; }
+.tp-past { fill: none; stroke: var(--text-dim); stroke-width: 1.2; stroke-dasharray: 4 3; }
+.tp-next { fill: none; stroke-width: 1.4; }
+.tp-now { fill-opacity: 0.28; }
+.tp-dot { fill: var(--text); }
+.tp-mask { fill-opacity: 0.38; stroke-width: 1.2; }
+.tp-mask-a { fill: var(--tp-a); stroke: var(--tp-a); }
+.tp-mask-b { fill: var(--tp-b); stroke: var(--tp-b); }
+.tp-mask-c { fill: var(--tp-c); stroke: var(--tp-c); }
+.tp-track { fill: none; stroke-width: 2; stroke-linejoin: round; }
+.tp-ring { fill: none; stroke: var(--text); stroke-width: 1.2; }
+.tp-fill-a { fill: var(--tp-a); } .tp-fill-b { fill: var(--tp-b); } .tp-fill-c { fill: var(--tp-c); }
+.tp-fill-dim { fill: var(--text-dim); } .tp-fill-acc { fill: var(--accent); }
+.tp-stroke-a { stroke: var(--tp-a); } .tp-stroke-b { stroke: var(--tp-b); } .tp-stroke-c { stroke: var(--tp-c); }
+.tp-arrow-a, .tp-arrow-b, .tp-arrow-c, .tp-arrow-dim, .tp-arrow-acc { fill: none; stroke-width: 1.6; }
+.tp-arrow-a { stroke: var(--tp-a); } .tp-arrow-b { stroke: var(--tp-b); } .tp-arrow-c { stroke: var(--tp-c); }
+.tp-arrow-dim { stroke: var(--text-dim); } .tp-arrow-acc { stroke: var(--accent); }
+</style>
+</head>
+<body data-page="timepose">
+{{HEADER}}
+<main id="main">
+  <section class="hero">
+    <div class="wrap">
+      <p class="kicker">Draft, not public · in development</p>
+      <h1>TimePose</h1>
+      <p class="lede">Segmentation and tracking of cells in time-lapse microscopy, divisions included. TimePose extends Cellpose with flows along the time axis and new output heads.</p>
+      <ul class="facts">
+        <li>Backbone <b>Cellpose-SAM</b></li>
+        <li>Variants <b>TimePose-LM, TimePose-FL</b></li>
+        <li>Manuscript <b>in preparation</b></li>
+      </ul>
+    </div>
+  </section>
+
+  <section aria-labelledby="how-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="how-h">Time as an axis</h2>
+        <p>Cellpose describes each cell as a flow field: every pixel points towards the centre of its cell, and following the flows groups pixels into masks. TimePose adds time as a further axis. For every pixel of a frame it also predicts where the same cell was in the previous frame and where it will be in the next.</p>
+        <p>New heads on the same network score which objects in neighbouring frames are the same cell, and which cell has divided into two daughters. Masks, tracks and lineages come out of one model rather than a segmentation step followed by a separate tracker.</p>
+      </div>
+      <figure>
+        <div class="tp-fig">
+          <div>
+            <h3>1. Frames in</h3>
+          <svg viewBox="0 0 300 240" role="img" aria-labelledby="tp-p1-t"><title id="tp-p1-t">Three consecutive frames, t−1, t and t+1, each passing into the same Cellpose-SAM encoder</title>
+          <defs><marker id="tp-ah-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="tp-fill-acc" d="M0 0 10 5 0 10z"/></marker></defs>
+          <rect class="tp-frame" x="6" y="8" width="88" height="88" rx="6"/>
+          <ellipse class="tp-raw" cx="26" cy="34" rx="11" ry="8" transform="rotate(20 26 34)"/>
+          <ellipse class="tp-raw" cx="74" cy="26" rx="8" ry="8"/>
+          <ellipse class="tp-raw" cx="56" cy="74" rx="10" ry="8" transform="rotate(10 56 74)"/>
+          <text class="tp-lbl tp-i" x="50" y="116" text-anchor="middle">t−1</text>
+          <rect class="tp-frame" x="106" y="8" width="88" height="88" rx="6"/>
+          <ellipse class="tp-raw" cx="138" cy="40" rx="11" ry="8" transform="rotate(25 138 40)"/>
+          <ellipse class="tp-raw" cx="170" cy="30" rx="8" ry="8"/>
+          <ellipse class="tp-raw" cx="162" cy="70" rx="13" ry="8" transform="rotate(30 162 70)"/>
+          <text class="tp-lbl tp-i" x="150" y="116" text-anchor="middle">t</text>
+          <rect class="tp-frame" x="206" y="8" width="88" height="88" rx="6"/>
+          <ellipse class="tp-raw" cx="250" cy="46" rx="11" ry="8" transform="rotate(30 250 46)"/>
+          <ellipse class="tp-raw" cx="266" cy="34" rx="8" ry="8"/>
+          <ellipse class="tp-raw" cx="250" cy="64" rx="7.5" ry="6.5"/>
+          <ellipse class="tp-raw" cx="276" cy="78" rx="7.5" ry="6.5"/>
+          <text class="tp-lbl tp-i" x="250" y="116" text-anchor="middle">t+1</text>
+          <path class="tp-arrow-acc" d="M50 124 L118 158" marker-end="url(#tp-ah-acc)"/>
+          <path class="tp-arrow-acc" d="M150 124 L150 158" marker-end="url(#tp-ah-acc)"/>
+          <path class="tp-arrow-acc" d="M250 124 L182 158" marker-end="url(#tp-ah-acc)"/>
+          <rect class="tp-box" x="40" y="162" width="220" height="40" rx="6"/>
+          <text class="tp-lbl" x="150" y="187" text-anchor="middle">Cellpose-SAM encoder</text>
+          <text class="tp-txt" x="150" y="226" text-anchor="middle">same weights for every frame</text>
+          </svg>
+            <p class="note">Frames <i>t</i>−1, <i>t</i> and <i>t</i>+1 pass through the same Cellpose-SAM encoder.</p>
+          </div>
+          <div>
+            <h3>2. Temporal flows</h3>
+          <svg viewBox="0 0 300 240" role="img" aria-labelledby="tp-p2-t"><title id="tp-p2-t">Frame t with its three cells. Dashed outlines show where each cell was at t−1, solid outlines where it will be at t+1; arrows from each cell point to both. The lower cell splits into two daughter cells.</title>
+          <defs><marker id="tp-ah-dim" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="tp-fill-dim" d="M0 0 10 5 0 10z"/></marker><marker id="tp-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="tp-fill-a" d="M0 0 10 5 0 10z"/></marker><marker id="tp-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="tp-fill-b" d="M0 0 10 5 0 10z"/></marker><marker id="tp-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="tp-fill-c" d="M0 0 10 5 0 10z"/></marker></defs>
+          <rect class="tp-frame" x="44" y="8" width="211.2" height="211.2" rx="8"/>
+          <ellipse class="tp-past" cx="92" cy="70.4" rx="26.4" ry="19.2" transform="rotate(20 92 70.4)"/>
+          <ellipse class="tp-next tp-stroke-a" cx="149.6" cy="99.2" rx="26.4" ry="19.2" transform="rotate(30 149.6 99.2)"/>
+          <ellipse class="tp-now tp-fill-a" cx="120.8" cy="84.8" rx="26.4" ry="19.2" transform="rotate(25 120.8 84.8)"/>
+          <ellipse class="tp-past" cx="207.2" cy="51.2" rx="19.2" ry="19.2"/>
+          <ellipse class="tp-next tp-stroke-c" cx="188" cy="70.4" rx="19.2" ry="19.2"/>
+          <ellipse class="tp-now tp-fill-c" cx="197.6" cy="60.8" rx="19.2" ry="19.2"/>
+          <ellipse class="tp-past" cx="164" cy="166.4" rx="24" ry="19.2" transform="rotate(10 164 166.4)"/>
+          <ellipse class="tp-next tp-stroke-b" cx="149.6" cy="142.4" rx="18" ry="15.6"/>
+          <ellipse class="tp-next tp-stroke-b" cx="212" cy="176" rx="18" ry="15.6"/>
+          <ellipse class="tp-now tp-fill-b" cx="178.4" cy="156.8" rx="31.2" ry="19.2" transform="rotate(30 178.4 156.8)"/>
+          <path class="tp-arrow-dim" d="M120.8 84.8 L92.9 70.8" marker-end="url(#tp-ah-dim)"/>
+          <path class="tp-arrow-a" d="M120.8 84.8 L148.7 98.8" marker-end="url(#tp-ah-a)"/>
+          <circle class="tp-dot" cx="120.8" cy="84.8" r="2.5"/>
+          <path class="tp-arrow-dim" d="M197.6 60.8 L206.5 51.9" marker-end="url(#tp-ah-dim)"/>
+          <path class="tp-arrow-c" d="M197.6 60.8 L188.7 69.7" marker-end="url(#tp-ah-c)"/>
+          <circle class="tp-dot" cx="197.6" cy="60.8" r="2.5"/>
+          <path class="tp-arrow-dim" d="M178.4 156.8 L164.8 165.8" marker-end="url(#tp-ah-dim)"/>
+          <path class="tp-arrow-b" d="M178.4 156.8 L150.5 142.8" marker-end="url(#tp-ah-b)"/>
+          <path class="tp-arrow-b" d="M178.4 156.8 L211.1 175.5" marker-end="url(#tp-ah-b)"/>
+          <circle class="tp-dot" cx="178.4" cy="156.8" r="2.5"/>
+          <text class="tp-txt" x="247.2" y="209.2" text-anchor="end">division</text>
+          </svg>
+            <p class="note">For each cell in frame <i>t</i>: where it was at <i>t</i>−1 (dashed) and where it will be at <i>t</i>+1 (solid). The lower cell divides.</p>
+          </div>
+          <div>
+            <h3>3. Masks and tracks</h3>
+          <svg viewBox="0 0 300 240" role="img" aria-labelledby="tp-p3-t"><title id="tp-p3-t">Masks in frames t−1, t and t+1, coloured by track, above the three tracks over time; the lower track splits into two daughter tracks between t and t+1</title>
+          <rect class="tp-frame" x="6" y="8" width="88" height="88" rx="6"/>
+          <ellipse class="tp-mask tp-mask-a" cx="26" cy="34" rx="11" ry="8" transform="rotate(20 26 34)"/>
+          <ellipse class="tp-mask tp-mask-c" cx="74" cy="26" rx="8" ry="8"/>
+          <ellipse class="tp-mask tp-mask-b" cx="56" cy="74" rx="10" ry="8" transform="rotate(10 56 74)"/>
+          <text class="tp-lbl tp-i" x="50" y="116" text-anchor="middle">t−1</text>
+          <rect class="tp-frame" x="106" y="8" width="88" height="88" rx="6"/>
+          <ellipse class="tp-mask tp-mask-a" cx="138" cy="40" rx="11" ry="8" transform="rotate(25 138 40)"/>
+          <ellipse class="tp-mask tp-mask-c" cx="170" cy="30" rx="8" ry="8"/>
+          <ellipse class="tp-mask tp-mask-b" cx="162" cy="70" rx="13" ry="8" transform="rotate(30 162 70)"/>
+          <text class="tp-lbl tp-i" x="150" y="116" text-anchor="middle">t</text>
+          <rect class="tp-frame" x="206" y="8" width="88" height="88" rx="6"/>
+          <ellipse class="tp-mask tp-mask-a" cx="250" cy="46" rx="11" ry="8" transform="rotate(30 250 46)"/>
+          <ellipse class="tp-mask tp-mask-c" cx="266" cy="34" rx="8" ry="8"/>
+          <ellipse class="tp-mask tp-mask-b" cx="250" cy="64" rx="7.5" ry="6.5"/>
+          <ellipse class="tp-mask tp-mask-b" cx="276" cy="78" rx="7.5" ry="6.5"/>
+          <text class="tp-lbl tp-i" x="250" y="116" text-anchor="middle">t+1</text>
+          <path class="tp-track tp-stroke-a" d="M50 142 L250 142"/>
+          <circle class="tp-fill-a" cx="50" cy="142" r="5"/>
+          <circle class="tp-fill-a" cx="150" cy="142" r="5"/>
+          <circle class="tp-fill-a" cx="250" cy="142" r="5"/>
+          <path class="tp-track tp-stroke-c" d="M50 170 L250 170"/>
+          <circle class="tp-fill-c" cx="50" cy="170" r="5"/>
+          <circle class="tp-fill-c" cx="150" cy="170" r="5"/>
+          <circle class="tp-fill-c" cx="250" cy="170" r="5"/>
+          <path class="tp-track tp-stroke-b" d="M50 202 L150 202 L250 186 M150 202 L250 226"/>
+          <circle class="tp-fill-b" cx="50" cy="202" r="5"/>
+          <circle class="tp-fill-b" cx="150" cy="202" r="5"/>
+          <circle class="tp-fill-b" cx="250" cy="186" r="5"/>
+          <circle class="tp-fill-b" cx="250" cy="226" r="5"/>
+          <circle class="tp-ring" cx="150" cy="202" r="9"/>
+          </svg>
+            <p class="note">Masks are linked across frames into tracks. At the division (ring) one track becomes two daughter tracks.</p>
+          </div>
+        </div>
+        <figcaption>Schematic, not data.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section aria-labelledby="var-h">
+    <div class="wrap">
+      <div class="section-head"><h2 id="var-h">Two variants</h2></div>
+      <div class="grid two">
+        <div>
+          <h3>TimePose-LM: label-free light microscopy</h3>
+          <p>For unstained cells imaged in DIC, phase contrast or brightfield. It is trained on label-free data from several species, microscopes and magnifications, and the tests include microscopes and magnifications left out of training.</p>
+        </div>
+        <div>
+          <h3>TimePose-FL: fluorescence</h3>
+          <p>Fluorescent signal fades while a movie is recorded, so late frames are dimmer and noisier than early ones. TimePose-FL detects photobleaching and can correct for it, and it is trained to carry evidence from the early, bright frames to the late, faint ones. Left on auto, it is meant to leave movies without bleaching unchanged.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="aims-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="aims-h">Aims</h2>
+        <p>These are the goals the manuscript has to meet, not results. Each is tested only on held-out data (datasets that TimePose never saw in training, and unseen movies from datasets it did) against a named control.</p>
+      </div>
+      <ul class="steps">
+        <li><b>Tracking</b><span>More accurate tracks than Trackastra, the strongest tracker in our pilot comparisons.</span></li>
+        <li><b>Divisions</b><span>More accurate division detection than Trackastra.</span></li>
+        <li><b>Segmentation</b><span>Better masks than Cellpose-SAM in time-lapse, by using evidence from neighbouring frames.</span></li>
+        <li><b>Photobleaching</b><span>Better masks than Cellpose-SAM on bleached fluorescence movies, also when Cellpose-SAM is given bleach-corrected frames.</span></li>
+      </ul>
+      <p class="note" style="margin-top:16px">Trackastra is compared both as released and fine-tuned on the same training data. Ultrack, btrack, laptrack and frame-to-frame matching are also compared.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="status-h">
+    <div class="wrap">
+      <div class="section-head"><h2 id="status-h">Status</h2></div>
+      <ul class="steps">
+        <li><b>Development</b><span>Training and benchmarking are in progress.</span></li>
+        <li><b>Manuscript</b><span>In preparation for <i>Cell Reports Methods</i>.</span></li>
+        <li><b>Results</b><span class="pending" style="margin:0">Numbers will be added when the held-out benchmark is final.</span></li>
+        <li><b>Code and paper</b><span class="pending" style="margin:0">Repository and preprint links will be added when they are public.</span></li>
+      </ul>
+    </div>
+  </section>
+</main>
+{{FOOTER}}
+</body>
+</html>

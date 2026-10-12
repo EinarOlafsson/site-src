@@ -124,8 +124,25 @@ async function spacrMeta() {
 }
 
 // Starplast facts from PyPI at build time: version, release date and Python range.
+// If PyPI has no starplast project, the facts of the deployed site are kept.
 async function starplastMeta() {
-  const j = await getJSON("https://pypi.org/pypi/starplast/json");
+  let j;
+  try {
+    j = await getJSON("https://pypi.org/pypi/starplast/json");
+  } catch (e) {
+    const live = await getJSON(`https://einarolafsson.github.io/build.json?t=${Date.now()}`);
+    const page = await getText("https://einarolafsson.github.io/projects/starplast/").catch(() => "");
+    const unesc = (s) => s.replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&amp;/g, "&");
+    const v = live.starplast && live.starplast.version;
+    if (!v) throw e;
+    log(`note: ${e.message}; keeping the deployed Starplast ${v}`);
+    return {
+      version: v,
+      requiresPython: unesc((page.match(/Requires Python ([^,<]+),/) || [])[1] || ""),
+      released: (page.match(/Released <b>(\d{4}-\d{2}-\d{2})<\/b>/) || [])[1] || "",
+      pypiUrl: `https://pypi.org/project/starplast/${v}/`
+    };
+  }
   const v = j.info.version;
   const files = (j.releases && j.releases[v]) || [];
   const released = files.length ? String(files[0].upload_time_iso_8601 || files[0].upload_time || "").slice(0, 10) : "";

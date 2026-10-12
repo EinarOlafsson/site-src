@@ -105,7 +105,7 @@ jobs:
           cp -a dist/. out/
           cd out
           if [ -n "$old_digest" ] && [ "$old_digest" = "$(cat .protected-digest)" ]; then
-            git checkout -- projects/live-cell/index.html projects/cellect/index.html 2>/dev/null || true
+            git checkout -- projects/timepose/index.html projects/cellect/index.html 2>/dev/null || true
           fi
           git config user.name "site-build"
           git config user.email "site-build@users.noreply.github.com"
