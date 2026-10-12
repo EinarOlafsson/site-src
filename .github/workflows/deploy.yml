@@ -4,7 +4,7 @@ name: Build and deploy
 #   push to main           site source changed
 #   workflow_dispatch      manual run (force=true rebuilds even if nothing changed)
 #   repository_dispatch    event type "spacr-release", optional, sent by spaCR's release workflow
-#   schedule "23 * * * *"  hourly release check: rebuild only if PyPI or GitHub has a new spaCR or Starplast version
+#   schedule "23 * * * *"  hourly release check: rebuild only if PyPI or GitHub has a new spaCR or ParaScape version
 #   schedule "17 6 * * *"  daily full rebuild: Zenodo DOI and the papers check
 on:
   push:
@@ -58,15 +58,15 @@ jobs:
           live=$(curl -fsS --retry 3 "https://einarolafsson.github.io/build.json?t=$(date +%s)" || echo '{}')
           live_v=$(echo "$live" | jq -r '.spacr.version // ""')
           live_tag=$(echo "$live" | jq -r '.spacr.release // ""')
-          sp=$(curl -fsS --retry 3 https://pypi.org/pypi/starplast/json | jq -r .info.version)
-          live_sp=$(echo "$live" | jq -r '.starplast.version // ""')
-          echo "PyPI $pypi, GitHub release $tag, Starplast $sp; site shows $live_v / $live_tag / $live_sp"
+          sp=$(curl -fsS --retry 3 https://pypi.org/pypi/parascape/json | jq -r .info.version || echo "")
+          live_sp=$(echo "$live" | jq -r '.parascape.version // ""')
+          echo "PyPI $pypi, GitHub release $tag, ParaScape $sp; site shows $live_v / $live_tag / $live_sp"
           if [ "$pypi" != "$live_v" ] || [ "$tag" != "$live_tag" ] || [ "$sp" != "$live_sp" ]; then
             echo "build=true" >> "$GITHUB_OUTPUT"
-            echo "### Release changed: spaCR PyPI $pypi, release $tag, Starplast $sp (site had $live_v, $live_tag, $live_sp)" >> "$GITHUB_STEP_SUMMARY"
+            echo "### Release changed: spaCR PyPI $pypi, release $tag, ParaScape $sp (site had $live_v, $live_tag, $live_sp)" >> "$GITHUB_STEP_SUMMARY"
           else
             echo "build=false" >> "$GITHUB_OUTPUT"
-            echo "No new spaCR or Starplast version; nothing to do." >> "$GITHUB_STEP_SUMMARY"
+            echo "No new spaCR or ParaScape version; nothing to do." >> "$GITHUB_STEP_SUMMARY"
           fi
 
   deploy:

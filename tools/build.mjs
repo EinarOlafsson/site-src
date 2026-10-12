@@ -123,40 +123,51 @@ async function spacrMeta() {
   };
 }
 
-// Starplast facts from PyPI at build time: version, release date and Python range.
-// If PyPI has no starplast project, the facts of the deployed site are kept.
-async function starplastMeta() {
+// ParaScape facts from PyPI at build time: version, release date and Python range.
+// If PyPI has no parascape project, the facts of the deployed site are kept.
+async function parascapeMeta() {
   let j;
   try {
-    j = await getJSON("https://pypi.org/pypi/starplast/json");
+    j = await getJSON("https://pypi.org/pypi/parascape/json");
   } catch (e) {
     const live = await getJSON(`https://einarolafsson.github.io/build.json?t=${Date.now()}`);
-    const page = await getText("https://einarolafsson.github.io/projects/starplast/").catch(() => "");
+    const page = await getText("https://einarolafsson.github.io/projects/parascape/").catch(() => "");
     const unesc = (s) => s.replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&amp;/g, "&");
-    const v = live.starplast && live.starplast.version;
-    if (!v) throw e;
-    log(`note: ${e.message}; keeping the deployed Starplast ${v}`);
+    const v = live.parascape && live.parascape.version;
+    if (!v) {
+      const toml = await getText("https://raw.githubusercontent.com/EinarOlafsson/parascape/nightly/pyproject.toml");
+      const version = (toml.match(/^version\s*=\s*"([^"]+)"/m) || [])[1];
+      if (!version) throw e;
+      log(`note: ${e.message}; using ParaScape ${version} from the repository`);
+      return {
+        version,
+        requiresPython: (toml.match(/^requires-python\s*=\s*"([^"]+)"/m) || [])[1] || "",
+        released: "",
+        pypiUrl: "https://pypi.org/project/parascape/"
+      };
+    }
+    log(`note: ${e.message}; keeping the deployed ParaScape ${v}`);
     return {
       version: v,
       requiresPython: unesc((page.match(/Requires Python ([^,<]+),/) || [])[1] || ""),
       released: (page.match(/Released <b>(\d{4}-\d{2}-\d{2})<\/b>/) || [])[1] || "",
-      pypiUrl: `https://pypi.org/project/starplast/${v}/`
+      pypiUrl: `https://pypi.org/project/parascape/${v}/`
     };
   }
   const v = j.info.version;
   const files = (j.releases && j.releases[v]) || [];
   const released = files.length ? String(files[0].upload_time_iso_8601 || files[0].upload_time || "").slice(0, 10) : "";
-  return { version: v, requiresPython: j.info.requires_python || "", released, pypiUrl: `https://pypi.org/project/starplast/${v}/` };
+  return { version: v, requiresPython: j.info.requires_python || "", released, pypiUrl: `https://pypi.org/project/parascape/${v}/` };
 }
 
-function starplastVars(sp) {
+function parascapeVars(sp) {
   const py = sp.requiresPython.match(/>=\s*([\d.]+)/);
   return {
-    STARPLAST_VERSION: esc(sp.version),
-    STARPLAST_RELEASED: esc(sp.released || "see PyPI"),
-    STARPLAST_PYTHON: esc(py && !/</.test(sp.requiresPython) ? `${py[1]} or newer` : pythonRange(sp.requiresPython)),
-    STARPLAST_REQUIRES: esc(sp.requiresPython),
-    STARPLAST_PYPI_URL: esc(sp.pypiUrl)
+    PARASCAPE_VERSION: esc(sp.version),
+    PARASCAPE_RELEASED: esc(sp.released || "see PyPI"),
+    PARASCAPE_PYTHON: esc(py && !/</.test(sp.requiresPython) ? `${py[1]} or newer` : pythonRange(sp.requiresPython)),
+    PARASCAPE_REQUIRES: esc(sp.requiresPython),
+    PARASCAPE_PYPI_URL: esc(sp.pypiUrl)
   };
 }
 
@@ -678,11 +689,11 @@ async function main() {
     log(`note: Zenodo latest is ${meta.versionDoiVersion}, PyPI is ${meta.version}`);
   }
   const zs = await zooStatus();
-  const sp = await starplastMeta();
-  log(`Starplast ${sp.version} (PyPI, ${sp.released}), Python ${sp.requiresPython}`);
+  const sp = await parascapeMeta();
+  log(`ParaScape ${sp.version} (PyPI, ${sp.released}), Python ${sp.requiresPython}`);
   const stats = await statsVars(readJSON(path.join(DATA, "papers.json")).papers.length);
   const ASSET_VERSION = assetVersion();
-  const varsFor = (tr) => ({ ...spacrVars(meta, tr), ...showcaseVars(tr), ...papersVars(tr), ...stats, ...starplastVars(sp), ...modelsVars(tr, zs), ASSET_VERSION });
+  const varsFor = (tr) => ({ ...spacrVars(meta, tr), ...showcaseVars(tr), ...papersVars(tr), ...stats, ...parascapeVars(sp), ...modelsVars(tr, zs), ASSET_VERSION });
   await refreshPaperCandidates();
 
   const i18nPages = new Map();
@@ -765,7 +776,7 @@ async function main() {
   fs.writeFileSync(path.join(DIST, ".protected-digest"), digest.digest("hex") + "\n");
   fs.writeFileSync(path.join(DIST, "build.json"), JSON.stringify({
     spacr: { version: meta.version, release: meta.releaseTag, versionDoi: meta.versionDoi, conceptDoi: meta.conceptDoi },
-    starplast: { version: sp.version },
+    parascape: { version: sp.version },
     built: new Date().toISOString().replace(/\.\d+Z$/, "Z"),
     trigger: process.env.GITHUB_EVENT_NAME || "local"
   }, null, 2));
