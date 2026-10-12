@@ -240,50 +240,6 @@ function spacrVars(m, tr) {
 
 function readJSON(p) { return JSON.parse(fs.readFileSync(p, "utf8")); }
 
-function showcaseVars(tr) {
-  const sc = readJSON(path.join(DATA, "showcase.json"));
-  const figs = sc.figures.map((f) => {
-    const id = f.id;
-    const layers = f.classes.map((c, i) =>
-      `            <img id="${id}-l${i}" src="/assets/img/models/${esc(c.layer)}" width="${f.width}" height="${f.height}" alt="" loading="lazy" decoding="async">`).join("\n");
-    const rows = f.classes.map((c, i) => [
-      `          <li><label>`,
-      `            <input type="checkbox" checked data-layer="${id}-l${i}" aria-label="${esc(tr("models.show").replace("{name}", tr(`showcase.class.${slug(c.name)}`)))}">`,
-      `            <span class="cls"><span class="swatch" style="background:${esc(c.color)}" aria-hidden="true"></span>${esc(tr(`showcase.class.${slug(c.name)}`))}</span>`,
-      `            <span class="count">${Number(c.count).toLocaleString("en-US")}</span>`,
-      `            <span class="src">${c.model.url ? `<a href="${esc(c.model.url)}">${esc(c.model.display)}</a>` : esc(c.model.display)}${c.model.note ? ". " + esc(tr(dataKey("showcase.note", c.model.note))) : ""}</span>`,
-      `          </label></li>`].join("\n")).join("\n");
-    const dl = f.facts.map(([k, v, href]) =>
-      {
-      const tv = tr(dataKey("showcase.value", v));
-      return `          <dt>${esc(tr(`showcase.fact.${slug(k)}`))}</dt><dd>${href ? `<a href="${esc(href)}">${esc(tv)}</a>` : esc(tv)}</dd>`;
-    }).join("\n");
-    return [
-      `        <figure class="model-fig" aria-labelledby="${id}-h">`,
-      `          <div class="viewer" style="aspect-ratio:${f.width}/${f.height}">`,
-      `            <img class="base" src="/assets/img/models/${esc(f.base)}" width="${f.width}" height="${f.height}" alt="${esc(tr(dataKey(`showcase.${id}.alt`, f.alt)))}" loading="lazy" decoding="async">`,
-      `            <div class="layers">`,
-      layers,
-      `            </div>`,
-      `            <span class="lbl l">${esc(tr(`showcase.label.${slug(f.input_label)}`))}</span><span class="lbl r">${esc(tr("models.objects"))}</span>`,
-      `            <input type="range" min="0" max="100" value="50" aria-label="${esc(tr("models.divider"))}">`,
-      `            <span class="handle" aria-hidden="true"></span>`,
-      `          </div>`,
-      `          <figcaption>`,
-      `          <h3 id="${id}-h">${esc(tr(dataKey(`showcase.${id}.title`, f.title)))}</h3>`,
-      f.text ? `          <p class="small">${esc(tr(dataKey(`showcase.${id}.text`, f.text)))}</p>` : "",
-      `          <ul class="classes">`,
-      rows,
-      `          </ul>`,
-      `          <dl>`,
-      dl,
-      `          </dl>`,
-      `          </figcaption>`,
-      `        </figure>`].filter(Boolean).join("\n");
-  });
-  return { SHOWCASE_HTML: figs.join("\n"), SHOWCASE_SPACR: esc(tr(dataKey("models.note", sc.spacr_version))) };
-}
-
 // Model status at build time: spaCR's DEFAULT_* constants and the "(default)",
 // "(alternative)" or "(candidate)" marker of each zoo display name on nightly.
 async function zooStatus() {
@@ -341,95 +297,178 @@ function readScoresFor(tr) {
   };
 }
 
+const CARD_ORDER = ["toxoplasma_pv", "toxoplasma_plaque", "toxoplasma_well_detector", "live-cell", "toxoplasma_from_cellmask", "nuclei_from_cellmask", "cell_from_hoechst", "toxoplasma_from_hoechst"];
+
 function modelsVars(tr, zs) {
   const p = path.join(DATA, "models.json");
   if (!fs.existsSync(p)) return { MODELS_HTML: "" };
   const mj = readJSON(p);
+  const sc = readJSON(path.join(DATA, "showcase.json"));
   const T = (prefix, text) => { try { return esc(tr(dataKey(prefix, text))); } catch (e) { return esc(text); } };
   const metricOrder = ["f1_50", "f1_75", "ap", "precision", "recall", "aji", "dice", "map50", "map50_95", "median_count_error_pct", "plates_within_5pct", "plates_within_10pct"];
   const readScores = readScoresFor(tr);
-  const groups = (mj.groups || []).map((g) => {
-    const statusOf = (m) => {
-      const zkey = String(m.key).replace(/-/g, "_");
-      if (zs.defaults[zkey]) return "default";
-      const mk = ((zs.display[zkey] || "").match(/\b(default|alternative|candidate)\b/i) || [])[1];
-      return mk ? mk.toLowerCase() : (m.status || "");
-    };
-    const fams = selectModels(g, statusOf);
-    const linkList = (ms) => ms.map((m) => `<a href="${esc(m.repo_url)}">${esc(m.version || m.key)}</a>${["alternative", "candidate"].includes(statusOf(m)) ? ` (${esc(tr("mc." + statusOf(m)))})` : ""}`).join(", ");
-    const extra = fams.map((sel) => [
-      sel.newer.length ? `          <p class="mc-more">${esc(tr("mc.newer")).replace("{value}", linkList(sel.newer))}</p>` : "",
-      sel.older.length ? `          <p class="mc-more">${esc(tr("mc.previous")).replace("{value}", linkList(sel.older))}</p>` : ""].filter(Boolean).join("\n")).filter(Boolean).join("\n");
-    const cards = fams.map((f) => f.shown).filter(Boolean).map((m) => {
-      const zkey = String(m.key).replace(/-/g, "_");
-      const def = zs.defaults[zkey];
-      const disp = zs.display[zkey] || "";
-      const marker = (disp.match(/\b(default|alternative|candidate)\b/i) || [])[1];
-      let status = def ? "default" : marker ? marker.toLowerCase() : (m.status || "");
-      if (!["default", "alternative", "candidate", "superseded", "alpha"].includes(status)) status = "";
-      const badge = status ? `<span class="mc-badge ${status}"${def ? ` title="${esc(tr("mc.default_from").replace("{value}", def))}"` : ""}>${esc(tr("mc." + status))}</span>` : "";
-      const rows = [];
-      for (const k of metricOrder) {
-        const v = m.metrics && m.metrics[k];
-        if (v === undefined) continue;
-        const ft = v && typeof v === "object" ? v.finetuned : v;
-        const va = v && typeof v === "object" ? v.vanilla : null;
-        if ((ft === null || ft === undefined) && (va === null || va === undefined)) continue;
-        const pct = /pct$/.test(k);
-        const bar = (x, cls) => typeof x === "number" ? `<span class="mc-bar ${cls}" style="--v:${Math.max(0, Math.min(1, pct ? x / 100 : x)).toFixed(3)}"></span><span class="mc-num">${pct ? x.toFixed(1) + "%" : fmt3(x)}</span>` : `<span class="mc-nr">${esc(tr("mc.not_recorded"))}</span>`;
-        const label = k === "ap" && m.ap_label ? T("mc.aplabel", m.ap_label) : esc(tr("mc.metric." + k));
-        rows.push(`<tr><th scope="row">${label}</th><td>${bar(ft, "ft")}</td><td>${typeof va === "number" ? bar(va, "va") : '<span class="mc-nr">–</span>'}</td></tr>`);
-      }
-      const baseLabel = m.baseline_label ? T("mc.baselabel", m.baseline_label) : esc(tr("mc.vanilla"));
-      const heroKey = ["f1_50", "map50", "median_count_error_pct", "ap"].find((k) => {
-        const v = m.metrics && m.metrics[k];
-        return typeof (v && typeof v === "object" ? v.finetuned : v) === "number";
-      });
-      let hero = "";
-      if (heroKey) {
-        const hv = m.metrics[heroKey];
-        const hft = typeof hv === "object" ? hv.finetuned : hv;
-        const hva = typeof hv === "object" && typeof hv.vanilla === "number" ? hv.vanilla : null;
-        const hpct = /pct$/.test(heroKey);
-        const hf = (x) => hpct ? x.toFixed(1) + "%" : fmt3(x);
-        const hlabel = heroKey === "ap" && m.ap_label ? T("mc.aplabel", m.ap_label) : esc(tr("mc.metric." + heroKey));
-        const diff = hva !== null && !hpct ? hft - hva : null;
-        hero = [
-          `            <div class="mc-hero"><b class="mc-big">${hf(hft)}</b><div class="mc-hero-txt">`,
-          `<span class="mc-hero-label">${hlabel}</span>`,
-          hva !== null ? `<span><span class="mc-key va"></span>${baseLabel}: ${hf(hva)}</span>` : "",
-          diff !== null ? `<span class="mc-diff">${esc(tr("mc.difference"))} ${diff >= 0 ? "+" : "\u2212"}${Math.abs(diff).toFixed(3)}</span>` : "",
-          `</div></div>`].join("");
-      }
-      const table = rows.length ? `<table class="mc-table"><thead><tr><td></td><th scope="col"><span class="mc-key ft"></span>${esc(tr("mc.finetuned"))}</th><th scope="col"><span class="mc-key va"></span>${baseLabel}</th></tr></thead><tbody>${rows.join("")}</tbody></table>` : `<p class="mc-nr">${esc(tr("mc.not_recorded"))}</p>`;
-      const test = m.test ? [m.test.size ? T("mc.testsize", m.test.size) : "", m.test.source ? T("mc.testsrc", m.test.source) : ""].filter(Boolean).join(" · ") : "";
-      return [
-        `          <article class="mc">`,
-        `            <header><h4>${esc(m.display)}</h4>${badge}</header>`,
-        hero,
-        `            <dl class="mc-facts"><div><dt>${esc(tr("mc.version"))}</dt><dd>${esc(m.version || "")}</dd></div><div><dt>${esc(tr("mc.base"))}</dt><dd>${esc(m.base || "")}</dd></div><div class="wide"><dt>${esc(tr("mc.test"))}</dt><dd>${test || esc(tr("mc.not_recorded"))}</dd></div></dl>`,
-        `            ${table}`,
-        m.by_source ? [
-          `            <div class="mc-src"><table class="mc-srctable"><caption>${T("mc.bstitle", m.by_source.title)}</caption>`,
-          `<thead><tr><td></td>${m.by_source.columns.map((c) => `<th scope="col">${T("mc.bscol", c)}</th>`).join("")}</tr></thead>`,
-          `<tbody>${m.by_source.rows.map(([n, vals]) => `<tr><th scope="row">${esc(n)}</th>${vals.map((v) => `<td>${fmt3(v)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`,
-          m.by_source.note ? `            <p class="mc-note">${T("mc.bsnote", m.by_source.note)}</p>` : ""].join("\n") : "",
-        m.note ? `            <p class="mc-note">${T("mc.note", m.note)}</p>` : "",
-        readScores(m, rows.length > 0),
-        m.repo_url ? `            <p class="mc-link"><a href="${esc(m.repo_url)}">${esc(tr("mc.card"))}</a></p>` : "",
-        `          </article>`].filter(Boolean).join("\n");
-    });
+  const stemOf = (k) => String(k).replace(/[_-]v\d+$/, "");
+  const statusOf = (m) => {
+    const zkey = String(m.key).replace(/-/g, "_");
+    if (zs.defaults[zkey]) return "default";
+    const mk = ((zs.display[zkey] || "").match(/\b(default|alternative|candidate)\b/i) || [])[1];
+    return mk ? mk.toLowerCase() : (m.status || "");
+  };
+  const pair = (m, k) => {
+    const v = m.metrics && m.metrics[k];
+    const ft = v && typeof v === "object" ? v.finetuned : v;
+    const va = v && typeof v === "object" ? v.vanilla : null;
+    return { ft: typeof ft === "number" ? ft : null, va: typeof va === "number" ? va : null };
+  };
+  const fmt = (k, x) => (/pct$/.test(k) ? x.toFixed(1) + "%" : fmt3(x));
+  const frac = (k, x) => Math.max(0, Math.min(1, /pct$/.test(k) ? x / 100 : x)).toFixed(3);
+  const shortMetric = (m, k) => (k === "ap" ? tr(/^mAP/.test(m.ap_label || "mAP") ? "mc.s.map" : "mc.s.ap") : tr("mc.s." + k));
+  const longMetric = (m, k) => (k === "ap" && m.ap_label ? T("mc.aplabel", m.ap_label) : esc(tr("mc.metric." + k)));
+  const versus = (m) => {
+    const b = String(m.baseline_label || "stock");
+    if (/^stock/i.test(b)) return tr("mc.stock");
+    const v = b.match(/(?:^|[\s_(])v(\d+)\b/);
+    return v ? "v" + v[1] : tr("mc.baseline").toLowerCase();
+  };
+  const byUrl = new Map();
+  for (const f of sc.figures) for (const c of f.classes) if (c.model && c.model.url) byUrl.set(c.model.url, { f, c });
+
+  const rows = [];
+  for (const g of mj.groups || []) {
+    for (const sel of selectModels(g, statusOf)) {
+      const m = sel.shown;
+      if (!m) continue;
+      const stem = stemOf(m.key);
+      if (!CARD_ORDER.includes(stem)) continue;
+      rows.push({ g, m, sel, stem });
+    }
+  }
+  rows.sort((a, b) => CARD_ORDER.indexOf(a.stem) - CARD_ORDER.indexOf(b.stem));
+
+  const html = rows.map(({ g, m, sel, stem }) => {
+    const id = "mr-" + slug(stem);
+    const name = esc(tr("mc.short." + stem));
+    const zkey = String(m.key).replace(/-/g, "_");
+    const def = zs.defaults[zkey];
+    let status = statusOf(m);
+    if (!["default", "alternative", "candidate", "superseded", "alpha"].includes(status)) status = "";
+    const badge = status ? `<span class="fc-badge ${status}"${def ? ` title="${esc(tr("mc.default_from").replace("{value}", def))}"` : ""}>${esc(tr("mc." + status))}</span>` : "";
+    const vs = esc(versus(m));
+    const ver = esc(m.version || "");
+    const heroKey = ["f1_50", "map50", "median_count_error_pct", "ap"].find((k) => pair(m, k).ft !== null);
+    const detector = heroKey === "map50";
+    const has = (k) => pair(m, k).ft !== null;
+    const bars = detector ? ["map50", "map50_95", "recall"] : (has("aji") && has("dice") ? ["f1_50", "aji", "dice"] : ["f1_50", "precision", "recall"]);
+    const anyBase = bars.some((k) => pair(m, k).va !== null);
+    const size = String((m.test && m.test.size) || "");
+    const n = (size.match(/^[\d,]+/) || [])[0];
+    const unit = /validation images/.test(size) ? "val_images" : ((size.match(/\b(wells|fields|images|plates)\b/) || [])[1]);
+    const capSize = n && unit ? tr("mc.cap." + unit).replace("{n}", n) : "";
+    let hero = "";
+    if (heroKey) {
+      const h = pair(m, heroKey);
+      const d = h.va !== null && !/pct$/.test(heroKey) ? h.ft - h.va : null;
+      const chip = d === null
+        ? `<span class="fc-delta none">${esc(tr("mc.no_baseline"))}</span>`
+        : `<span class="fc-delta ${d >= 0 ? "up" : "down"}">${d >= 0 ? "+" : "\u2212"}${Math.abs(d).toFixed(3)} ${esc(tr("mc.vs").replace("{value}", versus(m)))}</span>`;
+      hero = `<span class="fc-big">${fmt(heroKey, h.ft)}</span><span class="fc-cap">${esc(shortMetric(m, heroKey))}${capSize ? " \u00b7 " + esc(capSize) : ""}</span>${chip}`;
+    }
+    const barRows = bars.map((k, i) => {
+      const x = pair(m, k);
+      const track = x.ft === null ? "" : `<span class="fc-track"><span class="fc-b ft" style="--v:${frac(k, x.ft)}"></span>${x.va !== null ? `<span class="fc-b va" style="--v:${frac(k, x.va)}"></span>` : ""}</span>`;
+      return `<span class="fc-row" style="--i:${i}"><span class="fc-lbl">${esc(shortMetric(m, k))}</span>${track}<span class="fc-val">${x.ft !== null ? fmt(k, x.ft) : "\u2014"}</span></span>`;
+    }).join("");
+    const baseLegend = /^stock/i.test(String(m.baseline_label || "")) ? String(m.baseline_label).split(" ").slice(0, 2).join(" ") : versus(m);
+    const front = [
+      `<button type="button" class="fc-face fc-front" aria-expanded="false" aria-controls="${id}-back">`,
+      `<span class="fc-name">${name}</span><span class="fc-ver">${ver}</span>`,
+      hero,
+      barRows,
+      `<span class="fc-legend"><span><i class="ft"></i>${esc(tr("mc.finetuned"))}</span>${anyBase ? `<span><i class="va"></i>${esc(baseLegend)}</span>` : ""}</span>`,
+      `<span class="fc-hint">${esc(tr("mc.flip.show"))}<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8a5 5 0 0 1 8.6-3.5M13 8a5 5 0 0 1-8.6 3.5M11.5 2v2.7H8.8M4.5 14v-2.7h2.7"/></svg></span>`,
+      `</button>`].join("");
+
+    const tableRows = [];
+    for (const k of metricOrder) {
+      const x = pair(m, k);
+      if (x.ft === null && x.va === null) continue;
+      tableRows.push(`<tr><th scope="row">${longMetric(m, k)}</th><td class="ft">${x.ft !== null ? fmt(k, x.ft) : "–"}</td><td>${x.va !== null ? fmt(k, x.va) : "–"}</td></tr>`);
+    }
+    const baseLabel = m.baseline_label ? T("mc.baselabel", m.baseline_label) : esc(tr("mc.vanilla"));
+    const table = tableRows.length ? `<table class="fc-table"><thead><tr><td></td><th scope="col"><i class="ft"></i>${ver}</th><th scope="col"><i class="va"></i>${vs}</th></tr></thead><tbody>${tableRows.join("")}</tbody></table>` : `<p class="fc-nr">${esc(tr("mc.not_recorded"))}</p>`;
+    const test = m.test && m.test.size ? T("mc.testsize", m.test.size) : "";
+    const testFull = m.test ? [m.test.size ? T("mc.testsize", m.test.size) : "", m.test.source ? T("mc.testsrc", m.test.source) : ""].filter(Boolean).join("; ") : "";
+    const back = [
+      `<div class="fc-face fc-back" id="${id}-back" role="group" aria-label="${esc(tr("mc.flip.label_back").replace("{name}", tr("mc.short." + stem)))}">`,
+      `<span class="fc-top"><span class="fc-name">${name}</span>${badge}<span class="fc-ver">${ver}</span></span>`,
+      `<div class="fc-cols"><dl class="fc-facts"><div><dt>${esc(tr("mc.test"))}</dt><dd>${test || esc(tr("mc.not_recorded"))}</dd></div><div><dt>${esc(tr("mc.baseline"))}</dt><dd>${baseLabel}</dd></div><div><dt>${esc(tr("mc.base"))}</dt><dd>${esc(m.base || "")}</dd></div></dl>`,
+      table,
+      `</div>`,
+      `<span class="fc-actions">`,
+      m.repo_url ? `<a class="fc-link" href="${esc(m.repo_url)}">${esc(tr("mc.card"))}<span aria-hidden="true"> ↗</span></a>` : "",
+      `<button type="button" class="fc-morebtn" aria-expanded="false" aria-controls="${id}-more">${esc(tr("mc.more"))}<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></button>`,
+      `<button type="button" class="fc-return">${esc(tr("mc.flip.back"))}<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8a5 5 0 0 1 8.6-3.5M13 8a5 5 0 0 1-8.6 3.5M11.5 2v2.7H8.8M4.5 14v-2.7h2.7"/></svg></button>`,
+      `</span>`,
+      `</div>`].filter(Boolean).join("");
+
+    const ex = m.repo_url ? byUrl.get(m.repo_url) : null;
+    let media = `<div class="viewer viewer-empty" aria-hidden="true"></div>`;
+    let exMore = "";
+    if (ex) {
+      const { f, c } = ex;
+      const fid = `${id}-img`;
+      const cls = esc(tr(`showcase.class.${slug(c.name)}`));
+      media = [
+        `<figure class="fc-media">`,
+        `<div class="viewer">`,
+        `<img class="base" src="/assets/img/models/${esc(f.base)}" width="${f.width}" height="${f.height}" alt="${esc(tr(dataKey(`showcase.${f.id}.alt`, f.alt)))}" loading="lazy" decoding="async">`,
+        `<div class="layers"><img src="/assets/img/models/${esc(c.layer)}" width="${f.width}" height="${f.height}" alt="" loading="lazy" decoding="async"></div>`,
+        `<span class="lbl l">${esc(tr(`showcase.label.${slug(f.input_label)}`))}</span><span class="lbl r"><span class="swatch" style="background:${esc(c.color)}" aria-hidden="true"></span>${cls} \u00b7 ${Number(c.count).toLocaleString("en-US")}</span>`,
+        `<input type="range" min="0" max="100" value="50" aria-label="${esc(tr("models.divider"))}">`,
+        `<span class="handle" aria-hidden="true"></span>`,
+        `</div>`,
+        `</figure>`].join("");
+      const dl = f.facts.map(([k, v, href]) => {
+        const tv = tr(dataKey("showcase.value", v));
+        return `<dt>${esc(tr(`showcase.fact.${slug(k)}`))}</dt><dd>${href ? `<a href="${esc(href)}">${esc(tv)}</a>` : esc(tv)}</dd>`;
+      }).join("");
+      exMore = [
+        `<div class="mr-ex"><h4>${esc(tr("mc.example"))}</h4>`,
+        `<p>${esc(tr(dataKey(`showcase.${f.id}.title`, f.title)))}. ${f.text ? esc(tr(dataKey(`showcase.${f.id}.text`, f.text))) : ""}</p>`,
+        `<p class="mr-cls"><span class="swatch" style="background:${esc(c.color)}" aria-hidden="true"></span>${cls}: ${Number(c.count).toLocaleString("en-US")}. ${c.model.url ? `<a href="${esc(c.model.url)}">${esc(c.model.display)}</a>` : esc(c.model.display)}${c.model.note ? ". " + esc(tr(dataKey("showcase.note", c.model.note))) : ""}</p>`,
+        `<dl>${dl}</dl></div>`].join("");
+    }
+    const linkList = (ms) => ms.map((x) => `<a href="${esc(x.repo_url)}">${esc(x.version || x.key)}</a>${["alternative", "candidate"].includes(statusOf(x)) ? ` (${esc(tr("mc." + statusOf(x)))})` : ""}`).join(", ");
+    const versions = [
+      sel.newer.length ? `<p class="mc-more">${esc(tr("mc.newer")).replace("{value}", linkList(sel.newer))}</p>` : "",
+      sel.older.length ? `<p class="mc-more">${esc(tr("mc.previous")).replace("{value}", linkList(sel.older))}</p>` : ""].filter(Boolean).join("");
+    const bySource = m.by_source ? [
+      `<div class="mc-src"><table class="mc-srctable"><caption>${T("mc.bstitle", m.by_source.title)}</caption>`,
+      `<thead><tr><td></td>${m.by_source.columns.map((c) => `<th scope="col">${T("mc.bscol", c)}</th>`).join("")}</tr></thead>`,
+      `<tbody>${m.by_source.rows.map(([n, vals]) => `<tr><th scope="row">${esc(n)}</th>${vals.map((v) => `<td>${fmt3(v)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`,
+      m.by_source.note ? `<p class="mc-note">${T("mc.bsnote", m.by_source.note)}</p>` : ""].join("") : "";
+    const more = [
+      `<div class="mr-more" id="${id}-more" role="region" aria-label="${esc(tr("mc.more_title").replace("{name}", tr("mc.short." + stem)))}" hidden>`,
+      `<div class="mr-why"><h4>${T(`mc.group.${g.id}.title`, g.title)}</h4><p>${T(`mc.group.${g.id}.motivation`, g.motivation)}</p>`,
+      testFull ? `<p class="mc-note"><b>${esc(tr("mc.test"))}:</b> ${testFull}</p>` : "",
+      `<p class="mc-note"><b>${esc(tr("mc.baseline"))}:</b> ${baseLabel}. <b>${esc(tr("mc.base"))}:</b> ${esc(m.base || "")}</p>`,
+      m.note ? `<p class="mc-note">${T("mc.note", m.note)}</p>` : "",
+      bySource,
+      versions,
+      readScores(m, tableRows.length > 0).trim().replace(/^<details class="mc-read">/, '<details class="mc-read" open>'),
+      `</div>`,
+      exMore,
+      `</div>`].filter(Boolean).join("");
+
     return [
-      `        <div class="mc-group${fams.length > 1 ? " wide" : ""}" role="group" aria-labelledby="mc-${esc(g.id)}">`,
-      `          <h3 id="mc-${esc(g.id)}">${T(`mc.group.${g.id}.title`, g.title)}</h3>`,
-      `          <p class="note mc-why">${T(`mc.group.${g.id}.motivation`, g.motivation)}</p>`,
-      `          <div class="${fams.length > 1 ? "mc-grid" : "mc-one"}">`,
-      cards.join("\n"),
-      extra,
-      `          </div>`,
-      `        </div>`].join("\n");
+      `        <article class="mrow" id="${id}">`,
+      `          <h3 class="vh">${name} ${ver}</h3>`,
+      `          <div class="fc"><div class="fc-inner">${front}${back}</div></div>`,
+      `          ${media}`,
+      `          ${more}`,
+      `        </article>`].join("\n");
   });
-  return { MODELS_HTML: groups.join("\n") };
+  return { MODELS_HTML: html.join("\n"), SHOWCASE_SPACR: esc(tr(dataKey("models.note", sc.spacr_version))) };
 }
 
 function shorten(q, n = 260) {
@@ -718,7 +757,7 @@ async function main() {
   log(`ParaScape ${sp.version} (PyPI, ${sp.released}), Python ${sp.requiresPython}`);
   const stats = await statsVars(readJSON(path.join(DATA, "papers.json")).papers.length);
   const ASSET_VERSION = assetVersion();
-  const varsFor = (tr) => ({ ...spacrVars(meta, tr), ...showcaseVars(tr), ...papersVars(tr), ...stats, ...parascapeVars(sp), ...modelsVars(tr, zs), ASSET_VERSION });
+  const varsFor = (tr) => ({ ...spacrVars(meta, tr), ...papersVars(tr), ...stats, ...parascapeVars(sp), ...modelsVars(tr, zs), ASSET_VERSION });
   await refreshPaperCandidates();
 
   const i18nPages = new Map();

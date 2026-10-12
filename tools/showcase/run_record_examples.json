@@ -1,0 +1,165 @@
+{
+ "wells": {
+  "model_key": "toxoplasma_well_detector_v3",
+  "weights_url": "https://huggingface.co/einarolafsson/toxoplasma-plaque-well-detector-yolo11-v4-geldoc/resolve/main/weights/yolo_welldetect_v4_geldoc.pt",
+  "weights_sha256": "046861021594256957292cfe9488a84e758077a12dac31fe66b8b4083f8dfa18",
+  "zoo_sha256_match": true,
+  "settings": {
+   "confidence": 0.25,
+   "imgsz": 640,
+   "min_axis_ratio": 0.7,
+   "call": "spacr.plaque.detect_wells (RGB array converted to BGR for ultralytics)"
+  },
+  "runtime_s": 1.27,
+  "device": "CPU (CUDA_VISIBLE_DEVICES=''), 16 torch threads",
+  "ultralytics": "8.4.157",
+  "torch": "2.13.0",
+  "source_figure": "spectrum.01229-24.f003.jpg, PMC11448412 (Cabral G, Ren B, Bisio H, Otey D, Soldati-Favre D, Brown KM. Orthologs of Plasmodium ICM1 are dispensable for Ca2+ mobilization in Toxoplasma gondii. Microbiol Spectr 2024)",
+  "source_figure_px": [
+   4702,
+   5387
+  ],
+  "crop_xyxy_px": [
+   2600,
+   1000,
+   4702,
+   3985
+  ],
+  "crop": "panels H and I (KCl and zaprinast plaque assays), including their printed labels",
+  "display_scale": 0.343,
+  "boxes_xyxy_conf_crop_px": [
+   [
+    121,
+    218,
+    762,
+    842,
+    0.928
+   ],
+   [
+    1392,
+    221,
+    2026,
+    833,
+    0.946
+   ],
+   [
+    760,
+    224,
+    1395,
+    840,
+    0.949
+   ],
+   [
+    1393,
+    862,
+    2025,
+    1477,
+    0.955
+   ],
+   [
+    763,
+    863,
+    1397,
+    1476,
+    0.96
+   ],
+   [
+    123,
+    864,
+    760,
+    1477,
+    0.952
+   ],
+   [
+    121,
+    1724,
+    761,
+    2335,
+    0.939
+   ],
+   [
+    760,
+    1726,
+    1392,
+    2336,
+    0.953
+   ],
+   [
+    1391,
+    1728,
+    2022,
+    2333,
+    0.943
+   ],
+   [
+    1388,
+    2347,
+    2024,
+    2967,
+    0.947
+   ],
+   [
+    120,
+    2349,
+    764,
+    2964,
+    0.946
+   ],
+   [
+    762,
+    2350,
+    1392,
+    2968,
+    0.957
+   ]
+  ],
+  "outline": "#FF00FF rectangle, 3 px at display size, transparent background, lossless WebP",
+  "raw_webp_bytes": 99810,
+  "training_data_check": "training/fields.csv of the detector repo lists Fig. 2 of this article (spectrum.01229-24.f002 p01 train, p03 val) but no panel of Fig. 3. Plaque crops from Fig. 3 are in the plaque segmentation dataset, which is a different model.",
+  "reference_check": "the 12 boxes were compared with the YOLO box labels stored for this figure in spaCR's detector review set (curation/model_review_2026-10-08/detector/02_literature/held_out, unpublished; whether they were hand-reviewed is not recorded): 12 of 12 matched, IoU 0.957 to 0.978",
+  "licence_check": "Europe PMC record for PMC11448412: licence cc by; article states CC BY 4.0"
+ },
+ "livecell": {
+  "model": "live-cell-v1",
+  "weights_url": "https://huggingface.co/einarolafsson/live-cell-segmentation-cpsam",
+  "weights_sha256": "7ade69377093fe81830ddc7c52ba8618bef1fefe7d1243c01b9c1beed7fcb090",
+  "zoo_sha256_match": true,
+  "settings": {
+   "diameter": null,
+   "normalize": true,
+   "flow_threshold": 0.4,
+   "cellprob_threshold": 0.0,
+   "min_size": 15,
+   "channels": "single greyscale channel (2-D)",
+   "input_dtype": "float32 of the uint8 values; cellpose percentile normalisation"
+  },
+  "runtime_s": 124.1,
+  "device": "CPU, fp32 (use_bfloat16=False, gpu=False), 16 torch threads",
+  "cellpose": "4.2.1.1",
+  "torch": "2.13.0",
+  "source": "einarolafsson/live-cell-segmentation-dataset images/bbbc030_dic/bbbc030_dic__cho07.tif (BBBC030v1 image cho07.png; the three PNG channels are identical, channel 0 used)",
+  "source_dataset_url": "https://huggingface.co/datasets/einarolafsson/live-cell-segmentation-dataset",
+  "citation": "Koos K, et al. DIC image reconstruction on large cell scans. Sci Rep 6, 30420 (2016); image set BBBC030v1 of the Broad Bioimage Benchmark Collection (Ljosa V, Sokolnicki KL, Carpenter AE. Nat Methods 9, 637 (2012))",
+  "native_px": [
+   1376,
+   1032
+  ],
+  "display_scale": 0.7442,
+  "crop": "none; the whole 1376 × 1032 field was run",
+  "split": "test (acquisition-grouped split; group cho07 is test only)",
+  "outline": "#FF00FF inner boundaries computed on the label image resized with nearest neighbour, thickened to 2 px (render.py outline_layer)",
+  "raw_stretch": "1st-99.8th percentile, greyscale",
+  "raw_webp_bytes": 16800,
+  "reference_check": {
+   "reference": "dataset mask masks/bbbc030_dic/bbbc030_dic__cho07.tif",
+   "reference_count": 18,
+   "predicted": 21,
+   "tp": 17,
+   "fp": 4,
+   "fn": 1,
+   "f1_at_iou_0_5": 0.872,
+   "note": "single-field sanity check, not a benchmark. The model card's per-field test score for this field is F1 0.947 with 20 predictions, from the GPU evaluation; this CPU fp32 run gives 21"
+  },
+  "licence_check": "bbbc.broadinstitute.org/BBBC030: 'The BBBC030v1 image set are licensed under a Creative Commons Attribution 3.0 Unported License by Peter Horvath and Krisztián Koós'"
+ }
+}

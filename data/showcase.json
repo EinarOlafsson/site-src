@@ -235,6 +235,102 @@
      "/assets/img/models/plaque-v4-figure.webp"
     ]
    ]
+  },
+  {
+   "id": "wells",
+   "title": "Plaque assay plate: wells found",
+   "input_label": "Plate",
+   "text": "Two panels of plaque-assay wells from a published figure. spaCR's default well detector boxes each well, so every well can be cropped and its plaques counted on its own. This figure was not used to train the detector.",
+   "base": "wells-raw.webp",
+   "alt": "Twelve round crystal-violet stained wells in four rows of three, with condition labels above and strain labels at the side",
+   "width": 721,
+   "height": 1024,
+   "classes": [
+    {
+     "name": "Wells",
+     "color": "#FF00FF",
+     "count": 12,
+     "layer": "wells-boxes.webp",
+     "model": {
+      "display": "toxoplasma_well_detector_v3 (YOLO11n)",
+      "url": "https://huggingface.co/einarolafsson/toxoplasma-plaque-well-detector-yolo11-v4-geldoc",
+      "note": "The default well detector in spaCR. Model card: mAP50 0.994 on 73 validation images. 12 of 12 wells found, no extra boxes"
+     }
+    }
+   ],
+   "facts": [
+    [
+     "Input",
+     "Crystal violet, colour (RGB)"
+    ],
+    [
+     "Image",
+     "Cabral G, et al. Microbiol Spectrum 2024, Fig. 3 H and I",
+     "https://doi.org/10.1128/spectrum.01229-24"
+    ],
+    [
+     "Licence",
+     "CC BY 4.0 (cropped from the original figure)",
+     "https://creativecommons.org/licenses/by/4.0/"
+    ],
+    [
+     "Size",
+     "2102 × 2985 px crop, shown at 1024 px"
+    ],
+    [
+     "Training data",
+     "Figure 3 is not in the detector's training or validation list",
+     "https://huggingface.co/einarolafsson/toxoplasma-plaque-well-detector-yolo11-v4-geldoc/blob/main/training/fields.csv"
+    ]
+   ]
+  },
+  {
+   "id": "livecell",
+   "title": "Unstained cells: live-cell segmentation",
+   "input_label": "DIC",
+   "text": "One DIC image of unstained CHO cells from a public benchmark. Each cell is segmented by spaCR's live-cell model from the transmitted-light image alone, with no stain. This field was held out from training.",
+   "base": "livecell-raw.webp",
+   "alt": "Greyscale DIC image of round, scattered CHO cells on a flat grey background",
+   "width": 1024,
+   "height": 768,
+   "classes": [
+    {
+     "name": "Cells",
+     "color": "#FF00FF",
+     "count": 21,
+     "layer": "livecell-cells.webp",
+     "model": {
+      "display": "live-cell-v1 (Cellpose-SAM, phase, brightfield, DIC)",
+      "url": "https://huggingface.co/einarolafsson/live-cell-segmentation-cpsam",
+      "note": "Model card: test F1 0.960 against 0.885 for stock Cellpose-SAM on datasets stock never saw; 0.913 against 0.872 on the 12 test fields of this dataset. 18 cells in the reference mask; F1 0.872 at IoU 0.5 on this field"
+     }
+    }
+   ],
+   "facts": [
+    [
+     "Input",
+     "DIC (differential interference contrast), greyscale"
+    ],
+    [
+     "Image",
+     "BBBC030 (Koos K, et al. Sci Rep 2016), field cho07, test split",
+     "https://bbbc.broadinstitute.org/BBBC030"
+    ],
+    [
+     "Licence",
+     "CC BY 3.0 (Peter Horvath and Krisztián Koós)",
+     "https://creativecommons.org/licenses/by/3.0/"
+    ],
+    [
+     "Size",
+     "1376 × 1032 px, shown at 1024 px"
+    ],
+    [
+     "Training data",
+     "Field held out; other BBBC030 fields were in training",
+     "https://huggingface.co/einarolafsson/live-cell-segmentation-cpsam/blob/main/training/splits.csv"
+    ]
+   ]
   }
  ]
 }

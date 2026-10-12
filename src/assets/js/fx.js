@@ -775,6 +775,48 @@
     cb.addEventListener("change", function () { img.hidden = !cb.checked; });
   });
 
+  [].forEach.call(document.querySelectorAll(".fc"), function (card) {
+    var front = card.querySelector(".fc-front"), back = card.querySelector(".fc-back");
+    var ret = card.querySelector(".fc-return");
+    if (!front || !back) return;
+    function face(el, shown) {
+      if ("inert" in el) el.inert = !shown;
+      if (shown) el.removeAttribute("aria-hidden"); else el.setAttribute("aria-hidden", "true");
+    }
+    function flip(on, focus) {
+      card.classList.toggle("flipped", on);
+      front.setAttribute("aria-expanded", on ? "true" : "false");
+      var show = on ? back : front, hide = on ? front : back;
+      face(show, true);
+      if (focus) (on ? (ret || back) : front).focus({ preventScroll: true });
+      face(hide, false);
+    }
+    flip(false, false);
+    front.addEventListener("click", function () { flip(true, true); });
+    if (ret) ret.addEventListener("click", function (e) { e.stopPropagation(); flip(false, true); });
+    back.addEventListener("click", function (e) {
+      if (e.target.closest("a, button, summary, table, dl")) return;
+      if (window.getSelection && String(window.getSelection())) return;
+      flip(false, true);
+    });
+    back.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") { e.preventDefault(); flip(false, true); }
+    });
+  });
+  [].forEach.call(document.querySelectorAll(".fc-morebtn"), function (b) {
+    var panel = document.getElementById(b.getAttribute("aria-controls"));
+    if (!panel) return;
+    b.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var open = panel.hidden;
+      panel.hidden = !open;
+      b.setAttribute("aria-expanded", open ? "true" : "false");
+      if (open && panel.getBoundingClientRect().top > window.innerHeight - 80) {
+        panel.scrollIntoView({ block: "nearest", behavior: document.documentElement.classList.contains("no-motion") ? "auto" : "smooth" });
+      }
+    });
+  });
+
   [].forEach.call(document.querySelectorAll("video[data-src]"), function (v) {
     var visible = false, loaded = false;
     function load() { if (!loaded) { v.src = v.getAttribute("data-src"); loaded = true; } }

@@ -204,7 +204,40 @@ export const FIXED = {
   "mc.read.count": "Median count error is the median difference between the predicted and the reference count per plate, as a percentage of the reference. Plates within 5% or 10% is the share of plates whose count error stays inside that limit.",
   "mc.read.baseline": "The grey bar is the baseline named in the column header, scored on the same test images: stock Cellpose-SAM without fine-tuning, or an earlier model where no stock model has the class.",
   "mc.read.cv": "Cross-validated scores split the data into folds, hold out each fold once and report the mean over folds with its standard deviation (SD). A single split can mislead; the SD shows how far the score moves from one split to another.",
-  "mc.read.heldout": "The held-out test set is images kept out of training and used only for scoring."
+  "mc.read.heldout": "The held-out test set is images kept out of training and used only for scoring.",
+  "mc.short.toxoplasma_pv": "Parasite vacuoles",
+  "mc.short.toxoplasma_plaque": "Plaques",
+  "mc.short.toxoplasma_well_detector": "Plaque wells",
+  "mc.short.live-cell": "Live cells",
+  "mc.short.toxoplasma_from_cellmask": "Vacuoles from cell mask",
+  "mc.short.nuclei_from_cellmask": "Nuclei from cell mask",
+  "mc.short.cell_from_hoechst": "Cells from Hoechst",
+  "mc.short.toxoplasma_from_hoechst": "Vacuoles from Hoechst",
+  "mc.s.f1_50": "F1",
+  "mc.s.f1_75": "F1 at 0.75",
+  "mc.s.ap": "AP",
+  "mc.s.map": "mAP",
+  "mc.s.precision": "Precision",
+  "mc.s.recall": "Recall",
+  "mc.s.aji": "AJI",
+  "mc.s.dice": "Dice",
+  "mc.s.map50": "mAP50",
+  "mc.s.map50_95": "mAP50-95",
+  "mc.stock": "stock",
+  "mc.vs": "vs {value}",
+  "mc.flip.show": "Details",
+  "mc.flip.back": "Scores",
+  "mc.no_baseline": "no baseline recorded",
+  "mc.cap.wells": "{n} held-out wells",
+  "mc.cap.fields": "{n} held-out fields",
+  "mc.cap.images": "{n} held-out images",
+  "mc.cap.plates": "{n} held-out plates",
+  "mc.cap.val_images": "{n} validation images",
+  "mc.flip.label_back": "{name}: details. Turn the card back to the scores",
+  "mc.more": "More",
+  "mc.more_title": "{name}: more about the model",
+  "mc.example": "The example image",
+  "mc.all_scores": "Held-out scores"
 };
 
 export const UI_KEYS = Object.keys(FIXED).filter((k) => k.startsWith("ui."));
@@ -284,7 +317,7 @@ export function generatedStrings(dataDir, withShowcase = true) {
 // English reference for a page: template keys, then generated keys.
 export function englishFor(templateWithPartials, dataDir) {
   const en = new Map(extract(templateWithPartials));
-  for (const [k, v] of generatedStrings(dataDir, templateWithPartials.includes("{{SHOWCASE_HTML}}"))) {
+  for (const [k, v] of generatedStrings(dataDir, templateWithPartials.includes("{{MODELS_HTML}}"))) {
     if (en.has(k) && en.get(k) !== v) throw new Error(`key ${k} is both in the template and generated`);
     en.set(k, v);
   }
