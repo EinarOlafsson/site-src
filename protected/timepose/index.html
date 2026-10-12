@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 {{HEAD}}
-<title>TimePose</title>
+<title>Timepose</title>
 <meta name="robots" content="noindex">
 <style>
 :root { --tp-a: #7aa7ff; --tp-b: #f0a35e; --tp-c: #6cc3a0; }
@@ -42,11 +42,11 @@
   <section class="hero">
     <div class="wrap">
       <p class="kicker">Draft, not public · in development</p>
-      <h1>TimePose</h1>
-      <p class="lede">Segmentation and tracking of cells in time-lapse microscopy, divisions included. TimePose extends Cellpose with flows along the time axis and new output heads.</p>
+      <h1>Timepose</h1>
+      <p class="lede">Segmentation and tracking of cells in time-lapse microscopy, divisions included. Timepose extends Cellpose with flows along the time axis and new output heads.</p>
       <ul class="facts">
         <li>Backbone <b>Cellpose-SAM</b></li>
-        <li>Variants <b>TimePose-LM, TimePose-FL</b></li>
+        <li>Variants <b>Timepose-LM, Timepose-FL</b></li>
         <li>Manuscript <b>in preparation</b></li>
       </ul>
     </div>
@@ -56,7 +56,7 @@
     <div class="wrap">
       <div class="section-head">
         <h2 id="how-h">Time as an axis</h2>
-        <p>Cellpose describes each cell as a flow field: every pixel points towards the centre of its cell, and following the flows groups pixels into masks. TimePose adds time as a further axis. For every pixel of a frame it also predicts where the same cell was in the previous frame and where it will be in the next.</p>
+        <p>Cellpose describes each cell as a flow field: every pixel points towards the centre of its cell, and following the flows groups pixels into masks. Timepose adds time as a further axis. For every pixel of a frame it also predicts where the same cell was in the previous frame and where it will be in the next.</p>
         <p>New heads on the same network score which objects in neighbouring frames are the same cell, and which cell has divided into two daughters. Masks, tracks and lineages come out of one model rather than a segmentation step followed by a separate tracker.</p>
       </div>
       <figure>
@@ -166,12 +166,12 @@
       <div class="section-head"><h2 id="var-h">Two variants</h2></div>
       <div class="grid two">
         <div>
-          <h3>TimePose-LM: label-free light microscopy</h3>
+          <h3>Timepose-LM: label-free light microscopy</h3>
           <p>For unstained cells imaged in DIC, phase contrast or brightfield. It is trained on label-free data from several species, microscopes and magnifications, and the tests include microscopes and magnifications left out of training.</p>
         </div>
         <div>
-          <h3>TimePose-FL: fluorescence</h3>
-          <p>Fluorescent signal fades while a movie is recorded, so late frames are dimmer and noisier than early ones. TimePose-FL detects photobleaching and can correct for it, and it is trained to carry evidence from the early, bright frames to the late, faint ones. Left on auto, it is meant to leave movies without bleaching unchanged.</p>
+          <h3>Timepose-FL: fluorescence</h3>
+          <p>Fluorescent signal fades while a movie is recorded, so late frames are dimmer and noisier than early ones. Timepose-FL detects photobleaching and can correct for it, and it is trained to carry evidence from the early, bright frames to the late, faint ones. Left on auto, it is meant to leave movies without bleaching unchanged.</p>
         </div>
       </div>
     </div>
@@ -181,7 +181,7 @@
     <div class="wrap">
       <div class="section-head">
         <h2 id="aims-h">Aims</h2>
-        <p>These are the goals the manuscript has to meet, not results. Each is tested only on held-out data (datasets that TimePose never saw in training, and unseen movies from datasets it did) against a named control.</p>
+        <p>These are the goals the manuscript has to meet, not results. Each is tested only on held-out data (datasets that Timepose never saw in training, and unseen movies from datasets it did) against a named control.</p>
       </div>
       <ul class="steps">
         <li><b>Tracking</b><span>More accurate tracks than Trackastra, the strongest tracker in our pilot comparisons.</span></li>
