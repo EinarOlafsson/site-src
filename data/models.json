@@ -449,7 +449,7 @@
       "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r6.json"
      ],
      "by_source": {
-      "title": "F1 at IoU 0.5 by test source (263 held-out fields)",
+      "title": "Earlier evaluation (263 held-out fields, 2026-10-10), F1 at IoU 0.5 by image source",
       "columns": [
        "All 263",
        "Gel Doc",
@@ -489,7 +489,7 @@
         ]
        ]
       ],
-      "note": "v4 scores below v3 on every source; it is the default because spaCR's models build on cpsam_v2 (model card).",
+      "note": "On this earlier set v3 scored above v4 on every source; on the 2026-10-11 strict hold-out v4 scores higher. v4 is the default because spaCR's models build on cpsam_v2 (model card).",
       "source": "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam-r6/blob/c12c0e269/README.md"
      }
     }
