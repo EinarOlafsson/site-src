@@ -484,7 +484,7 @@
    "title": "Plaque-well detection",
    "motivation": "The plaque module first finds each well in a plate image or published figure and then segments plaques inside it; the detected well also gives the diameter that makes plaque areas comparable across microscopes. Stock YOLO has no plaque-well class, so each detector is compared with the one before it: on 129 held-out test images v2 scores mAP50 0.946 against v1's 0.884, with 49 false boxes on no-well images against 152.",
    "motivation_sources": [
-    "https://github.com/EinarOlafsson/spacr/blob/6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf/spacr/model_zoo.py",
+    "https://github.com/EinarOlafsson/spacr/blob/e7fb8cb1c9ca20d4978e66e4a1336e45737fc128/spacr/model_zoo.py",
     "https://huggingface.co/einarolafsson/toxoplasma-plaque-well-detector-yolo26/tree/c15a1f03207adcbd3e32c64f21175781170fa4fa"
    ],
    "models": [
@@ -527,7 +527,7 @@
      "baseline_label": "none recorded (stock YOLO has no plaque-well class)",
      "note": "Kept because the published plaque corpus was measured with these weights; on v2's test set it scores mAP50 0.884.",
      "sources": [
-      "https://github.com/EinarOlafsson/spacr/blob/6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf/spacr/model_zoo.py",
+      "https://github.com/EinarOlafsson/spacr/blob/e7fb8cb1c9ca20d4978e66e4a1336e45737fc128/spacr/model_zoo.py",
       "https://huggingface.co/einarolafsson/toxoplasma-plaque-well-detector-yolo11/tree/cf5b56ddfb558426f3d59815289d9ba1a7c9dac1"
      ]
     },
@@ -536,8 +536,8 @@
      "display": "Toxoplasma Plaque Well Detector v2",
      "version": "v2",
      "base": "yolo26n",
-     "status": "default",
-     "status_quote": "figure_detector: Default 'toxoplasma_well_detector_v2' (spacr/settings.py)",
+     "status": "superseded",
+     "status_quote": "Previous version; the figure_detector setting still defaults to it: Default 'toxoplasma_well_detector_v2' (spacr/settings.py)",
      "repo_url": "https://huggingface.co/einarolafsson/toxoplasma-plaque-well-detector-yolo26",
      "test": {
       "size": "129 test images (84 with no well)",
@@ -570,19 +570,19 @@
      "baseline_label": "previous version (well detector v1, YOLO11n) on the same test set",
      "note": "Cuts false boxes on no-well images from 152 to 49 on the shared test set.",
      "sources": [
-      "https://github.com/EinarOlafsson/spacr/blob/6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf/spacr/model_zoo.py",
+      "https://github.com/EinarOlafsson/spacr/blob/e7fb8cb1c9ca20d4978e66e4a1336e45737fc128/spacr/model_zoo.py",
       "https://huggingface.co/einarolafsson/toxoplasma-plaque-well-detector-yolo26/tree/c15a1f03207adcbd3e32c64f21175781170fa4fa",
       "https://huggingface.co/einarolafsson/toxoplasma-plaque-well-detector-yolo26/blob/c15a1f03207adcbd3e32c64f21175781170fa4fa/qc/test_metrics.json",
-      "https://github.com/EinarOlafsson/spacr/blob/6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf/spacr/settings.py"
+      "https://github.com/EinarOlafsson/spacr/blob/e7fb8cb1c9ca20d4978e66e4a1336e45737fc128/spacr/settings.py"
      ]
     },
     {
      "key": "toxoplasma_well_detector_v3",
-     "display": "Toxoplasma Well Detector v3 (YOLO11 Gel Doc candidate)",
+     "display": "Toxoplasma Well Detector v3 (YOLO11 Gel Doc)",
      "version": "v3",
      "base": "yolo11n",
-     "status": "candidate",
-     "status_quote": "Candidate, not promoted: clean incumbent-validation mAP50-95 regresses. (zoo note)",
+     "status": "default",
+     "status_quote": "The default well detector since 2026-10-12, by the maintainer's choice. (zoo note)",
      "repo_url": "https://huggingface.co/einarolafsson/toxoplasma-plaque-well-detector-yolo11-v4-geldoc",
      "test": {
       "size": "73 clean validation images",
@@ -615,7 +615,7 @@
      "baseline_label": "previous version (well detector v1, the YOLO11n incumbent) on the same validation images",
      "note": "On 3 Gel Doc validation plates mAP50-95 rises from 0.895 to 0.931; both models recover the expected well count on all 3.",
      "sources": [
-      "https://github.com/EinarOlafsson/spacr/blob/6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf/spacr/model_zoo.py",
+      "https://github.com/EinarOlafsson/spacr/blob/e7fb8cb1c9ca20d4978e66e4a1336e45737fc128/spacr/model_zoo.py",
       "https://huggingface.co/einarolafsson/toxoplasma-plaque-well-detector-yolo11-v4-geldoc/tree/a31e978758b7f8f4d98b6007d3d6e52e874cd618",
       "https://huggingface.co/einarolafsson/toxoplasma-plaque-well-detector-yolo11-v4-geldoc/blob/a31e978758b7f8f4d98b6007d3d6e52e874cd618/scorecard.json"
      ]

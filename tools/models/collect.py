@@ -220,10 +220,7 @@ def build(src, zoo, zoo_url, sha):
         for u in urls:
             if u not in seen:
                 seen.append(u)
-        if status != "alternative":
-            display = re.sub(r",\s*alternative\)", ")", display)
-        if status != "default":
-            display = re.sub(r",\s*default\)", ")", display)
+        display = re.sub(r",\s*(?:alternative|default)\)", ")", display)
         return {"key": public_key or key, "display": display, "version": version, "base": base,
                 "status": status, "status_quote": status_quote,
                 "repo_url": repo_url or (hf_url(repo) if repo else None), "test": test, "metrics": m,
