@@ -637,19 +637,19 @@ picture { display: block; }
   --fc-fill: #161b22;
   --fc-edge: #30363d;
   --fc-track: #21262d;
-  --fc-ink: #ffffff;
+  --fc-ink: #e6edf3;
   --fc-ink2: #c9d1d9;
-  --fc-muted: #9198a1;
+  --fc-muted: #8b949e;
   --fc-teal: #20aa9e;
   --fc-slate: #566a7e;
   --fc-edge-hi: #484f58;
   --fc-glow: #2ec4b6;
   --fc-glow2: #6cb6ff;
-  --fc-chip-up: #133f3f;
-  --fc-chip-down: #2d333b;
+  --fc-chip-up: #194345;
+  --fc-chip-down: #333f4b;
   --fc-shadow: 0 1px 2px rgba(0, 0, 0, 0.25), 0 14px 34px -14px rgba(0, 0, 0, 0.6);
 }
-:root[data-theme="light"] { --fc-shadow: 0 1px 2px rgba(8, 28, 35, 0.12), 0 16px 34px -16px rgba(8, 28, 35, 0.45); }
+:root[data-theme="light"] { --fc-shadow: 0 1px 2.4px rgba(31, 35, 40, 0.22), 0 12px 28px -14px rgba(31, 35, 40, 0.35); }
 .mr-intro { max-width: var(--measure); margin: var(--s3) 0 0; }
 .mrows { display: grid; gap: var(--s5); margin-top: var(--s5); }
 .mrow { display: grid; gap: var(--s2); grid-template-columns: minmax(0, 1fr); }
@@ -674,7 +674,7 @@ picture { display: block; }
   font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif; font-weight: 300;
   -webkit-backface-visibility: hidden; backface-visibility: hidden;
 }
-.fc-face::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: linear-gradient(90deg, var(--fc-glow), var(--fc-glow2)); }
+.fc-face::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 2px; opacity: 0.7; background: linear-gradient(90deg, var(--fc-glow), var(--fc-glow2)); }
 .fc-front { width: 100%; height: 100%; cursor: pointer; appearance: none; -webkit-appearance: none; line-height: 1; }
 .fc-front > span { position: absolute; }
 .fc-front:hover { border-color: var(--fc-edge-hi); }
@@ -683,7 +683,7 @@ picture { display: block; }
 .fc-ver { right: calc(22 * var(--u)); top: calc(24 * var(--u)); height: calc(21 * var(--u)); padding: 0 calc(8 * var(--u)); border-radius: calc(10.5 * var(--u)); display: inline-flex; align-items: center; font-size: calc(12 * var(--u)); font-weight: 400; color: var(--fc-glow); background: rgba(46, 196, 182, 0.12); border: 1px solid rgba(46, 196, 182, 0.6); font-variant-numeric: tabular-nums; }
 .fc-big { left: calc(20 * var(--u)); top: calc(66 * var(--u)); font-size: calc(54 * var(--u)); line-height: calc(54 * var(--u)); font-weight: 300; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 .fc-cap { left: calc(172 * var(--u)); top: calc(64 * var(--u)); max-width: calc(194 * var(--u)); font-size: calc(13 * var(--u)); line-height: calc(16 * var(--u)); color: var(--fc-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.fc-delta { left: calc(172 * var(--u)); top: calc(88 * var(--u)); height: calc(24 * var(--u)); padding: 0 calc(11 * var(--u)); border-radius: calc(12 * var(--u)); display: inline-flex; align-items: center; font-size: calc(13 * var(--u)); color: #fff; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.fc-delta { left: calc(172 * var(--u)); top: calc(88 * var(--u)); height: calc(24 * var(--u)); padding: 0 calc(11 * var(--u)); border-radius: calc(12 * var(--u)); display: inline-flex; align-items: center; font-size: calc(13 * var(--u)); color: var(--fc-ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .fc-delta.up { background: var(--fc-chip-up); }
 .fc-delta.down { background: var(--fc-chip-down); }
 .fc-delta.none { background: none; border: 1px solid var(--fc-edge); color: var(--fc-muted); }
