@@ -666,5 +666,8 @@ picture { display: block; }
 .mc-srctable tbody th { text-align: left; font-weight: 400; }
 .mc-one { max-width: 560px; display: grid; gap: var(--s1); }
 .mc-more { margin: 0; font-size: 13px; color: var(--text-dim); }
+.mc-read { font-size: 13px; color: var(--text-dim); }
+.mc-read summary { cursor: pointer; color: var(--text); }
+.mc-read ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; }
 @media (min-width: 1000px) { .mc-all { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--s5); } .mc-all > .mc-title, .mc-all > .note { grid-column: 1 / -1; } .mc-group { margin-top: var(--s5); } }
 @media (min-width: 1000px) { .mc-group.wide { grid-column: 1 / -1; } .mc-group.wide .mc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

@@ -294,12 +294,45 @@ async function zooStatus() {
 
 function fmt3(v) { return typeof v === "number" ? v.toFixed(3) : ""; }
 
+function readScoresFor(tr) {
+  return (m, hasTable) => {
+    const has = (k) => {
+      const v = m.metrics && m.metrics[k];
+      if (v === undefined || v === null) return false;
+      return typeof v === "object" ? (typeof v.finetuned === "number" || typeof v.vanilla === "number") : true;
+    };
+    const items = [];
+    if (has("map50") || has("map50_95")) {
+      items.push("mc.read.map");
+      if (has("precision") || has("recall")) items.push("mc.read.boxes");
+    } else if (has("median_count_error_pct") || has("plates_within_5pct") || has("plates_within_10pct")) {
+      items.push("mc.read.count");
+    } else {
+      if (has("precision") || has("recall") || has("f1_50") || has("f1_75")) items.push("mc.read.precision_recall");
+      if (has("f1_50") || has("f1_75")) items.push("mc.read.f1", "mc.read.iou");
+      if (has("f1_75")) items.push("mc.read.iou75");
+      if (has("ap")) items.push("mc.read.ap");
+      if (has("aji")) items.push("mc.read.aji");
+      if (has("dice")) items.push("mc.read.dice");
+    }
+    if (!items.length) return "";
+    const vals = Object.values(m.metrics || {});
+    if (hasTable && vals.some((v) => v && typeof v === "object" && typeof v.vanilla === "number")) items.push("mc.read.baseline");
+    if (/cross-validat|\bSD\b|\u00b1|\+\/-/i.test(String(m.note || ""))) items.push("mc.read.cv");
+    items.push("mc.read.heldout");
+    return [
+      `            <details class="mc-read"><summary>${esc(tr("mc.read.title"))}</summary>`,
+      `<ul>${items.map((k) => `<li>${esc(tr(k))}</li>`).join("")}</ul></details>`].join("");
+  };
+}
+
 function modelsVars(tr, zs) {
   const p = path.join(DATA, "models.json");
   if (!fs.existsSync(p)) return { MODELS_HTML: "" };
   const mj = readJSON(p);
   const T = (prefix, text) => { try { return esc(tr(dataKey(prefix, text))); } catch (e) { return esc(text); } };
   const metricOrder = ["f1_50", "f1_75", "ap", "precision", "recall", "aji", "dice", "map50", "map50_95", "median_count_error_pct", "plates_within_5pct", "plates_within_10pct"];
+  const readScores = readScoresFor(tr);
   const groups = (mj.groups || []).map((g) => {
     const statusOf = (m) => {
       const zkey = String(m.key).replace(/-/g, "_");
@@ -346,6 +379,7 @@ function modelsVars(tr, zs) {
           `<tbody>${m.by_source.rows.map(([n, vals]) => `<tr><th scope="row">${esc(n)}</th>${vals.map((v) => `<td>${fmt3(v)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`,
           m.by_source.note ? `            <p class="mc-note">${T("mc.bsnote", m.by_source.note)}</p>` : ""].join("\n") : "",
         m.note ? `            <p class="mc-note">${T("mc.note", m.note)}</p>` : "",
+        readScores(m, rows.length > 0),
         m.repo_url ? `            <p class="mc-link"><a href="${esc(m.repo_url)}">${esc(tr("mc.card"))}</a></p>` : "",
         `          </article>`].filter(Boolean).join("\n");
     });
