@@ -38,6 +38,7 @@
   "overview.btn.docs": "Documentation",
   "overview.btn.tutorials": "Tutorials",
   "overview.btn.source": "Source code",
+  "ov.mosaic.alt": "The spaCR logo, a round cell outline with a vacuole and parasites, built as a photomosaic of green and blue microscopy tiles on black",
   "ov.strip2.alt": "One field of HeLa cells infected with Toxoplasma in five panels: the image, thin cell, nucleus and vacuole outlines, a table of measured values, cells coloured by an infection score, and a volcano plot with GRA14 labelled",
   "ov.strip.1": "Image",
   "ov.strip.2": "Masks",
