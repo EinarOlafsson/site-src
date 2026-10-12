@@ -334,7 +334,6 @@
   "showcase.pv.text.5197cd": "감염된 숙주 세포 단층에서 얻은 Toxoplasma 채널 형광 이미지 한 장. 기생충 액포는 spaCR PV 모델로 분할합니다. 이 웰은 데이터 세트의 홀드아웃 테스트 분할에 속하며 모델 학습에 사용하지 않았습니다.",
   "showcase.pv.alt.02dbbb": "희미한 숙주 세포 위에 밝고 둥근 Toxoplasma 액포가 흩어져 있는 회색조 형광 이미지",
   "showcase.label.toxoplasma": "Toxoplasma",
-  "showcase.note.e3dc1f": "홀드아웃 웰 11개에서 테스트 F1 0.854(모델 카드). 수작업으로 큐레이션한 마스크의 액포 136개. 이 웰에서 IoU 0.5 기준 F1 0.874",
   "showcase.value.4e4117": "Toxoplasma 형광 채널, 회색조",
   "showcase.value.f0c678": "기준 웰 plate7_K07_8, 테스트 분할(학습에서 제외)",
   "showcase.value.6094e3": "1994 × 1994 px, 1024 px로 표시",

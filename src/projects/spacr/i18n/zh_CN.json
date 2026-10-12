@@ -334,7 +334,6 @@
   "showcase.pv.text.5197cd": "一张来自受感染宿主细胞单层的 Toxoplasma 通道荧光图像。纳虫空泡由 spaCR 的 PV 模型分割。该孔属于数据集的留出测试集，未用于训练模型。",
   "showcase.pv.alt.02dbbb": "灰度荧光图像，明亮的圆形 Toxoplasma 空泡散布在暗淡的宿主细胞上",
   "showcase.label.toxoplasma": "Toxoplasma",
-  "showcase.note.e3dc1f": "在 11 个留出孔上测试 F1 为 0.854（模型卡）。人工整理的掩膜中有 136 个空泡；在该孔上 IoU 0.5 时 F1 为 0.874",
   "showcase.value.4e4117": "Toxoplasma 荧光通道，灰度",
   "showcase.value.f0c678": "锚定孔 plate7_K07_8，测试集（未用于训练）",
   "showcase.value.6094e3": "1994 × 1994 px，以 1024 px 显示",

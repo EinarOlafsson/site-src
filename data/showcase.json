@@ -159,7 +159,7 @@
      "model": {
       "display": "toxoplasma_pv_v4 (round 7)",
       "url": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r7",
-      "note": "Test F1 0.854 on 11 held-out wells (model card). 136 vacuoles in the hand-curated mask; F1 0.874 at IoU 0.5 on this well"
+      "note": "Re-scored F1 0.761 on 209 strict hold-out fields, stock cpsam_v2 0.377 (model card). 136 vacuoles in the hand-curated mask; F1 0.874 at IoU 0.5 on this well"
      }
     }
    ],
@@ -206,7 +206,7 @@
      "model": {
       "display": "toxoplasma_plaque_v4 (round 6, cpsam_v2)",
       "url": "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam-r6",
-      "note": "The default plaque model in spaCR since 2026-10-11. Model card: F1 0.815 on 263 held-out fields (v3 0.844). 98 plaques in the hand-drawn mask; F1 0.960 at IoU 0.5 on this well"
+      "note": "The default plaque model in spaCR since 2026-10-11. Model card: re-scored F1 0.765 on 329 strict hold-out fields, stock cpsam_v2 0.338. 98 plaques in the hand-drawn mask; F1 0.960 at IoU 0.5 on this well"
      }
     }
    ],

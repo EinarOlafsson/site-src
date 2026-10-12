@@ -334,7 +334,6 @@
   "showcase.pv.text.5197cd": "Une image de fluorescence du canal Toxoplasma d’un tapis de cellules hôtes infectées. Les vacuoles parasitophores sont segmentées par le modèle PV de spaCR. Ce puits fait partie de la partition de test réservée du jeu de données et n’a pas été utilisé pour entraîner le modèle.",
   "showcase.pv.alt.02dbbb": "Image de fluorescence en niveaux de gris avec des vacuoles de Toxoplasma brillantes et arrondies dispersées sur des cellules hôtes peu visibles",
   "showcase.label.toxoplasma": "Toxoplasma",
-  "showcase.note.e3dc1f": "F1 de test 0,854 sur 11 puits réservés (fiche de modèle). 136 vacuoles dans le masque annoté à la main ; F1 0,874 à IoU 0,5 sur ce puits",
   "showcase.value.4e4117": "Canal de fluorescence Toxoplasma, niveaux de gris",
   "showcase.value.f0c678": "Puits de référence plate7_K07_8, partition de test (exclu de l’entraînement)",
   "showcase.value.6094e3": "1994 × 1994 px, affichée à 1024 px",

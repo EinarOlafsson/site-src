@@ -334,7 +334,6 @@
   "showcase.pv.text.5197cd": "Ein flúrljómunarmynd af Toxoplasma-rásinni úr sýktu einlagi hýsilfrumna. PV-líkan spaCR hlutar safabólur sníkjudýrsins. Þessi brunnur er í fráteknum prófunarhluta gagnasafnsins og var ekki notaður til að þjálfa líkanið.",
   "showcase.pv.alt.02dbbb": "Grátóna flúrljómunarmynd með björtum, ávölum Toxoplasma-safabólum dreifðum yfir daufar hýsilfrumur",
   "showcase.label.toxoplasma": "Toxoplasma",
-  "showcase.note.e3dc1f": "F1 á prófunargögnum 0,854 á 11 fráteknum brunnum (líkanaspjald). 136 safabólur í handyfirfarinni grímu; F1 0,874 við IoU 0,5 í þessum brunni",
   "showcase.value.4e4117": "Toxoplasma-flúrljómunarrás, grátónar",
   "showcase.value.f0c678": "Akkerisbrunnur plate7_K07_8, prófunarhluti (frátekinn frá þjálfun)",
   "showcase.value.6094e3": "1994 × 1994 px, sýnd í 1024 px",

@@ -334,7 +334,6 @@
   "showcase.pv.text.5197cd": "Una imagen de fluorescencia del canal de Toxoplasma de una monocapa de células huésped infectadas. Las vacuolas parasitóforas se segmentan con el modelo de PV de spaCR. Este pocillo pertenece a la partición de prueba reservada del conjunto de datos y no se usó para entrenar el modelo.",
   "showcase.pv.alt.02dbbb": "Imagen de fluorescencia en escala de grises con vacuolas de Toxoplasma brillantes y redondeadas dispersas sobre células huésped tenues",
   "showcase.label.toxoplasma": "Toxoplasma",
-  "showcase.note.e3dc1f": "F1 de prueba 0,854 en 11 pocillos reservados (ficha de modelo). 136 vacuolas en la máscara curada a mano; F1 0,874 con IoU 0,5 en este pocillo",
   "showcase.value.4e4117": "Canal de fluorescencia de Toxoplasma, escala de grises",
   "showcase.value.f0c678": "Pocillo de referencia plate7_K07_8, partición de prueba (reservado del entrenamiento)",
   "showcase.value.6094e3": "1994 × 1994 px, mostrada a 1024 px",

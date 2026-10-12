@@ -334,7 +334,6 @@
   "showcase.pv.text.5197cd": "Ein Fluoreszenzbild des Toxoplasma-Kanals aus einem infizierten Wirtszell-Monolayer. Die parasitophoren Vakuolen werden vom PV-Modell von spaCR segmentiert. Dieses Well gehört zur zurückgehaltenen Testaufteilung des Datensatzes und wurde nicht zum Training des Modells verwendet.",
   "showcase.pv.alt.02dbbb": "Graustufen-Fluoreszenzbild mit hellen, rundlichen Toxoplasma-Vakuolen, verteilt über schwach sichtbare Wirtszellen",
   "showcase.label.toxoplasma": "Toxoplasma",
-  "showcase.note.e3dc1f": "Test-F1 0,854 auf 11 zurückgehaltenen Wells (Modellkarte). 136 Vakuolen in der von Hand kuratierten Maske; F1 0,874 bei IoU 0,5 in diesem Well",
   "showcase.value.4e4117": "Toxoplasma-Fluoreszenzkanal, Graustufen",
   "showcase.value.f0c678": "Anker-Well plate7_K07_8, Testaufteilung (vom Training zurückgehalten)",
   "showcase.value.6094e3": "1994 × 1994 px, dargestellt mit 1024 px",

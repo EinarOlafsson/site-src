@@ -334,7 +334,6 @@
   "showcase.pv.text.5197cd": "En fluorescensbild av Toxoplasma-kanalen från ett infekterat monolager av värdceller. Parasitofora vakuoler segmenteras av spaCR:s PV-modell. Brunnen ingår i datamängdens undanhållna testuppsättning och användes inte för att träna modellen.",
   "showcase.pv.alt.02dbbb": "Gråskalig fluorescensbild med ljusa, rundade Toxoplasma-vakuoler utspridda över svaga värdceller",
   "showcase.label.toxoplasma": "Toxoplasma",
-  "showcase.note.e3dc1f": "Test-F1 0,854 på 11 undanhållna brunnar (modellkort). 136 vakuoler i den handkurerade masken; F1 0,874 vid IoU 0,5 i denna brunn",
   "showcase.value.4e4117": "Toxoplasma-fluorescenskanal, gråskala",
   "showcase.value.f0c678": "Ankarbrunn plate7_K07_8, testuppsättning (undanhållen från träning)",
   "showcase.value.6094e3": "1994 × 1994 px, visad i 1024 px",

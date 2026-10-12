@@ -1,6 +1,6 @@
 {
- "generated": "2026-10-11",
- "spacr_commit": "6a3fd10fc5852a4f4b7c8b98da5dc9053f17dedf",
+ "generated": "2026-10-12",
+ "spacr_commit": "a212fd3aedb88a4a25b815e0ccbc44fb4569cee0",
  "hf_revisions": {
   "model:einarolafsson/cross-channel-cell-from-hoechst-cpsam": "397320ba0471ae9752ee3b36acc79788fbc0ad79",
   "model:einarolafsson/cross-channel-nuclei-from-cellmask-cpsam": "04d1784878261494a5a43e2cc4851d985b49024b",
@@ -22,336 +22,6 @@
   "model:einarolafsson/toxoplasma-pv-segmentation-cpsam-r8": "239f65f160acddca415d2f687dca7f1b3f916b32"
  },
  "numbers": [
-  {
-   "what": "pv_v1 f1 ft",
-   "value": 0.864,
-   "raw": "0.8640",
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam/blob/25aa82e37486e80ff0d778e0c55bed33ae4e9558/README.md"
-  },
-  {
-   "what": "pv_v1 f1 stock",
-   "value": 0.713,
-   "raw": "0.7130",
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam/blob/25aa82e37486e80ff0d778e0c55bed33ae4e9558/README.md"
-  },
-  {
-   "what": "pv_v1 mAP ft",
-   "value": 0.575,
-   "raw": "0.5754",
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam/blob/25aa82e37486e80ff0d778e0c55bed33ae4e9558/round2_vs_round1.csv"
-  },
-  {
-   "what": "pv_v1 mAP stock",
-   "value": 0.322,
-   "raw": 0.32245898246765137,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam/blob/25aa82e37486e80ff0d778e0c55bed33ae4e9558/vanilla_vs_finetuned.json#vanilla_mAP"
-  },
-  {
-   "what": "pv_v1 precision ft",
-   "value": 0.843,
-   "raw": "0.843",
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam/blob/25aa82e37486e80ff0d778e0c55bed33ae4e9558/round2_heldout_metrics.csv"
-  },
-  {
-   "what": "pv_v1 recall ft",
-   "value": 0.886,
-   "raw": "0.8862",
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam/blob/25aa82e37486e80ff0d778e0c55bed33ae4e9558/round2_heldout_metrics.csv"
-  },
-  {
-   "what": "pv_v1 aji ft",
-   "value": 0.809,
-   "raw": "0.8090",
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam/blob/25aa82e37486e80ff0d778e0c55bed33ae4e9558/README.md"
-  },
-  {
-   "what": "pv_v1 aji stock",
-   "value": 0.426,
-   "raw": "0.4260",
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam/blob/25aa82e37486e80ff0d778e0c55bed33ae4e9558/README.md"
-  },
-  {
-   "what": "pv_v1 dice ft",
-   "value": 0.837,
-   "raw": "0.8368",
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam/blob/25aa82e37486e80ff0d778e0c55bed33ae4e9558/round2_vs_round1.csv"
-  },
-  {
-   "what": "pv_v2 f1 cv",
-   "value": 0.817,
-   "raw": 0.817,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r5/blob/9c7cf1424ffeb2b3489f34a371c7fede2e42420a/evaluation/cv_aggregate.json#aggregate/all/f1/mean"
-  },
-  {
-   "what": "pv_v2 mAP cv",
-   "value": 0.556,
-   "raw": 0.5562,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r5/blob/9c7cf1424ffeb2b3489f34a371c7fede2e42420a/evaluation/cv_aggregate.json#aggregate/all/mAP/mean"
-  },
-  {
-   "what": "pv_v2 precision cv",
-   "value": 0.829,
-   "raw": 0.8291,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r5/blob/9c7cf1424ffeb2b3489f34a371c7fede2e42420a/evaluation/cv_aggregate.json#aggregate/all/precision/mean"
-  },
-  {
-   "what": "pv_v2 recall cv",
-   "value": 0.809,
-   "raw": 0.8091,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r5/blob/9c7cf1424ffeb2b3489f34a371c7fede2e42420a/evaluation/cv_aggregate.json#aggregate/all/recall/mean"
-  },
-  {
-   "what": "pv_v2 aji cv",
-   "value": 0.714,
-   "raw": 0.7144,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r5/blob/9c7cf1424ffeb2b3489f34a371c7fede2e42420a/evaluation/cv_aggregate.json#aggregate/all/aji/mean"
-  },
-  {
-   "what": "pv_v2 dice cv",
-   "value": 0.802,
-   "raw": 0.8024,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r5/blob/9c7cf1424ffeb2b3489f34a371c7fede2e42420a/evaluation/cv_aggregate.json#aggregate/all/dice/mean"
-  },
-  {
-   "what": "pv_v2 stock f1 (11 wells, note)",
-   "value": 0.713,
-   "raw": "0.7130",
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r5/blob/9c7cf1424ffeb2b3489f34a371c7fede2e42420a/README.md"
-  },
-  {
-   "what": "pv_v3 f1 ft",
-   "value": 0.86,
-   "raw": 0.8602,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r6/blob/a8295df3a122a4d84bad2497bdf3cc803d54cb0d/qc/summary.json#r6/test/f1"
-  },
-  {
-   "what": "pv_v3 f1 stock",
-   "value": 0.765,
-   "raw": 0.7648,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r6/blob/a8295df3a122a4d84bad2497bdf3cc803d54cb0d/qc/summary.json#stock_cpsam_v2/test/f1"
-  },
-  {
-   "what": "pv_v3 mAP ft",
-   "value": 0.506,
-   "raw": 0.5061,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r6/blob/a8295df3a122a4d84bad2497bdf3cc803d54cb0d/qc/summary.json#r6/test/mAP"
-  },
-  {
-   "what": "pv_v3 mAP stock",
-   "value": 0.362,
-   "raw": 0.362,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r6/blob/a8295df3a122a4d84bad2497bdf3cc803d54cb0d/qc/summary.json#stock_cpsam_v2/test/mAP"
-  },
-  {
-   "what": "pv_v3 precision ft",
-   "value": 0.847,
-   "raw": 0.8468,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r6/blob/a8295df3a122a4d84bad2497bdf3cc803d54cb0d/qc/summary.json#r6/test/precision"
-  },
-  {
-   "what": "pv_v3 precision stock",
-   "value": 0.754,
-   "raw": 0.7539,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r6/blob/a8295df3a122a4d84bad2497bdf3cc803d54cb0d/qc/summary.json#stock_cpsam_v2/test/precision"
-  },
-  {
-   "what": "pv_v3 recall ft",
-   "value": 0.874,
-   "raw": 0.8741,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r6/blob/a8295df3a122a4d84bad2497bdf3cc803d54cb0d/qc/summary.json#r6/test/recall"
-  },
-  {
-   "what": "pv_v3 recall stock",
-   "value": 0.776,
-   "raw": 0.776,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r6/blob/a8295df3a122a4d84bad2497bdf3cc803d54cb0d/qc/summary.json#stock_cpsam_v2/test/recall"
-  },
-  {
-   "what": "pv_v3 aji ft",
-   "value": 0.803,
-   "raw": 0.8026,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r6/blob/a8295df3a122a4d84bad2497bdf3cc803d54cb0d/qc/summary.json#r6/test/aji"
-  },
-  {
-   "what": "pv_v3 aji stock",
-   "value": 0.505,
-   "raw": 0.505,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r6/blob/a8295df3a122a4d84bad2497bdf3cc803d54cb0d/qc/summary.json#stock_cpsam_v2/test/aji"
-  },
-  {
-   "what": "pv_v3 dice ft",
-   "value": 0.906,
-   "raw": 0.9059,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r6/blob/a8295df3a122a4d84bad2497bdf3cc803d54cb0d/qc/summary.json#r6/test/dice"
-  },
-  {
-   "what": "pv_v3 dice stock",
-   "value": 0.643,
-   "raw": 0.6431,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r6/blob/a8295df3a122a4d84bad2497bdf3cc803d54cb0d/qc/summary.json#stock_cpsam_v2/test/dice"
-  },
-  {
-   "what": "pv_v3 test objects",
-   "value": 683,
-   "raw": "683",
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r6/blob/a8295df3a122a4d84bad2497bdf3cc803d54cb0d/README.md"
-  },
-  {
-   "what": "pv_v4 f1 ft",
-   "value": 0.854,
-   "raw": 0.8536,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r7/blob/555ef917ef02cd6b7561545f4b9d1fa62bd8c54a/scorecard.json#f1/finetuned"
-  },
-  {
-   "what": "pv_v4 f1 stock",
-   "value": 0.765,
-   "raw": 0.7648,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r7/blob/555ef917ef02cd6b7561545f4b9d1fa62bd8c54a/scorecard.json#f1/vanilla"
-  },
-  {
-   "what": "pv_v4 mAP ft",
-   "value": 0.492,
-   "raw": 0.4921,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r7/blob/555ef917ef02cd6b7561545f4b9d1fa62bd8c54a/scorecard.json#mAP/finetuned"
-  },
-  {
-   "what": "pv_v4 mAP stock",
-   "value": 0.362,
-   "raw": 0.362,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r7/blob/555ef917ef02cd6b7561545f4b9d1fa62bd8c54a/scorecard.json#mAP/vanilla"
-  },
-  {
-   "what": "pv_v4 precision ft",
-   "value": 0.849,
-   "raw": 0.8493,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r7/blob/555ef917ef02cd6b7561545f4b9d1fa62bd8c54a/scorecard.json#precision/finetuned"
-  },
-  {
-   "what": "pv_v4 precision stock",
-   "value": 0.754,
-   "raw": 0.7539,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r7/blob/555ef917ef02cd6b7561545f4b9d1fa62bd8c54a/scorecard.json#precision/vanilla"
-  },
-  {
-   "what": "pv_v4 recall ft",
-   "value": 0.858,
-   "raw": 0.858,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r7/blob/555ef917ef02cd6b7561545f4b9d1fa62bd8c54a/scorecard.json#recall/finetuned"
-  },
-  {
-   "what": "pv_v4 recall stock",
-   "value": 0.776,
-   "raw": 0.776,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r7/blob/555ef917ef02cd6b7561545f4b9d1fa62bd8c54a/scorecard.json#recall/vanilla"
-  },
-  {
-   "what": "pv_v4 aji ft",
-   "value": 0.776,
-   "raw": 0.7755,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r7/blob/555ef917ef02cd6b7561545f4b9d1fa62bd8c54a/scorecard.json#aji/finetuned"
-  },
-  {
-   "what": "pv_v4 aji stock",
-   "value": 0.505,
-   "raw": 0.505,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r7/blob/555ef917ef02cd6b7561545f4b9d1fa62bd8c54a/scorecard.json#aji/vanilla"
-  },
-  {
-   "what": "pv_v4 dice ft",
-   "value": 0.891,
-   "raw": 0.8905,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r7/blob/555ef917ef02cd6b7561545f4b9d1fa62bd8c54a/scorecard.json#dice/finetuned"
-  },
-  {
-   "what": "pv_v4 dice stock",
-   "value": 0.643,
-   "raw": 0.6431,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r7/blob/555ef917ef02cd6b7561545f4b9d1fa62bd8c54a/scorecard.json#dice/vanilla"
-  },
-  {
-   "what": "pv_v4 n_objects",
-   "value": 683,
-   "raw": 683,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r7/blob/555ef917ef02cd6b7561545f4b9d1fa62bd8c54a/scorecard.json#n_objects"
-  },
-  {
-   "what": "pv_v5 test objects",
-   "value": 3530,
-   "raw": "3,530",
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r8/blob/239f65f160acddca415d2f687dca7f1b3f916b32/README.md"
-  },
-  {
-   "what": "pv_v5 f1 ft",
-   "value": 0.792,
-   "raw": 0.7921031426269137,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r8/blob/239f65f160acddca415d2f687dca7f1b3f916b32/qc/comparison_vs_published.json#models/new_r8_best/overall/f1"
-  },
-  {
-   "what": "pv_v5 f1 stock",
-   "value": 0.559,
-   "raw": 0.5585950692333671,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r8/blob/239f65f160acddca415d2f687dca7f1b3f916b32/qc/comparison_vs_published.json#models/stock_cpsam_v2/overall/f1"
-  },
-  {
-   "what": "pv_v5 precision ft",
-   "value": 0.753,
-   "raw": 0.7530643513789581,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r8/blob/239f65f160acddca415d2f687dca7f1b3f916b32/qc/comparison_vs_published.json#models/new_r8_best/overall/precision"
-  },
-  {
-   "what": "pv_v5 precision stock",
-   "value": 0.463,
-   "raw": 0.4634784233140295,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r8/blob/239f65f160acddca415d2f687dca7f1b3f916b32/qc/comparison_vs_published.json#models/stock_cpsam_v2/overall/precision"
-  },
-  {
-   "what": "pv_v5 recall ft",
-   "value": 0.835,
-   "raw": 0.8354107648725212,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r8/blob/239f65f160acddca415d2f687dca7f1b3f916b32/qc/comparison_vs_published.json#models/new_r8_best/overall/recall"
-  },
-  {
-   "what": "pv_v5 recall stock",
-   "value": 0.703,
-   "raw": 0.7028328611898017,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r8/blob/239f65f160acddca415d2f687dca7f1b3f916b32/qc/comparison_vs_published.json#models/stock_cpsam_v2/overall/recall"
-  },
-  {
-   "what": "plaque_v1 f1 ft",
-   "value": 0.856,
-   "raw": "0.8558579881656805",
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam/blob/39224bed4cca03327d5afc189c71c4859629a04d/final_metrics.csv"
-  },
-  {
-   "what": "plaque_v1 f1 round1",
-   "value": 0.718,
-   "raw": "0.7176301958910655",
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam/blob/39224bed4cca03327d5afc189c71c4859629a04d/final_metrics.csv"
-  },
-  {
-   "what": "plaque_v1 precision ft",
-   "value": 0.832,
-   "raw": "0.8324125230202578",
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam/blob/39224bed4cca03327d5afc189c71c4859629a04d/final_metrics.csv"
-  },
-  {
-   "what": "plaque_v1 precision round1",
-   "value": 0.704,
-   "raw": "0.7041725269573371",
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam/blob/39224bed4cca03327d5afc189c71c4859629a04d/final_metrics.csv"
-  },
-  {
-   "what": "plaque_v1 recall ft",
-   "value": 0.881,
-   "raw": "0.8806624452021432",
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam/blob/39224bed4cca03327d5afc189c71c4859629a04d/final_metrics.csv"
-  },
-  {
-   "what": "plaque_v1 recall round1",
-   "value": 0.732,
-   "raw": "0.7316122747199221",
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam/blob/39224bed4cca03327d5afc189c71c4859629a04d/final_metrics.csv"
-  },
   {
    "what": "plaque 263 objects",
    "value": 12792,
@@ -465,30 +135,6 @@
    "value": 0.642,
    "raw": 0.6418703506907545,
    "source": "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam-r5-geldoc/blob/aed1d1f7ba07da7e53ee05621420a2687a7c5d48/scorecard.json#f1/finetuned"
-  },
-  {
-   "what": "plaque_v4 f1 ft",
-   "value": 0.815,
-   "raw": 0.8154095637384804,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam-r6/blob/c12c0e269389e3b336ec2daa5918566c0b686f28/qc/pipeline_check_vs_v3.json#plaque_v4_cpsam_v2/f1"
-  },
-  {
-   "what": "plaque_v4 f1 v3",
-   "value": 0.844,
-   "raw": 0.8442262372348782,
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam-r6/blob/c12c0e269389e3b336ec2daa5918566c0b686f28/qc/pipeline_check_vs_v3.json#toxoplasma_plaque_v3/f1"
-  },
-  {
-   "what": "plaque_v4 precision",
-   "value": 0.825,
-   "raw": "0.825",
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam-r6/blob/c12c0e269389e3b336ec2daa5918566c0b686f28/README.md"
-  },
-  {
-   "what": "plaque_v4 recall",
-   "value": 0.806,
-   "raw": "0.806",
-   "source": "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam-r6/blob/c12c0e269389e3b336ec2daa5918566c0b686f28/README.md"
   },
   {
    "what": "well_v1 mAP50",
@@ -1023,6 +669,600 @@
    "value": 87,
    "raw": "87",
    "source": "https://huggingface.co/datasets/einarolafsson/models/blob/d559f7c48c281b605c29b6f125c68fda4fc43f10/colony_detector/v1/README.md"
+  },
+  {
+   "what": "pv_v1 f1 ft",
+   "value": 0.793,
+   "raw": "0.7929943502824859",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam.json"
+  },
+  {
+   "what": "pv_v1 f1 stock",
+   "value": 0.402,
+   "raw": "0.40160642570281124",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam.json"
+  },
+  {
+   "what": "pv_v1 precision ft",
+   "value": 0.86,
+   "raw": "0.8604004903964038",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam.json"
+  },
+  {
+   "what": "pv_v1 precision stock",
+   "value": 0.292,
+   "raw": "0.2920542205009365",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam.json"
+  },
+  {
+   "what": "pv_v1 recall ft",
+   "value": 0.735,
+   "raw": "0.7353824659448132",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam.json"
+  },
+  {
+   "what": "pv_v1 recall stock",
+   "value": 0.643,
+   "raw": "0.6426825008732099",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam.json"
+  },
+  {
+   "what": "pv_v1 aji ft",
+   "value": 0.558,
+   "raw": "0.5578912919049481",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam.json"
+  },
+  {
+   "what": "pv_v1 aji stock",
+   "value": 0.052,
+   "raw": "0.05166723430300318",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam.json"
+  },
+  {
+   "what": "pv_v1 dice ft",
+   "value": 0.794,
+   "raw": "0.7940608344634016",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam.json"
+  },
+  {
+   "what": "pv_v1 dice stock",
+   "value": 0.115,
+   "raw": "0.11487659009293376",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam.json"
+  },
+  {
+   "what": "pv_v1 test objects",
+   "value": 14315,
+   "raw": "14315",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam.json"
+  },
+  {
+   "what": "pv_v2 f1 ft",
+   "value": 0.713,
+   "raw": "0.7130144605116796",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r5.json"
+  },
+  {
+   "what": "pv_v2 f1 stock",
+   "value": 0.364,
+   "raw": "0.36382797209815826",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r5.json"
+  },
+  {
+   "what": "pv_v2 precision ft",
+   "value": 0.766,
+   "raw": "0.7658303464755077",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r5.json"
+  },
+  {
+   "what": "pv_v2 precision stock",
+   "value": 0.256,
+   "raw": "0.25598474683991246",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r5.json"
+  },
+  {
+   "what": "pv_v2 recall ft",
+   "value": 0.667,
+   "raw": "0.6670135275754423",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r5.json"
+  },
+  {
+   "what": "pv_v2 recall stock",
+   "value": 0.629,
+   "raw": "0.6286853971557406",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r5.json"
+  },
+  {
+   "what": "pv_v2 aji ft",
+   "value": 0.451,
+   "raw": "0.4506756207360175",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r5.json"
+  },
+  {
+   "what": "pv_v2 aji stock",
+   "value": 0.049,
+   "raw": "0.04878078823857382",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r5.json"
+  },
+  {
+   "what": "pv_v2 dice ft",
+   "value": 0.678,
+   "raw": "0.6781863881840309",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r5.json"
+  },
+  {
+   "what": "pv_v2 dice stock",
+   "value": 0.112,
+   "raw": "0.11156247283508308",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r5.json"
+  },
+  {
+   "what": "pv_v2 test objects",
+   "value": 5766,
+   "raw": "5766",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r5.json"
+  },
+  {
+   "what": "pv_v3 f1 ft",
+   "value": 0.75,
+   "raw": "0.7504325615885309",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r6.json"
+  },
+  {
+   "what": "pv_v3 f1 stock",
+   "value": 0.39,
+   "raw": "0.3898822093950913",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r6.json"
+  },
+  {
+   "what": "pv_v3 precision ft",
+   "value": 0.8,
+   "raw": "0.7997892518440464",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r6.json"
+  },
+  {
+   "what": "pv_v3 precision stock",
+   "value": 0.279,
+   "raw": "0.27942957083277276",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r6.json"
+  },
+  {
+   "what": "pv_v3 recall ft",
+   "value": 0.707,
+   "raw": "0.7068135961508614",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r6.json"
+  },
+  {
+   "what": "pv_v3 recall stock",
+   "value": 0.645,
+   "raw": "0.6447307155051994",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r6.json"
+  },
+  {
+   "what": "pv_v3 aji ft",
+   "value": 0.528,
+   "raw": "0.5277595375267197",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r6.json"
+  },
+  {
+   "what": "pv_v3 aji stock",
+   "value": 0.055,
+   "raw": "0.05527082891216994",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r6.json"
+  },
+  {
+   "what": "pv_v3 dice ft",
+   "value": 0.75,
+   "raw": "0.7498509075512957",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r6.json"
+  },
+  {
+   "what": "pv_v3 dice stock",
+   "value": 0.124,
+   "raw": "0.1235796405524386",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r6.json"
+  },
+  {
+   "what": "pv_v3 test objects",
+   "value": 6443,
+   "raw": "6443",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r6.json"
+  },
+  {
+   "what": "pv_v4 f1 ft",
+   "value": 0.761,
+   "raw": "0.7611462052549666",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r7.json"
+  },
+  {
+   "what": "pv_v4 f1 stock",
+   "value": 0.377,
+   "raw": "0.3771380892782645",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r7.json"
+  },
+  {
+   "what": "pv_v4 precision ft",
+   "value": 0.769,
+   "raw": "0.7686760355029586",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r7.json"
+  },
+  {
+   "what": "pv_v4 precision stock",
+   "value": 0.265,
+   "raw": "0.26469511748773883",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r7.json"
+  },
+  {
+   "what": "pv_v4 recall ft",
+   "value": 0.754,
+   "raw": "0.7537624660018133",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r7.json"
+  },
+  {
+   "what": "pv_v4 recall stock",
+   "value": 0.656,
+   "raw": "0.6556663644605621",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r7.json"
+  },
+  {
+   "what": "pv_v4 aji ft",
+   "value": 0.582,
+   "raw": "0.5819656489765543",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r7.json"
+  },
+  {
+   "what": "pv_v4 aji stock",
+   "value": 0.04,
+   "raw": "0.039576354485982436",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r7.json"
+  },
+  {
+   "what": "pv_v4 dice ft",
+   "value": 0.835,
+   "raw": "0.834775753007006",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r7.json"
+  },
+  {
+   "what": "pv_v4 dice stock",
+   "value": 0.091,
+   "raw": "0.09056691644979822",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r7.json"
+  },
+  {
+   "what": "pv_v4 test objects",
+   "value": 5515,
+   "raw": "5515",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r7.json"
+  },
+  {
+   "what": "pv_v5 f1 ft",
+   "value": 0.733,
+   "raw": "0.7328529490258874",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r8.json"
+  },
+  {
+   "what": "pv_v5 f1 stock",
+   "value": 0.383,
+   "raw": "0.3831417624521073",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r8.json"
+  },
+  {
+   "what": "pv_v5 precision ft",
+   "value": 0.646,
+   "raw": "0.6459048783929999",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r8.json"
+  },
+  {
+   "what": "pv_v5 precision stock",
+   "value": 0.275,
+   "raw": "0.27485787836533304",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r8.json"
+  },
+  {
+   "what": "pv_v5 recall ft",
+   "value": 0.847,
+   "raw": "0.8468512921729476",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r8.json"
+  },
+  {
+   "what": "pv_v5 recall stock",
+   "value": 0.632,
+   "raw": "0.6322087213964103",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r8.json"
+  },
+  {
+   "what": "pv_v5 aji ft",
+   "value": 0.585,
+   "raw": "0.5846087030070517",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r8.json"
+  },
+  {
+   "what": "pv_v5 aji stock",
+   "value": 0.051,
+   "raw": "0.05090396508264559",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r8.json"
+  },
+  {
+   "what": "pv_v5 dice ft",
+   "value": 0.81,
+   "raw": "0.8098308956716249",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r8.json"
+  },
+  {
+   "what": "pv_v5 dice stock",
+   "value": 0.112,
+   "raw": "0.11190124652718378",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r8.json"
+  },
+  {
+   "what": "pv_v5 test objects",
+   "value": 16213,
+   "raw": "16213",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-pv-segmentation-cpsam-r8.json"
+  },
+  {
+   "what": "plaque_v1 f1 ft",
+   "value": 0.707,
+   "raw": "0.707398266659014",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam.json"
+  },
+  {
+   "what": "plaque_v1 f1 stock",
+   "value": 0.258,
+   "raw": "0.2581194997684113",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam.json"
+  },
+  {
+   "what": "plaque_v1 precision ft",
+   "value": 0.83,
+   "raw": "0.8297986938665589",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam.json"
+  },
+  {
+   "what": "plaque_v1 precision stock",
+   "value": 0.205,
+   "raw": "0.20499087752339473",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam.json"
+  },
+  {
+   "what": "plaque_v1 recall ft",
+   "value": 0.616,
+   "raw": "0.616465763017056",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam.json"
+  },
+  {
+   "what": "plaque_v1 recall stock",
+   "value": 0.348,
+   "raw": "0.3484219476816886",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam.json"
+  },
+  {
+   "what": "plaque_v1 aji ft",
+   "value": 0.657,
+   "raw": "0.6571894096613181",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam.json"
+  },
+  {
+   "what": "plaque_v1 aji stock",
+   "value": 0.265,
+   "raw": "0.2649139420033806",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam.json"
+  },
+  {
+   "what": "plaque_v1 dice ft",
+   "value": 0.819,
+   "raw": "0.819115740928949",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam.json"
+  },
+  {
+   "what": "plaque_v1 dice stock",
+   "value": 0.467,
+   "raw": "0.46670781142307854",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam.json"
+  },
+  {
+   "what": "plaque_v1 test objects",
+   "value": 19993,
+   "raw": "19993",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam.json"
+  },
+  {
+   "what": "plaque_v2 f1 ft",
+   "value": 0.455,
+   "raw": "0.4548077568274844",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r5.json"
+  },
+  {
+   "what": "plaque_v2 f1 stock",
+   "value": 0.189,
+   "raw": "0.18908191814691913",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r5.json"
+  },
+  {
+   "what": "plaque_v2 precision ft",
+   "value": 0.5,
+   "raw": "0.5003691126531817",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r5.json"
+  },
+  {
+   "what": "plaque_v2 precision stock",
+   "value": 0.201,
+   "raw": "0.20071833126122393",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r5.json"
+  },
+  {
+   "what": "plaque_v2 recall ft",
+   "value": 0.417,
+   "raw": "0.41685116851168513",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r5.json"
+  },
+  {
+   "what": "plaque_v2 recall stock",
+   "value": 0.179,
+   "raw": "0.17872078720787207",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r5.json"
+  },
+  {
+   "what": "plaque_v2 aji ft",
+   "value": 0.514,
+   "raw": "0.5144667946109783",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r5.json"
+  },
+  {
+   "what": "plaque_v2 aji stock",
+   "value": 0.181,
+   "raw": "0.18122514399163323",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r5.json"
+  },
+  {
+   "what": "plaque_v2 dice ft",
+   "value": 0.696,
+   "raw": "0.6960703552974518",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r5.json"
+  },
+  {
+   "what": "plaque_v2 dice stock",
+   "value": 0.314,
+   "raw": "0.3140579570760985",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r5.json"
+  },
+  {
+   "what": "plaque_v2 test objects",
+   "value": 8130,
+   "raw": "8130",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r5.json"
+  },
+  {
+   "what": "plaque_v3 f1 ft",
+   "value": 0.732,
+   "raw": "0.7321800065695828",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r5-geldoc.json"
+  },
+  {
+   "what": "plaque_v3 f1 stock",
+   "value": 0.128,
+   "raw": "0.12796323827544262",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r5-geldoc.json"
+  },
+  {
+   "what": "plaque_v3 precision ft",
+   "value": 0.676,
+   "raw": "0.6763426721958127",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r5-geldoc.json"
+  },
+  {
+   "what": "plaque_v3 precision stock",
+   "value": 0.083,
+   "raw": "0.08271596309756779",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r5-geldoc.json"
+  },
+  {
+   "what": "plaque_v3 recall ft",
+   "value": 0.798,
+   "raw": "0.7980665950590763",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r5-geldoc.json"
+  },
+  {
+   "what": "plaque_v3 recall stock",
+   "value": 0.282,
+   "raw": "0.2824919441460795",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r5-geldoc.json"
+  },
+  {
+   "what": "plaque_v3 aji ft",
+   "value": 0.628,
+   "raw": "0.6275208230815109",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r5-geldoc.json"
+  },
+  {
+   "what": "plaque_v3 aji stock",
+   "value": 0.173,
+   "raw": "0.1728607043795115",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r5-geldoc.json"
+  },
+  {
+   "what": "plaque_v3 dice ft",
+   "value": 0.811,
+   "raw": "0.8105257618202721",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r5-geldoc.json"
+  },
+  {
+   "what": "plaque_v3 dice stock",
+   "value": 0.334,
+   "raw": "0.33368681478266915",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r5-geldoc.json"
+  },
+  {
+   "what": "plaque_v3 test objects",
+   "value": 8379,
+   "raw": "8379",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r5-geldoc.json"
+  },
+  {
+   "what": "plaque_v4 f1 ft",
+   "value": 0.765,
+   "raw": "0.7647524888904199",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r6.json"
+  },
+  {
+   "what": "plaque_v4 f1 stock",
+   "value": 0.338,
+   "raw": "0.3380247732135861",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r6.json"
+  },
+  {
+   "what": "plaque_v4 precision ft",
+   "value": 0.734,
+   "raw": "0.7344184200079397",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r6.json"
+  },
+  {
+   "what": "plaque_v4 precision stock",
+   "value": 0.291,
+   "raw": "0.291082736426866",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r6.json"
+  },
+  {
+   "what": "plaque_v4 recall ft",
+   "value": 0.798,
+   "raw": "0.797700323392023",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r6.json"
+  },
+  {
+   "what": "plaque_v4 recall stock",
+   "value": 0.403,
+   "raw": "0.4030183255479698",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r6.json"
+  },
+  {
+   "what": "plaque_v4 aji ft",
+   "value": 0.662,
+   "raw": "0.6619416424025951",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r6.json"
+  },
+  {
+   "what": "plaque_v4 aji stock",
+   "value": 0.261,
+   "raw": "0.26098010837796465",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r6.json"
+  },
+  {
+   "what": "plaque_v4 dice ft",
+   "value": 0.839,
+   "raw": "0.838814491722459",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r6.json"
+  },
+  {
+   "what": "plaque_v4 dice stock",
+   "value": 0.429,
+   "raw": "0.42911704590170285",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r6.json"
+  },
+  {
+   "what": "plaque_v4 test objects",
+   "value": 13915,
+   "raw": "13915",
+   "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r6.json"
   }
  ]
 }
