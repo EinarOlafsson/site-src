@@ -4,7 +4,7 @@ name: Build and deploy
 #   push to main           site source changed
 #   workflow_dispatch      manual run (force=true rebuilds even if nothing changed)
 #   repository_dispatch    event type "spacr-release", optional, sent by spaCR's release workflow
-#   schedule "23 * * * *"  hourly release check: rebuild only if PyPI or GitHub has a new spaCR or ParaScape version
+#   schedule "23 * * * *"  hourly release check: rebuild if versions or spaCR release assets changed
 #   schedule "17 6 * * *"  daily full rebuild: Zenodo DOI and the papers check
 on:
   push:
@@ -35,6 +35,15 @@ jobs:
     outputs:
       build: ${{ steps.cmp.outputs.build }}
     steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Test release synchronization
+        run: node --test tools/releases.test.mjs
+
       - name: Compare published spaCR version with the deployed site
         id: cmp
         env:
@@ -54,8 +63,12 @@ jobs:
             echo "build=true" >> "$GITHUB_OUTPUT"; echo "Forced manual rebuild."; exit 0
           fi
           pypi=$(curl -fsS --retry 3 https://pypi.org/pypi/spacr/json | jq -r .info.version)
-          tag=$(curl -fsS --retry 3 -H "Authorization: Bearer $GH_TOKEN" https://api.github.com/repos/EinarOlafsson/spacr/releases/latest | jq -r .tag_name)
+          release_file="$RUNNER_TEMP/spacr-release.json"
+          live_file="$RUNNER_TEMP/spacr-live.json"
+          curl -fsS --retry 3 -H "Authorization: Bearer $GH_TOKEN" https://api.github.com/repos/EinarOlafsson/spacr/releases/latest > "$release_file"
+          tag=$(jq -r .tag_name "$release_file")
           live=$(curl -fsS --retry 3 "https://einarolafsson.github.io/build.json?t=$(date +%s)" || echo '{}')
+          printf '%s\n' "$live" > "$live_file"
           live_v=$(echo "$live" | jq -r '.spacr.version // ""')
           live_tag=$(echo "$live" | jq -r '.spacr.release // ""')
           live_sp=$(echo "$live" | jq -r '.parascape.version // ""')
@@ -65,12 +78,13 @@ jobs:
             sp="$live_sp"
           fi
           echo "PyPI $pypi, GitHub release $tag, ParaScape $sp; site shows $live_v / $live_tag / $live_sp"
-          if [ "$pypi" != "$live_v" ] || [ "$tag" != "$live_tag" ] || [ "$sp" != "$live_sp" ]; then
+          decision=$(node tools/check_release.mjs "$pypi" "$release_file" "$sp" "$live_file")
+          if [ "$decision" = "build=true" ]; then
             echo "build=true" >> "$GITHUB_OUTPUT"
-            echo "### Release changed: spaCR PyPI $pypi, release $tag, ParaScape $sp (site had $live_v, $live_tag, $live_sp)" >> "$GITHUB_STEP_SUMMARY"
+            echo "### Release version or assets changed: spaCR PyPI $pypi, release $tag, ParaScape $sp (site had $live_v, $live_tag, $live_sp)" >> "$GITHUB_STEP_SUMMARY"
           else
             echo "build=false" >> "$GITHUB_OUTPUT"
-            echo "No new spaCR or ParaScape version; nothing to do." >> "$GITHUB_STEP_SUMMARY"
+            echo "No new spaCR or ParaScape version or spaCR assets; nothing to do." >> "$GITHUB_STEP_SUMMARY"
           fi
 
   deploy:

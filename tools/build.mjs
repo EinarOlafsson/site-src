@@ -20,6 +20,7 @@
 //    anywhere in dist/.
 // 6. Pages with an i18n/ folder (see tools/i18n.mjs) are also built once per
 //    i18n/<lang>.json at <page>/<lang>/index.html, from the same template.
+import { installerAssets, releaseAssetsFingerprint, requireMatchingVersions } from "./releases.mjs";
 import { createCipheriv, createHash, createHmac } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
@@ -98,6 +99,8 @@ async function spacrMeta() {
   const gh = process.env.GITHUB_TOKEN ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` } : {};
   const pypi = await getJSON("https://pypi.org/pypi/spacr/json");
   const rel = await getJSON("https://api.github.com/repos/EinarOlafsson/spacr/releases/latest", gh);
+  requireMatchingVersions(pypi.info.version, rel.tag_name);
+  installerAssets(rel.assets);
   const cff = parseCff(await getText("https://raw.githubusercontent.com/EinarOlafsson/spacr/main/CITATION.cff"));
   let zen = null;
   const concept = cff.conceptDoi || "10.5281/zenodo.21343316";
@@ -115,7 +118,7 @@ async function spacrMeta() {
     releaseTag: rel.tag_name,
     releaseUrl: rel.html_url,
     releaseDate: (rel.published_at || "").slice(0, 10),
-    assets: rel.assets.map((a) => ({ name: a.name, url: a.browser_download_url, size: a.size })),
+    assets: rel.assets.map((a) => ({ name: a.name, url: a.browser_download_url, size: a.size, updatedAt: a.updated_at })),
     cff,
     conceptDoi: concept,
     versionDoi: zen ? zen.doi : cff.doi,
@@ -186,23 +189,17 @@ function pythonRange(spec) {
 }
 
 function spacrVars(m, tr) {
-  const installers = [
-    [/Windows.*\.exe$/i, tr("install.os.windows"), "windows"],
-    [/macOS.*\.pkg$/i, tr("install.os.macos"), "macos"],
-    [/Linux.*\.run$/i, tr("install.os.linux"), "linux"]
-  ];
+  requireMatchingVersions(m.version, m.releaseTag);
   const links = [];
-  for (const [re, label, os] of installers) {
-    const a = m.assets.find((x) => re.test(x.name));
-    if (a) links.push([
+  for (const { asset: a, label, os } of installerAssets(m.assets)) {
+    links.push([
       `            <li class="os">`,
       `              <img src="/assets/img/os/${os}.webp" width="64" height="75" alt="" loading="lazy" decoding="async">`,
-      `              <span class="os-name">${esc(label)}</span>`,
+      `              <span class="os-name">${esc(tr(label))}</span>`,
       `              <span class="os-file">${esc(a.name)}</span>`,
       `              <a class="btn" href="${esc(a.url)}">${esc(tr("install.download"))} <span class="sz">${fmtSize(a.size)}</span></a>`,
       `            </li>`].join("\n"));
   }
-  if (!links.length) throw new Error("no installers found in the latest release");
   const sha = m.assets.find((x) => /SHA256SUMS/i.test(x.name));
   const authors = m.cff.authors;
   const year = (m.releaseDate || new Date().toISOString()).slice(0, 4);
@@ -840,7 +837,7 @@ async function main() {
   log(`leak check passed: ${sentinels.size} protected-only words, none found in ${walk(DIST).length} built files`);
   fs.writeFileSync(path.join(DIST, ".protected-digest"), digest.digest("hex") + "\n");
   fs.writeFileSync(path.join(DIST, "build.json"), JSON.stringify({
-    spacr: { version: meta.version, release: meta.releaseTag, versionDoi: meta.versionDoi, conceptDoi: meta.conceptDoi },
+    spacr: { version: meta.version, release: meta.releaseTag, assetsFingerprint: releaseAssetsFingerprint(meta.assets), versionDoi: meta.versionDoi, conceptDoi: meta.conceptDoi },
     parascape: { version: sp.version },
     built: new Date().toISOString().replace(/\.\d+Z$/, "Z"),
     trigger: process.env.GITHUB_EVENT_NAME || "local"
