@@ -3,10 +3,6 @@
 <head>
 {{HEAD}}
 <title data-i18n="head.title">spaCR: spatial phenotype analysis of CRISPR-Cas9 screens</title>
-<link rel="preload" as="image" href="/assets/img/spacr/overview-strip.dark.webp" media="(min-width: 601px) and (prefers-color-scheme: dark)" fetchpriority="high">
-<link rel="preload" as="image" href="/assets/img/spacr/overview-strip.light.webp" media="(min-width: 601px) and (prefers-color-scheme: light)" fetchpriority="high">
-<link rel="preload" as="image" href="/assets/img/spacr/overview-stack.dark.webp" media="(max-width: 600px) and (prefers-color-scheme: dark)" fetchpriority="high">
-<link rel="preload" as="image" href="/assets/img/spacr/overview-stack.light.webp" media="(max-width: 600px) and (prefers-color-scheme: light)" fetchpriority="high">
 <meta name="description" data-i18n-content="head.description" content="spaCR {{SPACR_VERSION}}: segmentation, single-cell measurement, classification, barcode mapping and regression for image-based pooled CRISPR screens. Pipeline, published models, screen results, papers and installation.">
 <script src="/assets/js/volcano.js?v={{ASSET_VERSION}}" defer></script>
 </head>
@@ -62,7 +58,7 @@
           <source data-theme-dark="(max-width: 600px)" media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset="/assets/img/spacr/overview-stack.dark.webp" width="800" height="1414">
           <source media="(max-width: 600px)" srcset="/assets/img/spacr/overview-stack.light.webp" width="800" height="1414">
           <source data-theme-dark="" media="(prefers-color-scheme: dark)" srcset="/assets/img/spacr/overview-strip.dark.webp" width="1600" height="400">
-          <img src="/assets/img/spacr/overview-strip.light.webp" width="1600" height="400" data-i18n-alt="ov.strip2.alt" alt="One field of HeLa cells infected with Toxoplasma in five panels: the image, thin cell, nucleus and vacuole outlines, a table of measured values, cells coloured by an infection score, and a volcano plot with GRA14 labelled" fetchpriority="high">
+          <img src="/assets/img/spacr/overview-strip.light.webp" width="1600" height="400" data-i18n-alt="ov.strip2.alt" alt="One field of HeLa cells infected with Toxoplasma in five panels: the image, thin cell, nucleus and vacuole outlines, a table of measured values, cells coloured by an infection score, and a volcano plot with GRA14 labelled" loading="lazy" decoding="async">
         </picture></a>
         <ol class="ov-steps" aria-hidden="true"><li data-i18n="ov.strip.1">Image</li><li data-i18n="ov.strip.2">Masks</li><li data-i18n="ov.strip.3">Measurements</li><li data-i18n="ov.strip.4">Classifier scores</li><li data-i18n="ov.strip.5">Hits</li></ol>
         <figcaption data-i18n="ov.strip2.caption">One whole field of HeLa cells infected with <i>Toxoplasma</i> (MTOC screen plate 2, well P08, field 16; <a href="https://huggingface.co/datasets/einarolafsson/cross-channel-cell-from-hoechst">public data</a>, CC BY 4.0) through spaCR: image, outlines, Measure values and an infection score. The hit list comes from a different public screen, the four-plate GFP-TSG101 <a href="https://huggingface.co/datasets/einarolafsson/spacr-example-screen">example screen</a>. See <a href="#pipeline">Pipeline</a>.</figcaption>
