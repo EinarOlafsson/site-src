@@ -762,3 +762,7 @@ html:not(.js) .fc-front { aspect-ratio: 388 / 252; }
   .fc-legend, .fc-hint { top: auto; bottom: calc(20 * var(--u)); }
 }
 @container (max-width: 480px) { .fc-facts > div + div { display: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  #fx, .fc-hint svg, .fc-morebtn svg { transition: none; }
+}
