@@ -1,0 +1,36 @@
+name: Audit published website
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: website-audit
+  cancel-in-progress: false
+
+jobs:
+  lighthouse:
+    if: github.repository == 'EinarOlafsson/EinarOlafsson.github.io'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.19.0'
+      - name: Install pinned audit tool
+        run: npm install --prefix "$RUNNER_TEMP/website-audit" --no-save --ignore-scripts --no-audit --no-fund lighthouse@13.0.1
+      - name: Measure published mobile pages
+        env:
+          AUDIT_ROOT: ${{ github.workspace }}
+          AUDIT_REVISION: ${{ github.sha }}
+          AUDIT_REPOSITORY: ${{ github.repository }}
+          AUDIT_TEMP: ${{ runner.temp }}/website-audit-results
+          LIGHTHOUSE_CLI: ${{ runner.temp }}/website-audit/node_modules/lighthouse/cli/index.js
+        run: |
+          export CHROME_PATH="$(command -v google-chrome)"
+          node .github/scripts/website-audit.mjs

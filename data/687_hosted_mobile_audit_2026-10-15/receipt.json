@@ -1,0 +1,66 @@
+{
+  "schema": 1,
+  "items": [
+    "N686",
+    "N687"
+  ],
+  "status": "Source and deterministic checks ready for independent review; actual hosted Lighthouse acceptance pending",
+  "base_commit": "f1386095165efdb8e485533a11bb05f62d391a6a",
+  "source_sha256": {
+    "src/.github/workflows/website-audit.yml": "ec90dddf085a3d3be322c717b5f3e7ed88871a3c9cf1ac8375dc3801ff59bdbd",
+    "src/.github/scripts/website-audit.mjs": "9bb393e1c2ec81f3242bf46b967a8269b7eaad07d03c939f78ac61336b4f8bc0",
+    "tools/website-audit.test.mjs": "c2336bdb6182102bca793b8ab97ebac9e248f8f11e215dd4a0426dba70154470"
+  },
+  "normal_publication": "Existing site-src build copyPublic carries src/.github files into the public output repository; existing protected-page encryption and privacy leak gates are unchanged. No local full site build or disposable output deployment.",
+  "workflow": {
+    "trigger": "workflow_dispatch only",
+    "repository": "EinarOlafsson/EinarOlafsson.github.io",
+    "runner": "standard ubuntu-latest",
+    "timeout_minutes": 25,
+    "concurrency": "website-audit, cancel-in-progress false",
+    "permissions": "contents read, checkout does not persist credentials",
+    "secrets": false,
+    "artifact_upload": false,
+    "deployment": false
+  },
+  "audit": {
+    "lighthouse": "13.0.1",
+    "node": "22.19.0",
+    "chrome": "Runner installed full version recorded and rechecked before/after every sample; Lighthouse reduced hostUA major must match. No Chrome version inferred from a reduced UA.",
+    "routes": [
+      "/",
+      "/projects/spacr/",
+      "/projects/parascape/",
+      "/projects/timepose/",
+      "/projects/cellect/"
+    ],
+    "samples_per_route": 3,
+    "every_sample_must_pass": true,
+    "minimum_performance": 0.9,
+    "minimum_accessibility": 0.95,
+    "transfer_limit_exclusive_bytes": 1000000,
+    "cold": "Each CLI call launches its normal fresh profile; storage reset remains enabled and report config must be mobile/simulated. No reused user-data-dir, cookie, login or decryption.",
+    "identity": "Exact public checkout build.json and five HTML byte snapshots must match live before/after; build identity is checked before every measurement. Reports retain public revision, actual build facts and hashes.",
+    "evidence": "Full JSON reports gzip/base64 in bounded job-log chunks with raw/compressed hashes, sample summaries and actual audit failures. No billed artifact upload or external report service."
+  },
+  "validation": {
+    "node_cases": 22,
+    "result": "22 pass,0 fail,0 skipped,376.257587ms",
+    "test_log_sha256": "561817f368cc22b012fcc506bc1cb4088b7aa1fab9e5c879d57ebecb97ad477b",
+    "test_log_gzip_sha256": "3b35442c231a9d48191258a5b7c7a2ef35633a31cebc773b86602184d49ae04c",
+    "yaml": "Actual YAML parsed; manual trigger, one public standard runner,25-minute timeout and read-only permissions verified.",
+    "covered": "URL allowlist; score/transfer boundaries; wrong/missing/error/warm/desktop reports; reduced Chrome UA; actual command arguments and changed browser refusal; bounded HTTP/status/redirect policy; full report log reconstruction; all15 measurements including failing sample; before/during/after artifact drift; workflow constraints."
+  },
+  "primary_references": [
+    "https://docs.github.com/en/actions/how-tos/write-workflows/choose-where-workflows-run/choose-the-runner-for-a-job",
+    "https://raw.githubusercontent.com/GoogleChrome/lighthouse/v13.0.1/package.json",
+    "https://raw.githubusercontent.com/GoogleChrome/lighthouse/v13.0.1/cli/cli-flags.js",
+    "https://raw.githubusercontent.com/GoogleChrome/lighthouse/v13.0.1/cli/run.js"
+  ],
+  "limits": [
+    "No hosted run/score/publication has occurred for this change.",
+    "Standard public runner measurements do not prove physical mid-range laptop60fps or human accessibility.",
+    "Protected project pages are audited only as their existing locked public view.",
+    "A failing measured threshold remains a real open acceptance gate; no whole item completion is claimed."
+  ]
+}
