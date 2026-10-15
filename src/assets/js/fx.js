@@ -29,7 +29,8 @@
  * where WebGL is software-rendered or a frame takes over 25 ms (localStorage
  * "fx-motion" = "always" skips that check, e.g. for tests).
  * Reduced motion: one still frame, no loop. Pause: the same, until resumed.
- * No WebGL: the CSS gradient in site.css stays visible.
+ * No WebGL, or a major performance caveat: the CSS gradient stays visible.
+ * The existing explicit "fx-motion" = "always" override permits either context.
  */
 (function () {
   "use strict";
@@ -331,11 +332,16 @@
 
   function makeField(canvas) {
     var gl = null;
+    var allowSlow = store.get("fx-motion") === "always";
     try {
-      var opts = { antialias: false, alpha: false, depth: false, stencil: false, powerPreference: "low-power", preserveDrawingBuffer: false };
+      var opts = { antialias: false, alpha: false, depth: false, stencil: false, powerPreference: "low-power", preserveDrawingBuffer: false, failIfMajorPerformanceCaveat: !allowSlow };
       gl = canvas.getContext("webgl", opts) || canvas.getContext("experimental-webgl", opts);
     } catch (e) { gl = null; }
     if (!gl) return null;
+    var renderer = "";
+    try { var dbg = gl.getExtension("WEBGL_debug_renderer_info"); if (dbg) renderer = String(gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) || ""); } catch (e) { renderer = ""; }
+    var software = /swiftshader|llvmpipe|softpipe|software|basic render/i.test(renderer);
+    if (software && !allowSlow) return null;
 
     var small = Math.min(window.innerWidth, window.innerHeight) < 600 || (navigator.hardwareConcurrency || 4) <= 4;
     var owned = [];
@@ -571,9 +577,7 @@
       boot: function (slug) { use(slug); },
       current: function () { return themeSlug; },
       slow: function () {
-        var r = "";
-        try { var dbg = gl.getExtension("WEBGL_debug_renderer_info"); if (dbg) r = String(gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) || ""); } catch (e) { r = ""; }
-        if (/swiftshader|llvmpipe|softpipe|software|basic render/i.test(r)) return true;
+        if (software) return true;
         var t0 = performance.now();
         draw(0);
         try { gl.finish(); } catch (e) { /* timing only */ }

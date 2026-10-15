@@ -1,0 +1,87 @@
+{
+  "status": "Source correction and functional validation complete; new hosted scores pending",
+  "base": "f2115f8202b4421bc70922712076bb0b7c416949",
+  "source": "src/assets/js/fx.js",
+  "source_sha256": "87fc673736e4495bf85d646304efcc1cab87bafc37386fc18782aba2dec28889",
+  "test_sha256": "d2c1493ae6da7ab64997ce6169fcc107ca22ef7226df089618f2a4d27fbdb402",
+  "trigger": {
+    "audit_run": 38752383804,
+    "failed_sample": "home1 performance79/TBT751ms",
+    "full_15_reports_spacr_commit": "35560a089a",
+    "attribution": "The report attributes410ms to field.js and124/128ms to fx.js; it also attributes474ms to Lighthouse evaluation. Not all blocking time is attributed to site shaders."
+  },
+  "change": "Request caveat refusal on both context names; classify the existing software-renderer strings before factory/shader/draw. Existing fx-motion=always permits software, and existing slow() reuses the classification. CSS fallbacks and every theme/program/render body remain unchanged. No audit/UA-specific branch.",
+  "primary_contract": "https://registry.khronos.org/webgl/specs/latest/1.0/#WEBGLCONTEXTATTRIBUTES",
+  "validation": {
+    "initial_node": "4FAIL/1PASS on prior source;5PASS after caveat-only patch",
+    "accepted_software_regression": "1FAIL/5deselected against caveat-only source",
+    "final_node": "6PASS, no failures/skips",
+    "caveat_only_browser": "FAIL timeout31.60s, preserved exact source/script/log; Chrome accepts explicit SwiftShader despite caveat request",
+    "final_browser": "PASS four CPU-SwiftShader scenarios, real Chrome154.0.8037.97; baseline creates/draws software context, candidate dark/light CSS remain visible, explicit always still draws",
+    "browser_command": "bash run-context-browser.sh; shared flock,4G,threads1,CUDA hidden,timeout75s; local static fixture and actual entire fx.js routed",
+    "no_hardware_gpu": true
+  },
+  "limits": [
+    "No local timing or Lighthouse result claim.",
+    "No accelerated hardware or physical60fps claim; accelerated path covered deterministically and its rendering implementation unchanged.",
+    "No full new site build yet; normal production encryption/i18n/leak/build gates required before second hosted audit."
+  ],
+  "artifacts": {
+    "caveat-only-context-browser.exit": {
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "bytes": 2
+    },
+    "caveat-only-context-browser.log.gz": {
+      "sha256": "55c299e76393655e88131deedcac78680e60f8b4f14d8fc79a06a36ec7088018",
+      "bytes": 238
+    },
+    "caveat-only-context-browser.mjs": {
+      "sha256": "c5aa4bc155095822427ae85313854ffe9f2b735858621371a060990d0794c95b",
+      "bytes": 4869
+    },
+    "caveat-only-context-browser.time.gz": {
+      "sha256": "d24846431370378296f1c2be50eec59ad60f72ca44d6b01572c29e12672e6383",
+      "bytes": 523
+    },
+    "context-accepted-software-before.log.gz": {
+      "sha256": "2714742a1a402309cd6409b57ae4299e431ba2b72ed0b036d12915f36efed854",
+      "bytes": 733
+    },
+    "context-after.log.gz": {
+      "sha256": "d07dbb11b676f2ed215181a1d86f0671844a63372d5e0de74640f41542f5ac5b",
+      "bytes": 412
+    },
+    "context-before.log.gz": {
+      "sha256": "cb1ad4e3bd7f9af13bb4b02c58cdc41c7520aecdf65ed34b436f9e4a76532b66",
+      "bytes": 941
+    },
+    "context-browser.exit": {
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    "context-browser.log.gz": {
+      "sha256": "fcf6e0f5cb12d88e8425f13480044e677dbd53f52902f017551109c9a45d271c",
+      "bytes": 1119
+    },
+    "context-browser.mjs": {
+      "sha256": "da852b86cdc621d3c8411abe7d4f3ac3364bfda278984bbf35e1fd5b48faae81",
+      "bytes": 5014
+    },
+    "context-browser.time.gz": {
+      "sha256": "7ed305d096aebe43c783cb2ae7f38aa0c1f827e894e47fe45b28bb89cb1cfd18",
+      "bytes": 495
+    },
+    "context-caveat-only-source.js.gz": {
+      "sha256": "5b80f8214f0da4695f23c5d8604f64e0472c964c1b5e7e688c85e862fe9b8e34",
+      "bytes": 11512
+    },
+    "context-final-node.log.gz": {
+      "sha256": "7508c065c94ab6337b01f835a51cfac7bc82a3523ad9bc16c544f9c5686ebb1b",
+      "bytes": 457
+    },
+    "run-context-browser.sh": {
+      "sha256": "1c0676acc4a1e34f1f12343375ab0615e50502558d47f6452fa00e9f69a8998d",
+      "bytes": 624
+    }
+  }
+}
