@@ -12,6 +12,7 @@
 // in the build. Keys that start with "_" are metadata, e.g. "_status".
 // i18n/en.json is the generated reference (node tools/check_i18n.mjs --write-en).
 import { createHash } from "node:crypto";
+import { MASK_STRINGS } from "./mask-generator.mjs";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -314,7 +315,7 @@ export function generatedStrings(dataDir, withShowcase = true) {
   let mk = [];
   const mp = path.join(dataDir, "models.json");
   if (fs.existsSync(mp)) mk = modelKeys(JSON.parse(fs.readFileSync(mp, "utf8")));
-  return [...Object.entries(FIXED), ...showcaseKeys(sc), ...mk];
+  return [...Object.entries(FIXED), ...Object.entries(MASK_STRINGS), ...showcaseKeys(sc), ...mk];
 }
 
 // English reference for a page: template keys, then generated keys.

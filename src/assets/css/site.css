@@ -766,3 +766,16 @@ html:not(.js) .fc-front { aspect-ratio: 388 / 252; }
 @media (prefers-reduced-motion: reduce) {
   #fx, .fc-hint svg, .fc-morebtn svg { transition: none; }
 }
+
+/* Mask-generator controls share the existing page palette and native focus. */
+.mask-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:2rem;margin-top:1.5rem}
+.mask-family-links{line-height:2.2}.mask-family-links [aria-current="true"]{font-weight:700;text-decoration-thickness:3px}
+.mask-generator [hidden]{display:none!important}
+.mask-generator label{display:block;margin:.65rem 0}.mask-generator label>span{display:block}
+.mask-generator input:not([type="radio"]):not([type="checkbox"]),.mask-generator select,.mask-generator textarea{display:block;width:100%;max-width:100%;box-sizing:border-box;padding:.6rem;background:var(--bg);color:inherit;border:1px solid var(--line);border-radius:6px;font:inherit}
+.mask-generator fieldset{min-width:0;margin:1rem 0;padding:1rem;border:1px solid var(--line);border-radius:8px}
+.mask-generator legend{padding:0 .4rem;font-weight:600}.mask-generator button:disabled{opacity:.55;cursor:not-allowed}
+.mask-generator :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.mask-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem 1rem}
+.mask-family{scroll-margin-top:10rem}.mask-family article{margin:1rem 0}.mask-family table{width:100%}
+@media(max-width:760px){.mask-layout{grid-template-columns:1fr}.mask-fields{grid-template-columns:1fr}}

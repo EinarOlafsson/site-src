@@ -20,6 +20,7 @@
 //    anywhere in dist/.
 // 6. Pages with an i18n/ folder (see tools/i18n.mjs) are also built once per
 //    i18n/<lang>.json at <page>/<lang>/index.html, from the same template.
+import { renderMaskGenerator } from "./mask-generator.mjs";
 import { installerAssets, releaseAssetsFingerprint, requireMatchingVersions } from "./releases.mjs";
 import { createCipheriv, createHash, createHmac } from "node:crypto";
 import { execFileSync } from "node:child_process";
@@ -755,7 +756,9 @@ async function main() {
   log(`ParaScape ${sp.version} (PyPI, ${sp.released}), Python ${sp.requiresPython}`);
   const stats = await statsVars(readJSON(path.join(DATA, "papers.json")).papers.length);
   const ASSET_VERSION = assetVersion();
-  const varsFor = (tr) => ({ ...spacrVars(meta, tr), ...papersVars(tr), ...stats, ...parascapeVars(sp), ...modelsVars(tr, zs), ASSET_VERSION });
+  const maskConfig = readJSON(path.join(DATA, "mask-generator.json"));
+  const maskSnapshot = readJSON(path.join(DATA, "models.json"));
+  const varsFor = (tr, withMask = false) => ({ MASK_GENERATOR_HTML: withMask ? renderMaskGenerator(maskConfig, maskSnapshot, zs, tr) : "", ...spacrVars(meta, tr), ...papersVars(tr), ...stats, ...parascapeVars(sp), ...modelsVars(tr, zs), ASSET_VERSION });
   await refreshPaperCandidates();
 
   const i18nPages = new Map();
@@ -769,7 +772,7 @@ async function main() {
   }
   const spacrI18n = i18nPages.get(path.join("projects", "spacr"));
   const enTr = translator(null, englishFor(readPartials(PARTIALS, fs.readFileSync(path.join(SRC, "projects", "spacr", "index.html"), "utf8")), DATA));
-  const enVars = { ...varsFor(enTr), ...NO_LANG, SPACR_LANGS: spacrI18n ? spacrI18n.langs.map((l) => l.tag).join(" ") : "" };
+  const enVars = { ...varsFor(enTr, true), ...NO_LANG, SPACR_LANGS: spacrI18n ? spacrI18n.langs.map((l) => l.tag).join(" ") : "" };
 
   copyPublic();
   let publicText = "";
@@ -788,7 +791,7 @@ async function main() {
       const own = translator(lang.dict, multi.english, multi.warn);
       const tr = (id) => (multi.english.has(id) ? own(id) : enTr(id));
       const known = [...multi.english].filter(([k, en]) => typeof lang.dict[k] === "string" && lang.dict[k].trim() && sameSignature(lang.dict[k], en) && (!/<[^>]*>/.test(lang.dict[k]) || /<[^>]*>/.test(en))).length;
-      const vars = { ...varsFor(tr), ...langVars(multi.home, multi.langs, lang, tr), SPACR_LANGS: enVars.SPACR_LANGS };
+      const vars = { ...varsFor(tr, page === "spacr"), ...langVars(multi.home, multi.langs, lang, tr), SPACR_LANGS: enVars.SPACR_LANGS };
       const html = render(tpl, page, vars, { lang, english: multi.english, home: multi.home, warn: multi.warn });
       fs.mkdirSync(path.join(path.dirname(f), lang.tag), { recursive: true });
       fs.writeFileSync(path.join(path.dirname(f), lang.tag, "index.html"), html);

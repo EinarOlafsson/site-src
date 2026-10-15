@@ -4,6 +4,7 @@
 {{HEAD}}
 <title data-i18n="head.title">spaCR: spatial phenotype analysis of CRISPR-Cas9 screens</title>
 <meta name="description" data-i18n-content="head.description" content="spaCR {{SPACR_VERSION}}: segmentation, single-cell measurement, classification, barcode mapping and regression for image-based pooled CRISPR screens. Pipeline, published models, screen results, papers and installation.">
+<script type="module" src="/assets/js/mask-generator.js?v={{ASSET_VERSION}}"></script>
 <script src="/assets/js/volcano.js?v={{ASSET_VERSION}}" defer></script>
 </head>
 <body data-page="spacr">
@@ -15,6 +16,7 @@
         <a role="tab" id="tab-overview" href="#overview" aria-controls="overview" data-i18n="tabs.overview" aria-selected="true">Overview</a>
         <a role="tab" id="tab-pipeline" href="#pipeline" aria-controls="pipeline" data-i18n="tabs.pipeline" aria-selected="false">Pipeline</a>
         <a role="tab" id="tab-models" href="#models" aria-controls="models" data-i18n="tabs.models" aria-selected="false">Models</a>
+        <a role="tab" id="tab-mask-generator" href="#mask-generator" aria-controls="mask-generator" data-i18n="mask.title" aria-selected="false">Mask generator</a>
         <a role="tab" id="tab-screen" href="#screen" aria-controls="screen" data-i18n="tabs.screen" aria-selected="false">Screen results</a>
         <a role="tab" id="tab-phenotypes" href="#phenotypes" aria-controls="phenotypes" data-i18n="tabs.phenotypes" aria-selected="false">Phenotypes</a>
         <a role="tab" id="tab-assays" href="#assays" aria-controls="assays" data-i18n="tabs.assays" aria-selected="false">Assays and QC</a>
@@ -184,6 +186,12 @@
 {{MODELS_HTML}}
       </div>
       <p class="note" style="margin-top:48px" data-i18n="models.more">All models, with model cards, metrics and training data: <a href="https://einarolafsson.github.io/spacr/model_zoo.html">model zoo documentation</a> and <a href="https://huggingface.co/einarolafsson">Hugging Face</a>.</p>
+    </div>
+  </section>
+
+  <section id="mask-generator" class="panel-sec" role="tabpanel" aria-labelledby="tab-mask-generator" tabindex="-1">
+    <div class="wrap"><h2 data-i18n="mask.title">Mask generator</h2>
+{{MASK_GENERATOR_HTML}}
     </div>
   </section>
 
