@@ -60,7 +60,7 @@ export const MASK_STRINGS = {
   "mask.auto": "Auto diameter",
   "mask.native": "Use native scale explicitly",
   "mask.flow": "Flow threshold",
-  "mask.score": "Cell-score threshold (logits)",
+  "mask.cellprob": "Cell probability threshold",
   "mask.magnification": "Magnification",
   "mask.confidence": "Detection confidence",
   "mask.axis": "Minimum well axis ratio",
@@ -88,7 +88,6 @@ export const MASK_STRINGS = {
   "mask.postprocess": "Building masks and packaging the ZIP…",
   "mask.done_objects": "Done: {count} objects.",
   "mask.done_wells": "Done: {count} wells.",
-  "mask.failed": "Processing failed: {reason}",
   "mask.quota_hint": "If the hosted GPU says the free allowance is used up, sign in on the Space page on Hugging Face for a larger allowance, or run the model in your browser.",
   "mask.open_space": "Open the Space on Hugging Face",
   "mask.download": "Download ZIP",
@@ -97,22 +96,60 @@ export const MASK_STRINGS = {
   "mask.boxes": "Original upload, selected image, detection boxes and confidence scores, CSV, README and provenance. This detector returns boxes, not segmentation masks, flows or cell probabilities.",
   "mask.browser_note": "The browser route runs the same model weights exported to ONNX with the same normalization, tiling and Cellpose mask dynamics; the shared-perimeter merge and additional JSON object filters run only on the hosted route.",
   "mask.card": "Model card and test data",
-  "mask.snapshot": "Scores are copied from the published model snapshot, not recomputed here. Compare only the test sets described in each model card."
+  "mask.snapshot": "Scores are copied from the published model snapshot, not recomputed here. Compare only the test sets described in each model card.",
+  "mask.scores": "Scores and model card",
+  "mask.viewer": "Image viewer",
+  "mask.replace": "Choose another image",
+  "mask.more": "More settings",
+  "mask.running": "Running…",
+  "mask.show": "Show",
+  "mask.layer_image": "Image",
+  "mask.layer_masks": "Masks",
+  "mask.layer_outlines": "Outlines",
+  "mask.layer_flows": "Flows",
+  "mask.layer_cellprob": "Cell probability",
+  "mask.layer_boxes": "Boxes",
+  "mask.opacity": "Overlay opacity",
+  "mask.results": "Results",
+  "mask.stat_objects": "Objects",
+  "mask.stat_wells": "Wells",
+  "mask.stat_area": "Mean area (pixels)",
+  "mask.stat_box_area": "Mean box area (pixels)",
+  "mask.download_png": "Mask PNG",
+  "mask.download_tiff": "Mask TIFF",
+  "mask.download_csv": "Objects CSV",
+  "mask.no_preview": "No browser preview for this format. The hosted GPU reads it, and the result is shown here after the run.",
+  "mask.err_quota": "The free hosted GPU allowance for this connection is used up. It refills in {wait}.",
+  "mask.err_quota_nowait": "The free hosted GPU allowance for this connection is used up for now.",
+  "mask.err_busy": "The hosted GPU is busy or the run timed out. Try again in a minute.",
+  "mask.err_offline": "The hosted GPU service could not be reached. It may be starting up; try again in a minute.",
+  "mask.err_server": "The hosted service could not process this image with these settings. Check the channel and the diameter, or try another image.",
+  "mask.err_refused": "The hosted service did not accept the request: {reason}",
+  "mask.err_model": "The model could not be downloaded or verified. Check your connection and try again.",
+  "mask.err_memory": "The browser ran out of memory. Try a smaller image or the hosted GPU.",
+  "mask.err_diameter": "Enter the plaque diameter in pixels, or choose native scale.",
+  "mask.err_json": "The additional desktop settings are not valid JSON.",
+  "mask.err_hosted_only": "The shared-perimeter merge and additional JSON filters run only on the hosted GPU.",
+  "mask.err_example": "The test image could not be loaded from Hugging Face. Try again.",
+  "mask.err_generic": "Something went wrong while processing this image.",
+  "mask.details": "Technical details"
 };
 
+// [name, label key, default, min, max, scope, placement]: "main" sits next to
+// the viewer like Cellpose's controls; "more" goes under "More settings".
 export const FIELDS = [
-  ["selected_series", "series", 0, 0, null, "file"],
-  ["selected_t", "time", 0, 0, null, "file"],
-  ["selected_z", "depth", 0, 0, null, "file"],
-  ["selected_page", "page", 0, 0, null, "pdf"],
-  ["selected_dpi", "dpi", 150, 1, 600, "pdf"],
-  ["chosen_diameter", "diameter", "", 0, null, "segmentation"],
-  ["flow_threshold", "flow", 0.4, 0, null, "segmentation"],
-  ["score_threshold", "score", -1, null, null, "segmentation"],
-  ["chosen_magnification", "magnification", 20, 0, null, "masks"],
-  ["detection_confidence", "confidence", 0.25, 0, 1, "detector"],
-  ["minimum_axis_ratio", "axis", 0.7, 0, 1, "detector"],
-  ["detector_image_size", "detector_size", 640, 1, null, "detector"]
+  ["chosen_diameter", "diameter", "", 0, null, "segmentation", "main"],
+  ["flow_threshold", "flow", 0.4, 0, null, "segmentation", "main"],
+  ["score_threshold", "cellprob", -1, null, null, "segmentation", "main"],
+  ["detection_confidence", "confidence", 0.25, 0, 1, "detector", "main"],
+  ["minimum_axis_ratio", "axis", 0.7, 0, 1, "detector", "main"],
+  ["chosen_magnification", "magnification", 20, 0, null, "masks", "more"],
+  ["detector_image_size", "detector_size", 640, 1, null, "detector", "more"],
+  ["selected_series", "series", 0, 0, null, "file", "more"],
+  ["selected_t", "time", 0, 0, null, "file", "more"],
+  ["selected_z", "depth", 0, 0, null, "file", "more"],
+  ["selected_page", "page", 0, 0, null, "pdf", "more"],
+  ["selected_dpi", "dpi", 150, 1, 600, "pdf", "more"]
 ];
 export const FILTERS = [
   ["background_value", "background", "", 0, null, "masks"],
@@ -120,6 +157,7 @@ export const FILTERS = [
   ["lower_value", "lower", "", 0, 100, "masks"],
   ["perimeter_value", "perimeter", "", 0, 1, "masks"]
 ];
+export const LAYERS = ["image", "masks", "outlines", "flows", "cellprob", "boxes"];
 const esc = value => String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const safeJSON = value => JSON.stringify(value).replace(/</g, "\\u003c");
 const HTTPS = /^https:\/\/(cdn\.jsdelivr\.net\/npm\/|[a-z0-9-]+\.hf\.space$|huggingface\.co\/)/;
@@ -177,19 +215,24 @@ export function renderMaskGenerator(config, snapshot, statuses, tr, extras = {})
   const examples = validateExamples(extras.examples || { records: [] }, families);
   const t = key => esc(tr(`mask.${key}`));
   const title = family => esc(tr(`mc.short.${family.stem}`));
-  const number = ([name, label, value, min, max, scope]) => `<label data-scope="${scope}"><span data-label="${name}">${t(label)}</span><input type="number" name="${name}" value="${value}" step="any"${min === null ? "" : ` min="${min}"`}${max === null ? "" : ` max="${max}"`}></label>`;
+  const number = ([name, label, value, min, max, scope]) => `<label data-scope="${scope}"><span data-label="${name}">${t(label)}</span><input type="number" name="${name}" value="${value}" step="any" inputmode="decimal"${min === null ? "" : ` min="${min}"`}${max === null ? "" : ` max="${max}"`}></label>`;
   const option = state => `<option value="${state}">${t(state)}</option>`;
+  const main = FIELDS.filter(field => field[6] === "main");
+  const more = FIELDS.filter(field => field[6] === "more");
   const tabs = families.map((family, i) => `<a role="tab" id="mask-tab-${family.id}" href="#mask-${family.id}" aria-controls="mask-${family.id}" aria-selected="${i === 0}"${i ? ' tabindex="-1"' : ""}>${title(family)}</a>`).join("");
   const cards = families.map(family => `<section class="mask-family" id="mask-${family.id}" role="tabpanel" aria-labelledby="mask-tab-${family.id}" data-family="${family.id}">
-    <h3>${title(family)}</h3>
-    <p><strong>${t("recommended")}:</strong> ${t(`input.${family.id}`)}</p>
-    <label>${t("version")}<select data-model-select="${family.id}">${family.versions.map(model => `<option value="${esc(model.key)}"${model.key === family.default ? " selected" : ""}>${esc(model.display)}${model.key === family.default ? ` · ${esc(tr("mc.default"))}` : ""}</option>`).join("")}</select></label>
+    <div class="mask-family-head"><div><h3>${title(family)}</h3>
+    <p class="note"><strong>${t("recommended")}:</strong> ${t(`input.${family.id}`)}</p></div>
+    <label class="mask-version"><span>${t("version")}</span><select data-model-select="${family.id}">${family.versions.map(model => `<option value="${esc(model.key)}"${model.key === family.default ? " selected" : ""}>${esc(model.display)}${model.key === family.default ? ` · ${esc(tr("mc.default"))}` : ""}</option>`).join("")}</select></label></div>
+    <details class="mask-card"><summary>${t("scores")}</summary>
     ${family.versions.map(model => `<article data-model="${esc(model.key)}"><h4>${esc(model.display)}</h4><table><caption>${esc(tr("mc.all_scores"))}</caption><tbody>${["f1_50", "precision", "recall", "aji", "dice", "map50", "map50_95"].flatMap(key => {
       const score = model.metrics?.[key]?.finetuned;
       return typeof score === "number" ? [`<tr><th scope="row">${esc(tr(`mc.metric.${key}`))}</th><td>${score.toFixed(3)}</td></tr>`] : [];
     }).join("")}</tbody></table><a href="${esc(model.repo_url)}">${t("card")}</a></article>`).join("")}
-    <p><strong>${t("output")}:</strong> ${t(family.output === "boxes" ? "boxes" : "labels")}</p>
+    <p class="note"><strong>${t("output")}:</strong> ${t(family.output === "boxes" ? "boxes" : "labels")}</p>
+    <p class="note">${t("snapshot")}</p></details>
   </section>`).join("\n");
+  const layers = LAYERS.map(layer => `<label class="mask-chip" data-layer-wrap="${layer}"><input type="checkbox" data-layer="${layer}"${["image", "masks", "outlines", "boxes"].includes(layer) ? " checked" : ""}> <span>${t(`layer_${layer}`)}</span></label>`).join("");
   const publicConfig = {
     ...config,
     families: families.map(({ versions, ...family }) => ({ ...family, versions: versions.map(model => model.key) })),
@@ -201,34 +244,61 @@ export function renderMaskGenerator(config, snapshot, statuses, tr, extras = {})
   return `<div class="mask-generator" data-mask-generator>
     <p class="lede">${t("intro2")}</p>
     <div class="mask-family-tabs" role="tablist" aria-label="${t("family")}">${tabs}</div>
-    <div class="mask-layout"><div class="mask-models">${cards}<p class="note">${t("snapshot")}</p></div>
-    <form class="mask-settings" data-mask-form novalidate>
+    <div class="mask-models">${cards}</div>
+    <form class="mask-app" data-mask-form novalidate>
       <input type="hidden" name="model_key" value="${esc(families[0].default)}">
-      <fieldset><legend>${t("route")}</legend><label><input type="radio" name="route" value="hosted" checked> ${t("hosted")}</label><label><input type="radio" name="route" value="browser"> ${t("browser")}</label></fieldset>
-      <p class="note mask-status" data-route-status role="status" aria-live="polite">${t("hosted_checking")}</p>
-      <p class="note">${t("privacy2")}</p>
-      <label data-hosted-consent><input type="checkbox" name="accepted"> ${t("consent")}</label>
-      <div class="mask-drop" data-drop tabindex="0" aria-describedby="mask-formats"><p>${t("drop")}</p>
-        <label class="btn"><span>${t("choose")}</span><input class="vh" type="file" name="path" accept=".tif,.tiff,.png,.jpg,.jpeg,.bmp,.pdf,.czi,.nd2"></label>
-        <button class="btn" type="button" data-example>${t("example2")}</button></div>
-      <p class="note" id="mask-formats">${t("formats2")}</p>
-      <p class="note" data-file-status role="status" aria-live="polite"></p>
-      <fieldset data-channels hidden><legend>${t("channels2")}</legend><p class="note" data-channel-hint></p><div class="mask-channel-list" data-channel-list></div>
-        <label data-channel-numbers hidden>${t("channel_numbers")}<input type="text" name="chosen_channels" inputmode="numeric" value="0"></label></fieldset>
-      <figure class="mask-preview" data-preview hidden><canvas data-preview-canvas aria-label="${t("preview")}"></canvas><figcaption data-preview-caption>${t("preview")}</figcaption></figure>
-      <fieldset><legend>${t("settings")}</legend><div class="mask-fields">${FIELDS.map(number).join("")}
-      <label data-scope="segmentation"><span data-label="native_scale">${t("auto")}</span><input type="checkbox" name="native_scale"></label></div></fieldset>
-      <details data-scope="masks"><summary>${t("advanced")}</summary><p class="note">${t("defaults")}</p><div class="mask-fields">${FILTERS.map(number).join("")}
-      <label>${t("remove_background")}<select name="background_switch">${["default", "enabled", "disabled"].map(option).join("")}</select></label>
-      <label>${t("border")}<select name="border_switch">${["default", "enabled", "disabled"].map(option).join("")}</select></label>
-      <label>${t("extra")}<textarea name="advanced" rows="2">{}</textarea></label></div></details>
-      <div class="btns"><button class="btn primary" type="submit" disabled data-run>${t("run")}</button><button class="btn" type="button" data-cancel hidden>${t("cancel")}</button></div>
-      <progress data-progress hidden></progress>
-      <p class="note mask-status" data-run-status role="status" aria-live="polite"></p>
-      <p class="note" data-quota-hint hidden>${t("quota_hint")} <a href="${esc(config.hosted.page)}" rel="noopener">${t("open_space")}</a></p>
-      <p data-result hidden><a class="btn primary" data-download download>${t("download")}</a></p>
-      <p class="note" data-browser-note hidden>${t("browser_note")}</p>
-    </form></div>
+      <div class="mask-stage">
+        <div class="mask-drop" data-drop tabindex="0" role="group" aria-label="${t("viewer")}" aria-describedby="mask-formats">
+          <div class="mask-drop-empty" data-drop-empty>
+            <svg class="mask-drop-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg>
+            <p class="mask-drop-title">${t("drop")}</p>
+            <div class="btns"><label class="btn primary"><span>${t("choose")}</span><input class="vh" type="file" name="path" accept=".tif,.tiff,.png,.jpg,.jpeg,.bmp,.pdf,.czi,.nd2"></label>
+            <button class="btn" type="button" data-example>${t("example2")}</button></div>
+            <p class="note" id="mask-formats">${t("formats2")}</p>
+          </div>
+          <canvas class="mask-canvas" data-view-canvas role="img" aria-label="${t("preview")}" hidden></canvas>
+          <p class="mask-drop-msg" data-view-msg hidden></p>
+          <div class="mask-busy" data-busy hidden><span class="mask-spinner" aria-hidden="true"></span></div>
+        </div>
+        <div class="mask-viewbar" data-viewbar hidden>
+          <p class="note" data-file-status role="status" aria-live="polite"></p>
+          <div class="btns"><button class="btn" type="button" data-replace>${t("replace")}</button><button class="btn" type="button" data-example>${t("example2")}</button></div>
+        </div>
+        <fieldset class="mask-layers" data-layers hidden><legend>${t("show")}</legend>
+          <div class="mask-chips">${layers}</div>
+          <label class="mask-opacity"><span>${t("opacity")}</span><input type="range" data-opacity min="0" max="100" value="50"></label>
+        </fieldset>
+        <section class="mask-results" data-result hidden aria-labelledby="mask-results-title">
+          <h4 id="mask-results-title">${t("results")}</h4>
+          <dl class="mask-stats"><div><dt data-stat-label="count">${t("stat_objects")}</dt><dd data-stat="count">–</dd></div><div><dt data-stat-label="area">${t("stat_area")}</dt><dd data-stat="area">–</dd></div></dl>
+          <div class="btns"><a class="btn primary" data-download download>${t("download")}</a><a class="btn" data-download-png download hidden>${t("download_png")}</a><a class="btn" data-download-tiff download hidden>${t("download_tiff")}</a><a class="btn" data-download-csv download hidden>${t("download_csv")}</a></div>
+          <p class="note" data-output-note></p>
+        </section>
+      </div>
+      <div class="mask-controls">
+        <fieldset class="mask-route"><legend>${t("route")}</legend><div class="mask-seg"><label><input type="radio" name="route" value="hosted" checked> <span>${t("hosted")}</span></label><label><input type="radio" name="route" value="browser"> <span>${t("browser")}</span></label></div></fieldset>
+        <p class="note mask-status" data-route-status role="status" aria-live="polite">${t("hosted_checking")}</p>
+        <fieldset data-channels hidden><legend>${t("channels2")}</legend><p class="note" data-channel-hint></p><div class="mask-chips" data-channel-list></div>
+          <label data-channel-numbers hidden>${t("channel_numbers")}<input type="text" name="chosen_channels" inputmode="numeric" value="0"></label></fieldset>
+        <div class="mask-fields">${number(main[0])}
+          <label class="mask-check" data-scope="segmentation"><input type="checkbox" name="native_scale"> <span data-label="native_scale">${t("auto")}</span></label>${main.slice(1).map(number).join("")}</div>
+        <label class="mask-check" data-hosted-consent><input type="checkbox" name="accepted"> <span>${t("consent")}</span></label>
+        <div class="mask-run"><button class="btn primary" type="submit" disabled data-run><span class="mask-spinner" data-run-spinner aria-hidden="true" hidden></span><span data-run-label>${t("run")}</span></button><button class="btn" type="button" data-cancel hidden>${t("cancel")}</button></div>
+        <progress data-progress hidden></progress>
+        <p class="note mask-status" data-run-status role="status" aria-live="polite"></p>
+        <div class="mask-error" data-error role="alert" hidden><p data-error-text></p><details data-error-more hidden><summary>${t("details")}</summary><code data-error-detail></code></details></div>
+        <p class="note" data-quota-hint hidden>${t("quota_hint")} <a href="${esc(config.hosted.page)}" rel="noopener">${t("open_space")}</a></p>
+        <details class="mask-more"><summary>${t("more")}</summary>
+          <div class="mask-fields">${more.map(number).join("")}</div>
+          <div data-scope="masks"><h4>${t("advanced")}</h4><p class="note">${t("defaults")}</p><div class="mask-fields">${FILTERS.map(number).join("")}
+          <label>${t("remove_background")}<select name="background_switch">${["default", "enabled", "disabled"].map(option).join("")}</select></label>
+          <label>${t("border")}<select name="border_switch">${["default", "enabled", "disabled"].map(option).join("")}</select></label></div>
+          <label>${t("extra")}<textarea name="advanced" rows="2">{}</textarea></label></div>
+        </details>
+        <p class="note">${t("privacy2")}</p>
+        <p class="note" data-browser-note hidden>${t("browser_note")}</p>
+      </div>
+    </form>
     <script type="application/json" data-mask-config>${safeJSON(publicConfig)}</script>
   </div>`;
 }

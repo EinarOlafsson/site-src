@@ -579,3 +579,119 @@ export async function buildDetectionZip({
   };
   return finishArchive(files, manifest, { deflate, date });
 }
+
+/* ------------------------------------------------------------------ */
+/* readers for the result viewer (hosted and browser ZIPs alike)       */
+/* ------------------------------------------------------------------ */
+
+async function inflateRaw(bytes) {
+  if (typeof DecompressionStream === 'function') {
+    try {
+      const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+      return new Uint8Array(await new Response(stream).arrayBuffer());
+    } catch { /* fall through to node:zlib */ }
+  }
+  const zlib = await import('node:zlib');
+  return new Uint8Array(zlib.inflateRawSync(bytes));
+}
+
+/** Members of a PKZIP archive (stored or deflated) as Map(name -> Uint8Array), CRC-checked. */
+export async function unzip(bytes) {
+  bytes = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+  const dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  let eocd = bytes.length - 22;
+  const stop = Math.max(0, bytes.length - 22 - 65535);
+  while (eocd >= stop && dv.getUint32(eocd, true) !== 0x06054b50) eocd--;
+  if (eocd < stop) throw new Error('not a ZIP archive');
+  const count = dv.getUint16(eocd + 10, true);
+  let p = dv.getUint32(eocd + 16, true);
+  const decoder = new TextDecoder();
+  const out = new Map();
+  for (let i = 0; i < count; i++) {
+    if (dv.getUint32(p, true) !== 0x02014b50) throw new Error('corrupt ZIP directory');
+    const method = dv.getUint16(p + 10, true);
+    const crc = dv.getUint32(p + 16, true);
+    const csize = dv.getUint32(p + 20, true);
+    const nlen = dv.getUint16(p + 28, true), elen = dv.getUint16(p + 30, true), clen = dv.getUint16(p + 32, true);
+    const off = dv.getUint32(p + 42, true);
+    const name = decoder.decode(bytes.subarray(p + 46, p + 46 + nlen));
+    const lnlen = dv.getUint16(off + 26, true), lext = dv.getUint16(off + 28, true);
+    const raw = bytes.subarray(off + 30 + lnlen + lext, off + 30 + lnlen + lext + csize);
+    if (method !== 0 && method !== 8) throw new Error(`unsupported ZIP method ${method}`);
+    const data = method === 8 ? await inflateRaw(raw) : raw;
+    if (crc32(data) !== crc) throw new Error(`ZIP checksum mismatch: ${name}`);
+    out.set(name, data);
+    p += 46 + nlen + elen + clen;
+  }
+  return out;
+}
+
+const NPY_TYPES = { u1: Uint8Array, i1: Int8Array, u2: Uint16Array, i2: Int16Array, u4: Uint32Array, i4: Int32Array, f4: Float32Array, f8: Float64Array, b1: Uint8Array };
+
+/** NumPy .npy (v1-v3, C order, little-endian numeric) to { data, shape, descr }. */
+export function parseNpy(bytes) {
+  bytes = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+  if (bytes[0] !== 0x93 || String.fromCharCode(...bytes.subarray(1, 6)) !== 'NUMPY') throw new Error('not an NPY file');
+  const major = bytes[6];
+  const dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  const hlen = major === 1 ? dv.getUint16(8, true) : dv.getUint32(8, true);
+  const start = major === 1 ? 10 : 12;
+  const header = new TextDecoder().decode(bytes.subarray(start, start + hlen));
+  const descr = /'descr':\s*'([^']+)'/.exec(header)?.[1];
+  const fortran = /'fortran_order':\s*True/.test(header);
+  const shapeText = /'shape':\s*\(([^)]*)\)/.exec(header)?.[1] ?? '';
+  const shape = shapeText.split(',').map(s => s.trim()).filter(Boolean).map(Number);
+  const kind = descr ? descr.slice(1) : '';
+  const Ctor = NPY_TYPES[kind];
+  if (!Ctor || fortran || (descr[0] === '>' && Ctor.BYTES_PER_ELEMENT > 1)) throw new Error(`unsupported NPY array ${descr}`);
+  const count = shape.reduce((n, s) => n * s, 1);
+  const offset = start + hlen;
+  const copy = bytes.slice(offset, offset + count * Ctor.BYTES_PER_ELEMENT);
+  return { data: new Ctor(copy.buffer, 0, count), shape, descr };
+}
+
+function pngChunk(type, data) {
+  const out = new Uint8Array(12 + data.length);
+  const dv = new DataView(out.buffer);
+  dv.setUint32(0, data.length);
+  for (let i = 0; i < 4; i++) out[4 + i] = type.charCodeAt(i);
+  out.set(data, 8);
+  dv.setUint32(8 + data.length, crc32(out.subarray(4, 8 + data.length)));
+  return out;
+}
+
+async function zlibDeflate(bytes) {
+  if (typeof CompressionStream === 'function') {
+    try { return await compress(bytes, 'deflate'); } catch { /* node fallback */ }
+  }
+  const zlib = await import('node:zlib');
+  return new Uint8Array(zlib.deflateSync(bytes));
+}
+
+/**
+ * Lossless 16-bit greyscale PNG of a label image (label value = pixel value),
+ * readable by skimage/imageio/PIL. Labels above 65535 cannot be stored.
+ */
+export async function labelPng(labels, width, height) {
+  if (labels.length !== width * height) throw new Error('label size does not match its shape');
+  const row = 1 + width * 2;
+  const raw = new Uint8Array(row * height);
+  for (let y = 0; y < height; y++) {
+    const base = y * row;
+    for (let x = 0; x < width; x++) {
+      const v = labels[y * width + x];
+      if (v > 65535 || v < 0) throw new Error('labels exceed the 16-bit PNG range');
+      raw[base + 1 + 2 * x] = v >> 8;
+      raw[base + 2 + 2 * x] = v & 0xFF;
+    }
+  }
+  const ihdr = new Uint8Array(13);
+  const dv = new DataView(ihdr.buffer);
+  dv.setUint32(0, width); dv.setUint32(4, height);
+  ihdr[8] = 16; ihdr[9] = 0; ihdr[10] = 0; ihdr[11] = 0; ihdr[12] = 0;
+  const parts = [new Uint8Array([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]), pngChunk('IHDR', ihdr), pngChunk('IDAT', await zlibDeflate(raw)), pngChunk('IEND', new Uint8Array(0))];
+  const out = new Uint8Array(parts.reduce((n, p) => n + p.length, 0));
+  let o = 0;
+  for (const p of parts) { out.set(p, o); o += p.length; }
+  return out;
+}

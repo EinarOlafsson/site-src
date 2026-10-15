@@ -4,7 +4,10 @@
 //   browser - the exported ONNX model in onnxruntime-web (WebGPU, WASM
 //             fallback); the file never leaves the computer.
 // Each route reports "not yet available" until it actually is.
+// The drop zone becomes the image viewer as soon as a file is chosen, and the
+// result viewer (layers + opacity, like Cellpose's) after a run.
 import { acceptedFile, extensionOf, fetchExample, previewRGBA, readImage, sha256Hex } from "./mask-io.js";
+import { boxStats, cellprobGrey, composite, flowRGB, formatNumber, friendlyError, labelStats, outlineMask } from "./mask-view.js";
 
 export const INFER_INPUTS = Object.freeze([
   "path", "model_key", "accepted", "selected_series", "selected_t", "selected_z", "chosen_channels",
@@ -166,12 +169,14 @@ async function modelBytes(url, sha256, bytes, onProgress) {
 export function initMaskGenerator(root, environment = globalThis) {
   const config = validateConfig(JSON.parse(root.querySelector("[data-mask-config]").textContent));
   const text = (key, values) => format(config.strings[`mask.${key}`] ?? key, values);
+  const lang = environment.document?.documentElement?.lang || undefined;
   const form = root.querySelector("[data-mask-form]");
   const $ = selector => root.querySelector(selector);
-  const tabs = [...root.querySelectorAll('.mask-family-tabs [role="tab"]')];
-  const cards = [...root.querySelectorAll("[data-family]")];
+  const $$ = selector => [...root.querySelectorAll(selector)];
+  const tabs = $$('.mask-family-tabs [role="tab"]');
+  const cards = $$("[data-family]");
   const defaults = [...form.querySelectorAll("input[name], select[name], textarea[name]")].map(element => [element, element.type === "checkbox" ? element.defaultChecked : element.value]);
-  const state = { family: config.families[0], file: null, image: null, credit: "", hosted: null, sessions: new Map(), job: null, url: null };
+  const state = { family: config.families[0], file: null, image: null, credit: "", hosted: null, sessions: new Map(), job: null, urls: [], view: null, result: null, cancelled: false, frame: 0 };
   const status = (selector, message) => { $(selector).textContent = message || ""; };
 
   const route = () => form.elements.route.value;
@@ -206,7 +211,7 @@ export function initMaskGenerator(root, environment = globalThis) {
 
   function selectedChannels() {
     if (!state.image || state.image.serverOnly) return parseChannels(form.elements.chosen_channels.value);
-    return [...root.querySelectorAll("[data-channel-list] input:checked")].map(input => Number(input.value));
+    return $$("[data-channel-list] input:checked").map(input => Number(input.value));
   }
 
   function channelsValid() {
@@ -236,14 +241,48 @@ export function initMaskGenerator(root, environment = globalThis) {
     $("[data-run]").disabled = !(ready && fileOk && channelsValid() && (!hosted || form.elements.accepted.checked) && !state.job);
   }
 
-  function drawPreview(overlay = {}) {
+  // ---- viewer: the drop zone turns into the image, then into the result viewer
+  function viewerMessage(message) {
+    const node = $("[data-view-msg]");
+    node.textContent = message || "";
+    node.hidden = !message;
+  }
+
+  function showViewer(on) {
+    $("[data-drop-empty]").hidden = on;
+    $("[data-viewbar]").hidden = !on;
+    $("[data-drop]").classList.toggle("has-image", on);
+  }
+
+  function baseFor(image, channels) {
+    if (!image || image.serverOnly || !channels || !channels.length || channels.some(c => c >= image.channels.length)) return null;
+    return previewRGBA(image, channels);
+  }
+
+  function layerState() {
+    return Object.fromEntries($$("[data-layer]").map(input => [input.dataset.layer, input.checked && !input.closest("[data-layer-wrap]").hidden]));
+  }
+
+  function render() {
+    state.frame = 0;
+    const view = state.view;
+    const canvas = $("[data-view-canvas]");
+    if (!view) { canvas.hidden = true; return; }
+    const layers = state.result ? layerState() : { image: true };
+    const rgba = state.result ? composite({ ...state.result, base: view.base, width: view.width, height: view.height }, layers, Number($("[data-opacity]").value) / 100) : view.base;
+    if (!rgba) { canvas.hidden = true; return; }
+    if (canvas.width !== view.width || canvas.height !== view.height) { canvas.width = view.width; canvas.height = view.height; }
+    canvas.getContext("2d").putImageData(new ImageData(rgba instanceof Uint8ClampedArray ? rgba : new Uint8ClampedArray(rgba.buffer), view.width, view.height), 0, 0);
+    canvas.hidden = false;
+  }
+  const schedule = () => { if (!state.frame) state.frame = (environment.requestAnimationFrame || (f => setTimeout(f, 16)))(render); };
+
+  function drawImage() {
     const image = state.image;
-    const channels = selectedChannels();
-    if (!image || image.serverOnly || !channels || !channels.length || channels.some(c => c >= image.channels.length)) { $("[data-preview]").hidden = true; return; }
-    const canvas = $("[data-preview-canvas]");
-    canvas.width = image.width; canvas.height = image.height;
-    canvas.getContext("2d").putImageData(new ImageData(previewRGBA(image, channels, overlay), image.width, image.height), 0, 0);
-    $("[data-preview]").hidden = false;
+    const base = baseFor(image, selectedChannels());
+    state.view = base ? { width: image.width, height: image.height, base } : null;
+    viewerMessage(image?.serverOnly ? text("no_preview") : "");
+    render();
   }
 
   function buildChannelPicker() {
@@ -257,12 +296,16 @@ export function initMaskGenerator(root, environment = globalThis) {
     $("[data-channel-numbers]").hidden = !image.serverOnly;
     if (image.serverOnly) return;
     const preselect = image.channels.length === 3 && channelLimit(family) === 3 ? [0, 1, 2] : [0];
+    const single = channelLimit(family) === 1;
     image.channels.forEach((_, index) => {
       const label = environment.document.createElement("label");
+      label.className = "mask-chip";
       const input = environment.document.createElement("input");
-      input.type = "checkbox"; input.name = "channel"; input.value = String(index); input.checked = preselect.includes(index);
-      input.addEventListener("change", () => { drawPreview(); refreshRoute(); });
-      label.append(input, ` ${text("channel_n", { n: index })}`);
+      input.type = single ? "radio" : "checkbox"; input.name = "channel"; input.value = String(index); input.checked = preselect.includes(index);
+      input.addEventListener("change", () => { clearResult(); drawImage(); refreshRoute(); });
+      const span = environment.document.createElement("span");
+      span.textContent = text("channel_n", { n: index });
+      label.append(input, " ", span);
       list.append(label);
     });
   }
@@ -271,12 +314,13 @@ export function initMaskGenerator(root, environment = globalThis) {
     clearResult();
     const check = acceptedFile(file, config.max_upload_bytes);
     if (!check.ok) {
-      status("[data-file-status]", text(check.reason === "size" ? "too_large" : "bad_type"));
-      state.file = null; state.image = null;
-      buildChannelPicker(); drawPreview(); refreshRoute();
+      showError({ message: text(check.reason === "size" ? "too_large" : "bad_type") }, "local");
       return;
     }
+    hideError();
     state.file = file; state.credit = credit;
+    showViewer(true);
+    $("[data-busy]").hidden = false;
     status("[data-file-status]", text("reading"));
     try {
       state.image = await readImage(file, config.readers, { page: numberOrNull(form.elements.selected_page.value) ?? 0, dpi: numberOrNull(form.elements.selected_dpi.value) ?? 150 });
@@ -284,11 +328,14 @@ export function initMaskGenerator(root, environment = globalThis) {
       status("[data-file-status]", [credit, `${file.name}: ${info}`].filter(Boolean).join(" "));
     } catch {
       state.image = null;
-      status("[data-file-status]", [credit, text("read_failed")].filter(Boolean).join(" "));
+      status("[data-file-status]", [credit, `${file.name}:`, text("read_failed")].filter(Boolean).join(" "));
+    } finally {
+      $("[data-busy]").hidden = true;
     }
     for (const element of form.querySelectorAll('[data-scope="pdf"]')) element.hidden = extensionOf(file.name) !== ".pdf";
     buildChannelPicker();
-    drawPreview();
+    drawImage();
+    if (!state.image) viewerMessage(text("read_failed"));
     refreshRoute();
   }
 
@@ -296,30 +343,109 @@ export function initMaskGenerator(root, environment = globalThis) {
     const records = config.examples.filter(record => record.family === state.family.id);
     if (!records.length) return;
     const record = records[Math.floor(Math.random() * records.length)];
+    showViewer(true);
+    $("[data-busy]").hidden = false;
     status("[data-file-status]", text("example_loading"));
     try {
       const { file } = await fetchExample(record);
       await useFile(file, text("example_credit", { name: file.name, source: `huggingface.co/datasets/${record.repo_id} (${record.credit})` }));
     } catch (error) {
-      status("[data-file-status]", text("failed", { reason: error.message }));
+      $("[data-busy]").hidden = true;
+      if (!state.file) showViewer(false);
+      status("[data-file-status]", "");
+      showError(error, "example");
     }
   }
 
-  function clearResult() {
-    if (state.url) URL.revokeObjectURL(state.url);
-    state.url = null;
-    $("[data-result]").hidden = true;
-    $("[data-quota-hint]").hidden = true;
-    status("[data-run-status]", "");
+  // ---- errors
+  function showError(error, where = route()) {
+    const { message, detail } = where === "local" || error?.friendly ? { message: error.message, detail: "" }
+      : where === "example" ? { message: text("err_example"), detail: String(error?.message || "") } : friendlyError(error, text, where);
+    $("[data-error-text]").textContent = message;
+    $("[data-error-detail]").textContent = detail;
+    $("[data-error-more]").hidden = !detail;
+    $("[data-error]").hidden = false;
+  }
+  function hideError() { $("[data-error]").hidden = true; $("[data-quota-hint]").hidden = true; }
+
+  // ---- results
+  function revokeAll() { for (const url of state.urls) URL.revokeObjectURL(url); state.urls = []; }
+  function link(selector, bytes, name, type) {
+    const anchor = $(selector);
+    if (!bytes) { anchor.hidden = true; anchor.removeAttribute("href"); return; }
+    const url = URL.createObjectURL(bytes instanceof Blob ? bytes : new Blob([bytes], { type }));
+    state.urls.push(url);
+    anchor.href = url; anchor.download = name; anchor.hidden = false;
   }
 
-  function finish(zipBlob, name, message, overlay) {
-    state.url = URL.createObjectURL(zipBlob);
-    const link = $("[data-download]");
-    link.href = state.url; link.download = name;
+  function clearResult() {
+    revokeAll();
+    state.result = null;
+    $("[data-result]").hidden = true;
+    $("[data-layers]").hidden = true;
+    hideError();
+    status("[data-run-status]", "");
+    if (state.view) render();
+  }
+
+  const stem = () => (state.file?.name || "image").replace(/\.[^.]+$/, "").replace(/[^\w.-]+/g, "_").slice(0, 80) || "image";
+
+  async function decodeTiff(bytes, name) {
+    const image = await readImage(new File([bytes], name, { type: "image/tiff" }), config.readers);
+    return image;
+  }
+
+  // zip: Uint8Array of the result archive (either route); known: arrays the
+  // browser route already has, so they are not decoded again.
+  async function showResult(zip, known = {}) {
+    const pack = await import("./mask-package.js");
+    let files = new Map();
+    try { files = await pack.unzip(zip); } catch { files = new Map(); }
+    const json = name => { try { return files.has(name) ? JSON.parse(new TextDecoder().decode(files.get(name))) : null; } catch { return null; } };
+    const manifest = json("manifest.json") || {};
+    const detector = state.family.output === "boxes";
+    let labels = known.labels || null, width = known.width, height = known.height;
+    if (!labels && files.has("mask.tif")) {
+      try { const mask = await decodeTiff(files.get("mask.tif"), "mask.tif"); labels = mask.channels[0]; width = mask.width; height = mask.height; } catch { labels = null; }
+    }
+    const boxes = known.boxes || json("boxes.json");
+    if (!width && Array.isArray(manifest.shape_yx)) [height, width] = manifest.shape_yx;
+    let base = state.view && state.view.width === width && state.view.height === height ? state.view.base : null;
+    if (!base && files.has("image.tif")) {
+      try {
+        const image = await decodeTiff(files.get("image.tif"), "image.tif");
+        base = previewRGBA(image, image.channels.slice(0, 3).map((_, i) => i));
+        width = width || image.width; height = height || image.height;
+      } catch { base = null; }
+    }
+    if (width && height) state.view = { width, height, base };
+    const npy = name => { try { return files.has(name) ? pack.parseNpy(files.get(name)) : null; } catch { return null; } };
+    const flows = known.flows || npy("flows.npy");
+    const prob = known.prob || npy("cell_probability.npy");
+    const result = { labels, boxes: detector ? boxes || [] : null };
+    if (labels && width) result.outlines = outlineMask(labels, width, height);
+    try { if (flows && width) result.flowRgb = flowRGB(flows, height, width); } catch { result.flowRgb = null; }
+    try { if (prob && width) result.probGrey = cellprobGrey(prob, height, width); } catch { result.probGrey = null; }
+    state.result = result;
+    const available = { image: Boolean(base), masks: Boolean(labels), outlines: Boolean(labels), flows: Boolean(result.flowRgb), cellprob: Boolean(result.probGrey), boxes: detector };
+    for (const wrap of $$("[data-layer-wrap]")) wrap.hidden = !available[wrap.dataset.layerWrap];
+    $("[data-layers]").hidden = !state.view;
+    const stats = detector ? boxStats(result.boxes) : labels ? labelStats(labels) : { count: manifest.object_count ?? null, meanArea: null };
+    $('[data-stat-label="count"]').textContent = text(detector ? "stat_wells" : "stat_objects");
+    $('[data-stat-label="area"]').textContent = text(detector ? "stat_box_area" : "stat_area");
+    $('[data-stat="count"]').textContent = stats.count === null ? "–" : formatNumber(stats.count, lang);
+    $('[data-stat="area"]').textContent = stats.meanArea === null || !stats.count ? "–" : formatNumber(stats.meanArea, lang, 1);
+    $("[data-output-note]").textContent = text(detector ? "boxes" : "labels");
+    const base_ = stem();
+    link("[data-download]", zip, `${base_}-spacr-${detector ? "wells" : "masks"}.zip`, "application/zip");
+    link("[data-download-tiff]", files.get("mask.tif"), `${base_}-mask.tif`, "image/tiff");
+    link("[data-download-csv]", files.get("objects.csv"), `${base_}-objects.csv`, "text/csv");
+    let png = null;
+    if (labels && width) { try { png = await pack.labelPng(labels, width, height); } catch { png = null; } }
+    link("[data-download-png]", png, `${base_}-mask.png`, "image/png");
     $("[data-result]").hidden = false;
-    status("[data-run-status]", message);
-    if (overlay) drawPreview(overlay);
+    status("[data-run-status]", text(detector ? "done_wells" : "done_objects", { count: stats.count ?? "?" }));
+    render();
   }
 
   function progress(value, max) {
@@ -338,27 +464,16 @@ export function initMaskGenerator(root, environment = globalThis) {
     state.job = job;
     let data = null;
     for await (const message of job) {
-      if (message.type === "status" && message.stage === "error") throw new Error(message.message || message.title || "error");
+      if (message.type === "status" && message.stage === "error") throw Object.assign(new Error(message.message || message.title || "Error"), { title: message.title || "" });
       if (message.type === "status" && message.stage === "pending" && Number.isFinite(message.position)) status("[data-run-status]", `${text("uploading")} (${message.position + 1})`);
       if (message.type === "data") { data = message.data; break; }
     }
-    if (!data || !data[0]?.url) throw new Error(text("hosted_na"));
+    if (state.cancelled) return;
+    if (!data || !data[0]?.url) throw Object.assign(new Error(text("hosted_na")), { friendly: true });
+    status("[data-run-status]", text("postprocess"));
     const response = await fetch(data[0].url);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const blob = await response.blob();
-    let count = "?";
-    try {
-      const pack = await import("./mask-package.js");
-      const manifest = pack.readZipJSON ? await pack.readZipJSON(new Uint8Array(await blob.arrayBuffer()), "manifest.json") : null;
-      if (manifest && Number.isInteger(manifest.object_count)) count = manifest.object_count;
-    } catch { /* count stays unknown */ }
-    if (data[1]?.url) {
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      img.onload = () => { const canvas = $("[data-preview-canvas]"); canvas.width = img.naturalWidth; canvas.height = img.naturalHeight; canvas.getContext("2d").drawImage(img, 0, 0); $("[data-preview]").hidden = false; };
-      img.src = data[1].url;
-    }
-    finish(blob, data[0].orig_name || "spacr-mask-result.zip", text(state.family.output === "boxes" ? "done_wells" : "done_objects", { count }));
+    await showResult(new Uint8Array(await response.arrayBuffer()));
   }
 
   async function session(entry) {
@@ -411,7 +526,7 @@ export function initMaskGenerator(root, environment = globalThis) {
       const wells = core.filterWells(core.decodeYolo(tensor.data, tensor.dims, { conf: settings.confidence, H, W, inputHeight: box.height, inputWidth: box.width }), { minAxisRatio: settings.minAxisRatio });
       status("[data-run-status]", text("postprocess"));
       const zip = await pack.buildDetectionZip({ inputName: state.file.name, inputBytes, image: imageInfo, wells, model: modelInfo, spacrVersion, settings: { family: family.id, ...settings, channels } });
-      finish(new Blob([zip], { type: "application/zip" }), "spacr-wells.zip", text("done_wells", { count: wells.length }), { boxes: wells });
+      await showResult(zip, { boxes: wells, width: W, height: H });
       return;
     }
     const plane = new Float32Array(n * selected.length);
@@ -419,7 +534,10 @@ export function initMaskGenerator(root, environment = globalThis) {
       const scaled = settings.kind === "mask" ? core.spacrNormalize(channel, settings.normalization) : channel;
       for (let i = 0; i < n; i++) plane[c * n + i] = scaled[i];
     });
-    const runBatch = async (batch, count) => (await model.run({ [inputName]: new ort.Tensor("float32", batch, [count, 3, 256, 256]) }))[outputName].data;
+    const runBatch = async (batch, count) => {
+      if (state.cancelled) throw new Error("cancelled");
+      return (await model.run({ [inputName]: new ort.Tensor("float32", batch, [count, 3, 256, 256]) }))[outputName].data;
+    };
     const result = await core.cellposeEval(plane, selected.length, H, W, runBatch, {
       normalize: settings.normalize === true, diameter: settings.diameter, resample: settings.resample,
       flowThreshold: settings.flowThreshold, cellprobThreshold: settings.cellprobThreshold, minSize: settings.minSize,
@@ -436,37 +554,58 @@ export function initMaskGenerator(root, environment = globalThis) {
       unavailable: sameSize ? {} : { flows: "computed at the model scale (resample off), not the image size", cell_probability: "computed at the model scale (resample off), not the image size" },
       settings: { family: family.id, ...settings, channels, niter: result.niter, rescale: result.rescale }
     });
-    finish(new Blob([zip], { type: "application/zip" }), "spacr-masks.zip", text("done_objects", { count: rows.length }), { labels });
+    const fh = result.flowHeight ?? H, fw = result.flowWidth ?? W;
+    await showResult(zip, {
+      labels, width: W, height: H,
+      flows: result.dP ? { data: result.dP, shape: [2, fh, fw] } : null,
+      prob: result.cellprob ? { data: result.cellprob, shape: [fh, fw] } : null
+    });
+  }
+
+  function busy(on) {
+    $("[data-run-spinner]").hidden = !on;
+    $("[data-run-label]").textContent = on ? text("running") : text(state.family.output === "boxes" ? "detect" : "run");
+    $("[data-run]").classList.toggle("is-busy", on);
+    $("[data-run]").setAttribute("aria-busy", String(on));
+    $("[data-cancel]").hidden = !on;
+    $("[data-busy]").hidden = !on || !state.view;
   }
 
   form.addEventListener("submit", async event => {
     event.preventDefault();
     if ($("[data-run]").disabled) return;
     const values = formValues(form, selectedChannels());
+    const where = route();
     clearResult();
-    $("[data-cancel]").hidden = false;
-    state.job = { cancel() {} };
+    if (state.family.id === "toxoplasma_plaque" && !values.native_scale && !(values.chosen_diameter > 0)) { showError(new Error("diameter"), where); return; }
+    state.cancelled = false;
+    state.job = { cancel() { state.cancelled = true; } };
     $("[data-run]").disabled = true;
+    busy(true);
     try {
-      if (route() === "hosted") await runHosted(values);
+      if (where === "hosted") await runHosted(values);
       else await runBrowser(values);
     } catch (error) {
-      status("[data-run-status]", text("failed", { reason: error?.message || String(error) }));
-      if (route() === "hosted") $("[data-quota-hint]").hidden = false;
+      if (!state.cancelled) {
+        status("[data-run-status]", "");
+        showError(error, where);
+        if (where === "hosted" && /quota/i.test(`${error?.title} ${error?.message}`)) $("[data-quota-hint]").hidden = false;
+      }
     } finally {
+      if (state.cancelled) status("[data-run-status]", "");
       state.job = null;
-      $("[data-cancel]").hidden = true;
+      busy(false);
       progress(null);
       refreshRoute();
     }
   });
-  $("[data-cancel]").addEventListener("click", () => { try { state.job?.cancel(); } catch { /* already finished */ } });
+  $("[data-cancel]").addEventListener("click", () => { state.cancelled = true; try { state.job?.cancel(); } catch { /* already finished */ } });
 
   function showModel() {
     const selector = root.querySelector(`[data-model-select="${state.family.id}"]`);
     const value = state.family.versions.includes(selector.value) ? selector.value : state.family.default;
     selector.value = value;
-    for (const article of root.querySelectorAll("[data-model]")) article.hidden = article.dataset.model !== value;
+    for (const article of $$("[data-model]")) article.hidden = article.dataset.model !== value;
     form.elements.model_key.value = value;
     refreshRoute();
   }
@@ -497,26 +636,31 @@ export function initMaskGenerator(root, environment = globalThis) {
     form.elements.score_threshold.value = String(family.score);
     root.querySelector('[data-label="chosen_diameter"]').textContent = text(plaque ? "plaque_diameter" : "diameter");
     root.querySelector('[data-label="native_scale"]').textContent = text(plaque ? "native" : "auto");
-    $("[data-run]").textContent = text(detector ? "detect" : "run");
-    $("[data-example]").disabled = !config.examples.some(record => record.family === family.id);
+    $("[data-run-label]").textContent = text(detector ? "detect" : "run");
+    const hasExamples = config.examples.some(record => record.family === family.id);
+    for (const button of $$("[data-example]")) button.disabled = !hasExamples;
     buildChannelPicker();
-    drawPreview();
+    drawImage();
     showModel();
   }
 
   for (const element of form.querySelectorAll('[data-scope="pdf"]')) element.hidden = true;
-  root.querySelectorAll("[data-model-select]").forEach(select => select.addEventListener("change", showModel));
+  $$("[data-model-select]").forEach(select => select.addEventListener("change", showModel));
   form.querySelectorAll('[name="route"]').forEach(radio => radio.addEventListener("change", () => { clearResult(); refreshRoute(); }));
   form.elements.accepted.addEventListener("change", refreshRoute);
   form.elements.chosen_channels.addEventListener("input", refreshRoute);
-  form.elements.path.addEventListener("change", () => { const file = form.elements.path.files[0]; if (file) useFile(file); });
+  form.elements.path.addEventListener("change", () => { const file = form.elements.path.files[0]; if (file) useFile(file); form.elements.path.value = ""; });
   for (const name of ["selected_page", "selected_dpi"]) form.elements[name].addEventListener("change", () => { if (state.file && extensionOf(state.file.name) === ".pdf") useFile(state.file, state.credit); });
-  $("[data-example]").addEventListener("click", randomExample);
+  $$("[data-example]").forEach(button => button.addEventListener("click", randomExample));
+  $("[data-replace]").addEventListener("click", () => form.elements.path.click());
+  $$("[data-layer]").forEach(input => input.addEventListener("change", schedule));
+  $("[data-opacity]").addEventListener("input", schedule);
   const drop = $("[data-drop]");
   drop.addEventListener("dragover", event => { event.preventDefault(); drop.classList.add("over"); });
   drop.addEventListener("dragleave", () => drop.classList.remove("over"));
   drop.addEventListener("drop", event => { event.preventDefault(); drop.classList.remove("over"); const file = event.dataTransfer?.files?.[0]; if (file) useFile(file); });
   drop.addEventListener("keydown", event => { if (event.target === drop && (event.key === "Enter" || event.key === " ")) { event.preventDefault(); form.elements.path.click(); } });
+  drop.addEventListener("click", event => { if (event.target === drop && !state.file) form.elements.path.click(); });
   tabs.forEach((tab, index) => {
     tab.addEventListener("click", event => {
       event.preventDefault();
