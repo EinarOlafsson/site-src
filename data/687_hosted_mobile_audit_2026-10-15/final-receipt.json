@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "status": "Final source checks PASS; hosted measurement pending",
+  "supersedes": "2e0faf8 source/test freeze only: failed command or invalid measurement now aborts before any later browser run. Valid below-threshold samples still complete all15.",
+  "source_sha256": {
+    "src/.github/workflows/website-audit.yml": "ec90dddf085a3d3be322c717b5f3e7ed88871a3c9cf1ac8375dc3801ff59bdbd",
+    "src/.github/scripts/website-audit.mjs": "03c87a54618a90d6fcbca6e8c11140438c3a0b2054e0ca7ed156b0c567747757",
+    "tools/website-audit.test.mjs": "610595bc7c330ff564e3577171e8e9f3e67df54176d5bdacdae5978091fd9316"
+  },
+  "result": "23 passed,0 failed,0 skipped,333.288283ms",
+  "raw_log_sha256": "71490202bb23100e2418f07e4838b7a6ec6a884f0be745321f709217976db37c",
+  "log_gzip_sha256": "2931016f01fe4d73b51be50855b703aba8f83c47b2ed0a3fbedad841a05f0dc5",
+  "added_case": "Child timeout produces one invalidMeasurement sample and immediate rejection, without later measurements or a result that could imply acceptance.",
+  "service_calls": "None; only deterministic focused Node checks, no browser/build/deployment/network audit."
+}

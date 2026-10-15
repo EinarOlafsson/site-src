@@ -124,6 +124,14 @@ test('before-page drift refuses before any Chrome run', () => fixture(async ({ c
   assert.equal(calls.length, 0);
 }));
 
+test('failed child aborts subsequent measurements that could compete with an orphaned browser', () => fixture(async ({ config, calls, events }) => {
+  config.runner.run = async (route, sample) => { calls.push([route, sample]); throw new Error('browser timeout'); };
+  await assert.rejects(audit(config), /Aborting after invalid measurement 0-1/);
+  assert.equal(calls.length, 1);
+  assert.deepEqual(events.at(-1).failures, ['invalidMeasurement']);
+  assert.equal(events.filter(event => event.type === 'result').length, 0);
+}));
+
 test('build drift between samples aborts instead of mixing deployments', () => fixture(async ({ config, calls, expected }) => {
   config.fetchBytes = async route => route === '/build.json' && calls.length === 1 ? Buffer.from('changed') : expected.get(route);
   await assert.rejects(audit(config), /before sample/);

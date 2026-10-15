@@ -119,8 +119,8 @@ export async function audit({ env = process.env, fetchBytes = readPublic, runner
       emit({ type: 'sample', ...result });
     } catch (error) {
       const result = { route, sample, failures: ['invalidMeasurement'], error: String(error.message) };
-      samples.push(result);
       emit({ type: 'sample', ...result });
+      throw new Error(`Aborting after invalid measurement ${id}: ${error.message}`);
     }
   }
   for (const [route, bytes] of expected) assertSameBytes(bytes, await fetchBytes(route), `after ${route}`);
