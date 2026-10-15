@@ -26,11 +26,11 @@
  * app. The vertex shader evaluates all of it, so the CPU only uploads time.
  *
  * Motion starts on its own shortly after load, or at the first interaction
- * where WebGL is software-rendered or a frame takes over 25 ms (localStorage
- * "fx-motion" = "always" skips that check, e.g. for tests).
+ * when a frame takes over 25 ms. LocalStorage "fx-motion" = "always" skips
+ * that check and permits software rendering.
  * Reduced motion: one still frame, no loop. Pause: the same, until resumed.
- * No WebGL, or a major performance caveat: the CSS gradient stays visible.
- * The existing explicit "fx-motion" = "always" override permits either context.
+ * Unavailable WebGL, software rendering or a major performance caveat keeps
+ * the CSS gradient visible unless the explicit "always" override is set.
  */
 (function () {
   "use strict";

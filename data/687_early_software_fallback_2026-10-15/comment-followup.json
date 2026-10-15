@@ -1,0 +1,8 @@
+{
+  "tested_source_commit": "a532f95d61bceb755007139f4f3b1cbb28165f59",
+  "change": "Correct opening policy comment; no executable bytes changed after the first block comment.",
+  "before_sha256": "87fc673736e4495bf85d646304efcc1cab87bafc37386fc18782aba2dec28889",
+  "after_sha256": "10a5c757fffd4ef46bd7d2d8590082fa516c9a11f0342d813406d8a40709d801",
+  "same_executable_tail": true,
+  "checks_reused": "Six Node cases and four real CPU browser cases from a532; no replay."
+}
