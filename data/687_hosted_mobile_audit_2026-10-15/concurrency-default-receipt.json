@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "status": "Source correction ready; hosted production retry pending",
+  "failed_production": {
+    "id": 38751039855,
+    "source": "b14274551821eeac2af191bb5ff8a42e48e4de5a",
+    "conclusion": "failure",
+    "boundary": "normal build privacy leak check",
+    "detail": "Optional GitHub cancel-in-progress key contained protected substring progress. Normal gate refused before public deployment; no manual audit dispatched.",
+    "other_actual_gates": "All nine spaCR locales564/564, protected pages encrypted; normal leak self-test passed before final scan."
+  },
+  "correction": "Remove only optional cancel-in-progress:false. Retain website-audit concurrency group. GitHub default does not cancel the running run; no scanner change, allowlist, encoding or content hiding.",
+  "official_default": "https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency",
+  "official_rule_summary": "Cancellation of the running workflow requires cancel-in-progress:true; default concurrency limits one running and one pending run.",
+  "checks": "Actual YAML parses to concurrency group only. One affected workflow contract case passes,22 unrelated tests intentionally deselected; prior23-case results remain unchanged.",
+  "source_sha256": {
+    "src/.github/workflows/website-audit.yml": "caa236a889a24f0b8249ad6fb53d357e206da52cb67a8ae8f1c9adadfa07f8ed",
+    "tools/website-audit.test.mjs": "6834da047a24ffa81742442232d77fbd537f29fbb1cc74363958f495ba328f4f",
+    "src/.github/scripts/website-audit.mjs": "03c87a54618a90d6fcbca6e8c11140438c3a0b2054e0ca7ed156b0c567747757"
+  },
+  "logs": {
+    "production-failed": {
+      "raw_sha256": "fadcd9b69106ea31e9d61d6a884ace998307c91b8e927a3534c03f1f5d071dfa",
+      "gzip_sha256": "130209b21ea29fbb0da472e65fb2ef4d7cf6e2169cca28513692d8f4c815e97e"
+    },
+    "concurrency-default-test": {
+      "raw_sha256": "877376a551bdf6d58f5967cc5fb3edb57321abbb3324080367d3bd96adc5553a",
+      "gzip_sha256": "7ec4fe417df0ab3b1d69e8fcede67f153bc81a3423b3fca4a95981909a6fc892"
+    }
+  },
+  "limits": "No current Lighthouse score/public-site acceptance yet. The hosted failure is preserved; normal retry is justified by this exact fix, not weakened gates."
+}

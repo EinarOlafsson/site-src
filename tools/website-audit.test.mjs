@@ -149,7 +149,8 @@ test('manual hosted workflow has bounded public-only read access and no build/de
   assert.match(workflow, /runs-on: ubuntu-latest/);
   assert.match(workflow, /timeout-minutes: 25/);
   assert.match(workflow, /contents: read/);
-  assert.match(workflow, /cancel-in-progress: false/);
+  assert.match(workflow, /concurrency:\n  group: website-audit\n/);
+  assert(!/cancel-in-progress|progress/.test(workflow));
   assert.match(workflow, /persist-credentials: false/);
   assert.match(workflow, /lighthouse@13\.0\.1/);
   assert.match(workflow, /node-version: '22\.19\.0'/);
