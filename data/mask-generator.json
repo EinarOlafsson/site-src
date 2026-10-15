@@ -1,18 +1,194 @@
 {
-  "schema": 1,
+  "schema": 2,
   "source_commit": "7eee39dd38953dbe12c103a23695d32d6abf0857",
-  "hosted": {"url": null, "accepted": false},
-  "browser": {"export_manifest": null, "accepted": false},
+  "hosted": {
+    "space": "einarolafsson/spacr-mask-generator",
+    "url": "https://einarolafsson-spacr-mask-generator.hf.space",
+    "page": "https://huggingface.co/spaces/einarolafsson/spacr-mask-generator",
+    "client": "https://cdn.jsdelivr.net/npm/@gradio/client@2.7.1/dist/index.min.js"
+  },
+  "browser": {
+    "runtime": "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.30.0/dist/ort.webgpu.min.mjs",
+    "wasm_paths": "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.30.0/dist/",
+    "manifest": "mask-browser-models.json"
+  },
   "max_upload_bytes": 64000000,
-  "protocol": ["path", "model_key", "accepted", "selected_series", "selected_t", "selected_z", "chosen_channels", "selected_page", "selected_dpi", "chosen_diameter", "native_scale", "flow_threshold", "score_threshold", "chosen_magnification", "advanced", "detection_confidence", "minimum_axis_ratio", "background_value", "signal_value", "lower_value", "background_switch", "perimeter_value", "border_switch", "detector_image_size"],
+  "protocol": [
+    "path",
+    "model_key",
+    "accepted",
+    "selected_series",
+    "selected_t",
+    "selected_z",
+    "chosen_channels",
+    "selected_page",
+    "selected_dpi",
+    "chosen_diameter",
+    "native_scale",
+    "flow_threshold",
+    "score_threshold",
+    "chosen_magnification",
+    "advanced",
+    "detection_confidence",
+    "minimum_axis_ratio",
+    "background_value",
+    "signal_value",
+    "lower_value",
+    "background_switch",
+    "perimeter_value",
+    "border_switch",
+    "detector_image_size"
+  ],
   "families": [
-    {"id": "toxoplasma_pv", "stem": "toxoplasma_pv", "default": "toxoplasma_pv_v4", "output": "labels", "channels": [1], "score": -1},
-    {"id": "toxoplasma_plaque", "stem": "toxoplasma_plaque", "default": "toxoplasma_plaque_v4", "output": "labels", "channels": [1, 2, 3], "score": 0},
-    {"id": "toxoplasma_well_detector", "stem": "toxoplasma_well_detector", "default": "toxoplasma_well_detector_v3", "output": "boxes", "channels": [1, 3], "score": 0},
-    {"id": "cell_from_hoechst", "stem": "cell_from_hoechst", "default": "cell_from_hoechst_v1", "output": "labels", "channels": [1], "score": 0},
-    {"id": "nuclei_from_cellmask", "stem": "nuclei_from_cellmask", "default": "nuclei_from_cellmask_v1", "output": "labels", "channels": [1], "score": 0},
-    {"id": "toxoplasma_from_cellmask", "stem": "toxoplasma_from_cellmask", "default": "toxoplasma_from_cellmask_v1", "output": "labels", "channels": [1], "score": -1},
-    {"id": "toxoplasma_from_hoechst", "stem": "toxoplasma_from_hoechst", "default": "toxoplasma_from_hoechst_v1", "output": "labels", "channels": [1], "score": -1},
-    {"id": "live_cell", "stem": "live-cell", "default": "live-cell-v1", "output": "labels", "channels": [1], "score": 0}
-  ]
+    {
+      "id": "toxoplasma_pv",
+      "stem": "toxoplasma_pv",
+      "default": "toxoplasma_pv_v4",
+      "output": "labels",
+      "channels": [
+        1
+      ],
+      "score": -1,
+      "desktop": {
+        "role": "pathogen",
+        "background": 200,
+        "signal_to_noise": 20,
+        "remove_background": true,
+        "lower_percentile": 2,
+        "resample": false,
+        "diameter": "pathogen"
+      }
+    },
+    {
+      "id": "toxoplasma_plaque",
+      "stem": "toxoplasma_plaque",
+      "default": "toxoplasma_plaque_v4",
+      "output": "labels",
+      "channels": [
+        1,
+        2,
+        3
+      ],
+      "score": 0,
+      "desktop": {
+        "role": "plaque",
+        "cellpose_normalize": true
+      }
+    },
+    {
+      "id": "toxoplasma_well_detector",
+      "stem": "toxoplasma_well_detector",
+      "default": "toxoplasma_well_detector_v3",
+      "output": "boxes",
+      "channels": [
+        1,
+        3
+      ],
+      "score": 0,
+      "desktop": {
+        "role": "well"
+      }
+    },
+    {
+      "id": "cell_from_hoechst",
+      "stem": "cell_from_hoechst",
+      "default": "cell_from_hoechst_v1",
+      "output": "labels",
+      "channels": [
+        1
+      ],
+      "score": 0,
+      "desktop": {
+        "role": "cell",
+        "background": 100,
+        "signal_to_noise": 10,
+        "remove_background": false,
+        "lower_percentile": 2,
+        "resample": true,
+        "diameter": "cell"
+      }
+    },
+    {
+      "id": "nuclei_from_cellmask",
+      "stem": "nuclei_from_cellmask",
+      "default": "nuclei_from_cellmask_v1",
+      "output": "labels",
+      "channels": [
+        1
+      ],
+      "score": 0,
+      "desktop": {
+        "role": "nucleus",
+        "background": 100,
+        "signal_to_noise": 10,
+        "remove_background": false,
+        "lower_percentile": 2,
+        "resample": true,
+        "diameter": "nucleus"
+      }
+    },
+    {
+      "id": "toxoplasma_from_cellmask",
+      "stem": "toxoplasma_from_cellmask",
+      "default": "toxoplasma_from_cellmask_v1",
+      "output": "labels",
+      "channels": [
+        1
+      ],
+      "score": -1,
+      "desktop": {
+        "role": "pathogen",
+        "background": 200,
+        "signal_to_noise": 20,
+        "remove_background": true,
+        "lower_percentile": 2,
+        "resample": false,
+        "diameter": "pathogen"
+      }
+    },
+    {
+      "id": "toxoplasma_from_hoechst",
+      "stem": "toxoplasma_from_hoechst",
+      "default": "toxoplasma_from_hoechst_v1",
+      "output": "labels",
+      "channels": [
+        1
+      ],
+      "score": -1,
+      "desktop": {
+        "role": "pathogen",
+        "background": 200,
+        "signal_to_noise": 20,
+        "remove_background": true,
+        "lower_percentile": 2,
+        "resample": false,
+        "diameter": "pathogen"
+      }
+    },
+    {
+      "id": "live_cell",
+      "stem": "live-cell",
+      "default": "live-cell-v1",
+      "output": "labels",
+      "channels": [
+        1
+      ],
+      "score": 0,
+      "desktop": {
+        "role": "cell",
+        "background": 100,
+        "signal_to_noise": 10,
+        "remove_background": false,
+        "lower_percentile": 2,
+        "resample": true,
+        "diameter": "cell"
+      }
+    }
+  ],
+  "readers": {
+    "geotiff": "https://cdn.jsdelivr.net/npm/geotiff@3.0.5/+esm",
+    "pdfjs": "https://cdn.jsdelivr.net/npm/pdfjs-dist@6.3.289/build/pdf.min.mjs",
+    "pdfjsWorker": "https://cdn.jsdelivr.net/npm/pdfjs-dist@6.3.289/build/pdf.worker.min.mjs"
+  },
+  "examples": "mask-examples.json"
 }

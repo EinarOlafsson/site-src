@@ -1,0 +1,28 @@
+[
+  {
+    "detection_id": 1,
+    "x0": 1,
+    "y0": 2,
+    "x1": 9,
+    "y1": 10,
+    "confidence": 0.8999999761581421,
+    "diameter_px": 8.0,
+    "axis_ratio": 1.0,
+    "bbox_area_pixels": 64,
+    "bbox_center_x": 5.0,
+    "bbox_center_y": 6.0
+  },
+  {
+    "detection_id": 2,
+    "x0": 3,
+    "y0": 0,
+    "x1": 14,
+    "y1": 11,
+    "confidence": 0.5,
+    "diameter_px": 11.0,
+    "axis_ratio": 1.0,
+    "bbox_area_pixels": 121,
+    "bbox_center_x": 8.5,
+    "bbox_center_y": 5.5
+  }
+]

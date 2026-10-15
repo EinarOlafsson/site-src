@@ -758,7 +758,8 @@ async function main() {
   const ASSET_VERSION = assetVersion();
   const maskConfig = readJSON(path.join(DATA, "mask-generator.json"));
   const maskSnapshot = readJSON(path.join(DATA, "models.json"));
-  const varsFor = (tr, withMask = false) => ({ MASK_GENERATOR_HTML: withMask ? renderMaskGenerator(maskConfig, maskSnapshot, zs, tr) : "", ...spacrVars(meta, tr), ...papersVars(tr), ...stats, ...parascapeVars(sp), ...modelsVars(tr, zs), ASSET_VERSION });
+  const maskExtras = { spacrVersion: meta.version, browserModels: readJSON(path.join(DATA, maskConfig.browser.manifest)), examples: readJSON(path.join(DATA, maskConfig.examples)) };
+  const varsFor = (tr, withMask = false) => ({ MASK_GENERATOR_HTML: withMask ? renderMaskGenerator(maskConfig, maskSnapshot, zs, tr, maskExtras) : "", ...spacrVars(meta, tr), ...papersVars(tr), ...stats, ...parascapeVars(sp), ...modelsVars(tr, zs), ASSET_VERSION });
   await refreshPaperCandidates();
 
   const i18nPages = new Map();

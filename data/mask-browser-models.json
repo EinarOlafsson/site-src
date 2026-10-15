@@ -1,0 +1,1154 @@
+{
+ "schema": 1,
+ "generated_by": "tools/web_mask_generator/export_onnx.py",
+ "base_url": "https://huggingface.co/datasets/einarolafsson/models/resolve/main/web-onnx/",
+ "models": {
+  "cell_from_hoechst_v1": {
+   "family": "cell_from_hoechst",
+   "kind": "cellpose",
+   "file": "cell_from_hoechst_v1-f8938132f536.onnx",
+   "bytes": 1219177662,
+   "sha256": "f8938132f536f9236a26943e8a6a8454514b880e2e2c42a1b78823a1f707a1f0",
+   "source": {
+    "repo_id": "einarolafsson/cross-channel-cell-from-hoechst-cpsam",
+    "repo_type": "model",
+    "revision": "397320ba0471ae9752ee3b36acc79788fbc0ad79",
+    "filename": "weights/cell_from_hoechst_best",
+    "sha256": "d1992433b4f2f291f73738830bb953198165fdc10719e54dae9b8c2bd430e0eb",
+    "url": "https://huggingface.co/einarolafsson/cross-channel-cell-from-hoechst-cpsam/resolve/397320ba0471ae9752ee3b36acc79788fbc0ad79/weights/cell_from_hoechst_best"
+   },
+   "opset": 17,
+   "input": {
+    "name": "image",
+    "dtype": "float32",
+    "shape": [
+     "N",
+     3,
+     256,
+     256
+    ],
+    "layout": "NCHW",
+    "channels": "first three image channels; missing channels are zero (Cellpose slices the patch-embedding weights to the given channel count, which equals zero-filling)"
+   },
+   "output": {
+    "name": "flows",
+    "dtype": "float32",
+    "shape": [
+     "N",
+     3,
+     256,
+     256
+    ],
+    "layout": "NCHW",
+    "channels": [
+     "dY",
+     "dX",
+     "cellprob"
+    ],
+    "cellprob": "logits (no sigmoid)",
+    "consumed_as": "cellpose.core.run_net: tiles averaged, then dP = y[:2], cellprob = y[2]"
+   },
+   "preprocess": {
+    "normalize": {
+     "method": "cellpose.transforms.normalize99 per channel",
+     "percentiles": [
+      1.0,
+      99.0
+     ],
+     "formula": "(x - p1) / (p99 - p1) as float32",
+     "flat_channel": "channels with zero range, or p99 - p1 <= 1e-3, become all zeros",
+     "downsample": "percentiles use a strided subsample only when a channel has more than 224**3 pixels"
+    },
+    "diam_mean": 30.0,
+    "rescale": "30 / diameter when diameter > 0, else 1",
+    "resize": "cv2.INTER_LINEAR to (int(Ly * rescale), int(Lx * rescale)) when rescale != 1",
+    "pad": "cellpose.transforms.get_pad_yx(div=16, extra=1, min_size=(256, 256)), zero padding, split as evenly as possible",
+    "bsize": 256,
+    "tile_overlap": 0.1,
+    "batch_size": 8,
+    "tiles": "ny = 1 if Ly <= 256 else ceil(1.2 * Ly / 256); starts = linspace(0, Ly - 256, ny).astype(int); same for x",
+    "blend": "cellpose.transforms.average_tiles with _taper_mask(sig=7.5): weight 1 / (1 + exp((|i - 127.5| - 108) / 7.5)) per axis, outer product",
+    "resample": "crop padding, then resize the flows back to the original Ly x Lx with cv2.INTER_LINEAR (resample=True)",
+    "augment": false
+   },
+   "postprocess": {
+    "function": "cellpose.dynamics.resize_and_compute_masks",
+    "niter": "int(200 / rescale) when resample is True, else 200",
+    "flow_threshold": 0.4,
+    "cellprob_threshold": 0.0,
+    "min_size": 15,
+    "max_size_fraction": 0.4,
+    "dynamics": "follow_flows on dP * (cellprob > cellprob_threshold) / 5 for niter steps; get_masks_torch; remove_bad_flow_masks(threshold=flow_threshold); fill_holes_and_remove_small_masks(min_size)",
+    "spacr_defaults": {
+     "web_app": {
+      "flow_threshold": 0.4,
+      "cellprob_threshold": 0.0,
+      "source": "tools/web_mask_generator/app.py defaults",
+      "magnification": 20
+     },
+     "desktop": {
+      "object_role": "cell",
+      "cell_flow_threshold": 0.4,
+      "cell_cellprob_threshold": 0,
+      "cell_diameter": null,
+      "magnification": 40,
+      "diameter_at_default_magnification": 160,
+      "diameter_rule": "blank cell_diameter resolves from magnification via spacr.utils._get_diam(magnification, obj='cell')",
+      "normalization_note": "the spaCR desktop route normalizes with spacr.io._normalize_img_batch and calls Cellpose with normalize=False; the preprocess block here describes Cellpose's own normalize=True path",
+      "source": "spacr.settings.set_default_settings_preprocess_generate_masks"
+     }
+    }
+   },
+   "check": {
+    "runtime": "onnxruntime CPUExecutionProvider",
+    "reference": "torch float32 CPU",
+    "inputs": "2 tiles, numpy default_rng(698).random float32 in [0, 1)",
+    "rel_definition": "max_abs_diff / max(|torch output|)",
+    "outputs": {
+     "flows": {
+      "max_abs_diff": 1.1444091796875e-05,
+      "max_rel_diff": 1.1026946917747797e-06,
+      "reference_max_abs": 10.3782958984375,
+      "channels": {
+       "dY": {
+        "max_abs_diff": 4.135072231292725e-06,
+        "max_rel_diff": 0.00010885419000861713,
+        "reference_max_abs": 0.03798725828528404
+       },
+       "dX": {
+        "max_abs_diff": 3.129243850708008e-06,
+        "max_rel_diff": 6.410749544836783e-05,
+        "reference_max_abs": 0.04881244897842407
+       },
+       "cellprob": {
+        "max_abs_diff": 1.1444091796875e-05,
+        "max_rel_diff": 1.1026946917747797e-06,
+        "reference_max_abs": 10.3782958984375
+       }
+      }
+     }
+    },
+    "tolerance": {
+     "flows_max_abs_diff": 0.001
+    },
+    "passed": true
+   }
+  },
+  "nuclei_from_cellmask_v1": {
+   "family": "nuclei_from_cellmask",
+   "kind": "cellpose",
+   "file": "nuclei_from_cellmask_v1-ea633b4aee45.onnx",
+   "bytes": 1219177662,
+   "sha256": "ea633b4aee45c0f285c60cb5ee1ef15d7386edb9a8d58eba3fc3a571a8302b8a",
+   "source": {
+    "repo_id": "einarolafsson/cross-channel-nuclei-from-cellmask-cpsam",
+    "repo_type": "model",
+    "revision": "04d1784878261494a5a43e2cc4851d985b49024b",
+    "filename": "weights/nuclei_from_cellmask_best",
+    "sha256": "2675553a46e97a7bc4bd2bfe3e954954194fe71ca4e94261e752a02bf0b6eb47",
+    "url": "https://huggingface.co/einarolafsson/cross-channel-nuclei-from-cellmask-cpsam/resolve/04d1784878261494a5a43e2cc4851d985b49024b/weights/nuclei_from_cellmask_best"
+   },
+   "opset": 17,
+   "input": {
+    "name": "image",
+    "dtype": "float32",
+    "shape": [
+     "N",
+     3,
+     256,
+     256
+    ],
+    "layout": "NCHW",
+    "channels": "first three image channels; missing channels are zero (Cellpose slices the patch-embedding weights to the given channel count, which equals zero-filling)"
+   },
+   "output": {
+    "name": "flows",
+    "dtype": "float32",
+    "shape": [
+     "N",
+     3,
+     256,
+     256
+    ],
+    "layout": "NCHW",
+    "channels": [
+     "dY",
+     "dX",
+     "cellprob"
+    ],
+    "cellprob": "logits (no sigmoid)",
+    "consumed_as": "cellpose.core.run_net: tiles averaged, then dP = y[:2], cellprob = y[2]"
+   },
+   "preprocess": {
+    "normalize": {
+     "method": "cellpose.transforms.normalize99 per channel",
+     "percentiles": [
+      1.0,
+      99.0
+     ],
+     "formula": "(x - p1) / (p99 - p1) as float32",
+     "flat_channel": "channels with zero range, or p99 - p1 <= 1e-3, become all zeros",
+     "downsample": "percentiles use a strided subsample only when a channel has more than 224**3 pixels"
+    },
+    "diam_mean": 30.0,
+    "rescale": "30 / diameter when diameter > 0, else 1",
+    "resize": "cv2.INTER_LINEAR to (int(Ly * rescale), int(Lx * rescale)) when rescale != 1",
+    "pad": "cellpose.transforms.get_pad_yx(div=16, extra=1, min_size=(256, 256)), zero padding, split as evenly as possible",
+    "bsize": 256,
+    "tile_overlap": 0.1,
+    "batch_size": 8,
+    "tiles": "ny = 1 if Ly <= 256 else ceil(1.2 * Ly / 256); starts = linspace(0, Ly - 256, ny).astype(int); same for x",
+    "blend": "cellpose.transforms.average_tiles with _taper_mask(sig=7.5): weight 1 / (1 + exp((|i - 127.5| - 108) / 7.5)) per axis, outer product",
+    "resample": "crop padding, then resize the flows back to the original Ly x Lx with cv2.INTER_LINEAR (resample=True)",
+    "augment": false
+   },
+   "postprocess": {
+    "function": "cellpose.dynamics.resize_and_compute_masks",
+    "niter": "int(200 / rescale) when resample is True, else 200",
+    "flow_threshold": 0.4,
+    "cellprob_threshold": 0.0,
+    "min_size": 15,
+    "max_size_fraction": 0.4,
+    "dynamics": "follow_flows on dP * (cellprob > cellprob_threshold) / 5 for niter steps; get_masks_torch; remove_bad_flow_masks(threshold=flow_threshold); fill_holes_and_remove_small_masks(min_size)",
+    "spacr_defaults": {
+     "web_app": {
+      "flow_threshold": 0.4,
+      "cellprob_threshold": 0.0,
+      "source": "tools/web_mask_generator/app.py defaults",
+      "magnification": 20
+     },
+     "desktop": {
+      "object_role": "nucleus",
+      "nucleus_flow_threshold": 0.4,
+      "nucleus_cellprob_threshold": 0,
+      "nucleus_diameter": null,
+      "magnification": 40,
+      "diameter_at_default_magnification": 75,
+      "diameter_rule": "blank nucleus_diameter resolves from magnification via spacr.utils._get_diam(magnification, obj='nucleus')",
+      "normalization_note": "the spaCR desktop route normalizes with spacr.io._normalize_img_batch and calls Cellpose with normalize=False; the preprocess block here describes Cellpose's own normalize=True path",
+      "source": "spacr.settings.set_default_settings_preprocess_generate_masks"
+     }
+    }
+   },
+   "check": {
+    "runtime": "onnxruntime CPUExecutionProvider",
+    "reference": "torch float32 CPU",
+    "inputs": "2 tiles, numpy default_rng(698).random float32 in [0, 1)",
+    "rel_definition": "max_abs_diff / max(|torch output|)",
+    "outputs": {
+     "flows": {
+      "max_abs_diff": 9.5367431640625e-06,
+      "max_rel_diff": 8.595856522088945e-07,
+      "reference_max_abs": 11.094581604003906,
+      "channels": {
+       "dY": {
+        "max_abs_diff": 3.6135315895080566e-06,
+        "max_rel_diff": 0.00013064212354596663,
+        "reference_max_abs": 0.02765977382659912
+       },
+       "dX": {
+        "max_abs_diff": 4.2943283915519714e-06,
+        "max_rel_diff": 0.00018527024785631354,
+        "reference_max_abs": 0.02317872643470764
+       },
+       "cellprob": {
+        "max_abs_diff": 9.5367431640625e-06,
+        "max_rel_diff": 8.595856522088945e-07,
+        "reference_max_abs": 11.094581604003906
+       }
+      }
+     }
+    },
+    "tolerance": {
+     "flows_max_abs_diff": 0.001
+    },
+    "passed": true
+   }
+  },
+  "toxoplasma_from_cellmask_v1": {
+   "family": "toxoplasma_from_cellmask",
+   "kind": "cellpose",
+   "file": "toxoplasma_from_cellmask_v1-c5e18b83ce9b.onnx",
+   "bytes": 1219177662,
+   "sha256": "c5e18b83ce9b7233573f620933edf31098f918b336571f58d2b9db0f4cf64208",
+   "source": {
+    "repo_id": "einarolafsson/toxoplasma-from-cellmask-cpsam",
+    "repo_type": "model",
+    "revision": "4169ff46e3b31d9743920c492e33d8c1685f02a4",
+    "filename": "toxoplasma_from_cellmask_pv",
+    "sha256": "481dfccc1a68cc594aafcb71088efc25b5f5c6a6240e52902c0089759b3149ab",
+    "url": "https://huggingface.co/einarolafsson/toxoplasma-from-cellmask-cpsam/resolve/4169ff46e3b31d9743920c492e33d8c1685f02a4/toxoplasma_from_cellmask_pv"
+   },
+   "opset": 17,
+   "input": {
+    "name": "image",
+    "dtype": "float32",
+    "shape": [
+     "N",
+     3,
+     256,
+     256
+    ],
+    "layout": "NCHW",
+    "channels": "first three image channels; missing channels are zero (Cellpose slices the patch-embedding weights to the given channel count, which equals zero-filling)"
+   },
+   "output": {
+    "name": "flows",
+    "dtype": "float32",
+    "shape": [
+     "N",
+     3,
+     256,
+     256
+    ],
+    "layout": "NCHW",
+    "channels": [
+     "dY",
+     "dX",
+     "cellprob"
+    ],
+    "cellprob": "logits (no sigmoid)",
+    "consumed_as": "cellpose.core.run_net: tiles averaged, then dP = y[:2], cellprob = y[2]"
+   },
+   "preprocess": {
+    "normalize": {
+     "method": "cellpose.transforms.normalize99 per channel",
+     "percentiles": [
+      1.0,
+      99.0
+     ],
+     "formula": "(x - p1) / (p99 - p1) as float32",
+     "flat_channel": "channels with zero range, or p99 - p1 <= 1e-3, become all zeros",
+     "downsample": "percentiles use a strided subsample only when a channel has more than 224**3 pixels"
+    },
+    "diam_mean": 30.0,
+    "rescale": "30 / diameter when diameter > 0, else 1",
+    "resize": "cv2.INTER_LINEAR to (int(Ly * rescale), int(Lx * rescale)) when rescale != 1",
+    "pad": "cellpose.transforms.get_pad_yx(div=16, extra=1, min_size=(256, 256)), zero padding, split as evenly as possible",
+    "bsize": 256,
+    "tile_overlap": 0.1,
+    "batch_size": 8,
+    "tiles": "ny = 1 if Ly <= 256 else ceil(1.2 * Ly / 256); starts = linspace(0, Ly - 256, ny).astype(int); same for x",
+    "blend": "cellpose.transforms.average_tiles with _taper_mask(sig=7.5): weight 1 / (1 + exp((|i - 127.5| - 108) / 7.5)) per axis, outer product",
+    "resample": "crop padding, then resize the flows back to the original Ly x Lx with cv2.INTER_LINEAR (resample=True)",
+    "augment": false
+   },
+   "postprocess": {
+    "function": "cellpose.dynamics.resize_and_compute_masks",
+    "niter": "int(200 / rescale) when resample is True, else 200",
+    "flow_threshold": 0.4,
+    "cellprob_threshold": 0.0,
+    "min_size": 15,
+    "max_size_fraction": 0.4,
+    "dynamics": "follow_flows on dP * (cellprob > cellprob_threshold) / 5 for niter steps; get_masks_torch; remove_bad_flow_masks(threshold=flow_threshold); fill_holes_and_remove_small_masks(min_size)",
+    "spacr_defaults": {
+     "web_app": {
+      "flow_threshold": 0.4,
+      "cellprob_threshold": -1.0,
+      "source": "tools/web_mask_generator/app.py defaults",
+      "magnification": 20
+     },
+     "desktop": {
+      "object_role": "pathogen",
+      "pathogen_flow_threshold": 0.4,
+      "pathogen_cellprob_threshold": -1,
+      "pathogen_diameter": null,
+      "magnification": 40,
+      "diameter_at_default_magnification": 40,
+      "diameter_rule": "blank pathogen_diameter resolves from magnification via spacr.utils._get_diam(magnification, obj='pathogen')",
+      "normalization_note": "the spaCR desktop route normalizes with spacr.io._normalize_img_batch and calls Cellpose with normalize=False; the preprocess block here describes Cellpose's own normalize=True path",
+      "source": "spacr.settings.set_default_settings_preprocess_generate_masks"
+     }
+    }
+   },
+   "check": {
+    "runtime": "onnxruntime CPUExecutionProvider",
+    "reference": "torch float32 CPU",
+    "inputs": "2 tiles, numpy default_rng(698).random float32 in [0, 1)",
+    "rel_definition": "max_abs_diff / max(|torch output|)",
+    "outputs": {
+     "flows": {
+      "max_abs_diff": 8.58306884765625e-06,
+      "max_rel_diff": 7.852822745125208e-07,
+      "reference_max_abs": 10.929915428161621,
+      "channels": {
+       "dY": {
+        "max_abs_diff": 3.4943222999572754e-06,
+        "max_rel_diff": 0.00022479772997430883,
+        "reference_max_abs": 0.015544295310974121
+       },
+       "dX": {
+        "max_abs_diff": 3.2009556889533997e-06,
+        "max_rel_diff": 0.00017335611795277369,
+        "reference_max_abs": 0.018464624881744385
+       },
+       "cellprob": {
+        "max_abs_diff": 8.58306884765625e-06,
+        "max_rel_diff": 7.852822745125208e-07,
+        "reference_max_abs": 10.929915428161621
+       }
+      }
+     }
+    },
+    "tolerance": {
+     "flows_max_abs_diff": 0.001
+    },
+    "passed": true
+   }
+  },
+  "toxoplasma_from_hoechst_v1": {
+   "family": "toxoplasma_from_hoechst",
+   "kind": "cellpose",
+   "file": "toxoplasma_from_hoechst_v1-35f1b8ad4c30.onnx",
+   "bytes": 1219177662,
+   "sha256": "35f1b8ad4c30706fc7e2fd9ad4d54a51ff019fcb660917a7ecd9681740de77cd",
+   "source": {
+    "repo_id": "einarolafsson/toxoplasma-from-hoechst-cpsam",
+    "repo_type": "model",
+    "revision": "ce4177fa614ce5ab761fe4ffb0f928e158581304",
+    "filename": "toxoplasma_from_hoechst_pv",
+    "sha256": "8dc05ebced3550d1a418c13d24d319e0482c742988df29a525520026cb2f0d96",
+    "url": "https://huggingface.co/einarolafsson/toxoplasma-from-hoechst-cpsam/resolve/ce4177fa614ce5ab761fe4ffb0f928e158581304/toxoplasma_from_hoechst_pv"
+   },
+   "opset": 17,
+   "input": {
+    "name": "image",
+    "dtype": "float32",
+    "shape": [
+     "N",
+     3,
+     256,
+     256
+    ],
+    "layout": "NCHW",
+    "channels": "first three image channels; missing channels are zero (Cellpose slices the patch-embedding weights to the given channel count, which equals zero-filling)"
+   },
+   "output": {
+    "name": "flows",
+    "dtype": "float32",
+    "shape": [
+     "N",
+     3,
+     256,
+     256
+    ],
+    "layout": "NCHW",
+    "channels": [
+     "dY",
+     "dX",
+     "cellprob"
+    ],
+    "cellprob": "logits (no sigmoid)",
+    "consumed_as": "cellpose.core.run_net: tiles averaged, then dP = y[:2], cellprob = y[2]"
+   },
+   "preprocess": {
+    "normalize": {
+     "method": "cellpose.transforms.normalize99 per channel",
+     "percentiles": [
+      1.0,
+      99.0
+     ],
+     "formula": "(x - p1) / (p99 - p1) as float32",
+     "flat_channel": "channels with zero range, or p99 - p1 <= 1e-3, become all zeros",
+     "downsample": "percentiles use a strided subsample only when a channel has more than 224**3 pixels"
+    },
+    "diam_mean": 30.0,
+    "rescale": "30 / diameter when diameter > 0, else 1",
+    "resize": "cv2.INTER_LINEAR to (int(Ly * rescale), int(Lx * rescale)) when rescale != 1",
+    "pad": "cellpose.transforms.get_pad_yx(div=16, extra=1, min_size=(256, 256)), zero padding, split as evenly as possible",
+    "bsize": 256,
+    "tile_overlap": 0.1,
+    "batch_size": 8,
+    "tiles": "ny = 1 if Ly <= 256 else ceil(1.2 * Ly / 256); starts = linspace(0, Ly - 256, ny).astype(int); same for x",
+    "blend": "cellpose.transforms.average_tiles with _taper_mask(sig=7.5): weight 1 / (1 + exp((|i - 127.5| - 108) / 7.5)) per axis, outer product",
+    "resample": "crop padding, then resize the flows back to the original Ly x Lx with cv2.INTER_LINEAR (resample=True)",
+    "augment": false
+   },
+   "postprocess": {
+    "function": "cellpose.dynamics.resize_and_compute_masks",
+    "niter": "int(200 / rescale) when resample is True, else 200",
+    "flow_threshold": 0.4,
+    "cellprob_threshold": 0.0,
+    "min_size": 15,
+    "max_size_fraction": 0.4,
+    "dynamics": "follow_flows on dP * (cellprob > cellprob_threshold) / 5 for niter steps; get_masks_torch; remove_bad_flow_masks(threshold=flow_threshold); fill_holes_and_remove_small_masks(min_size)",
+    "spacr_defaults": {
+     "web_app": {
+      "flow_threshold": 0.4,
+      "cellprob_threshold": -1.0,
+      "source": "tools/web_mask_generator/app.py defaults",
+      "magnification": 20
+     },
+     "desktop": {
+      "object_role": "pathogen",
+      "pathogen_flow_threshold": 0.4,
+      "pathogen_cellprob_threshold": -1,
+      "pathogen_diameter": null,
+      "magnification": 40,
+      "diameter_at_default_magnification": 40,
+      "diameter_rule": "blank pathogen_diameter resolves from magnification via spacr.utils._get_diam(magnification, obj='pathogen')",
+      "normalization_note": "the spaCR desktop route normalizes with spacr.io._normalize_img_batch and calls Cellpose with normalize=False; the preprocess block here describes Cellpose's own normalize=True path",
+      "source": "spacr.settings.set_default_settings_preprocess_generate_masks"
+     }
+    }
+   },
+   "check": {
+    "runtime": "onnxruntime CPUExecutionProvider",
+    "reference": "torch float32 CPU",
+    "inputs": "2 tiles, numpy default_rng(698).random float32 in [0, 1)",
+    "rel_definition": "max_abs_diff / max(|torch output|)",
+    "outputs": {
+     "flows": {
+      "max_abs_diff": 9.5367431640625e-06,
+      "max_rel_diff": 8.459133334720631e-07,
+      "reference_max_abs": 11.273900985717773,
+      "channels": {
+       "dY": {
+        "max_abs_diff": 3.606081008911133e-06,
+        "max_rel_diff": 0.00022402097280644587,
+        "reference_max_abs": 0.016097068786621094
+       },
+       "dX": {
+        "max_abs_diff": 3.460794687271118e-06,
+        "max_rel_diff": 0.00017249369813120068,
+        "reference_max_abs": 0.020063310861587524
+       },
+       "cellprob": {
+        "max_abs_diff": 9.5367431640625e-06,
+        "max_rel_diff": 8.459133334720631e-07,
+        "reference_max_abs": 11.273900985717773
+       }
+      }
+     }
+    },
+    "tolerance": {
+     "flows_max_abs_diff": 0.001
+    },
+    "passed": true
+   }
+  },
+  "toxoplasma_plaque_v4": {
+   "family": "toxoplasma_plaque",
+   "kind": "cellpose",
+   "file": "toxoplasma_plaque_v4-8516559ff267.onnx",
+   "bytes": 1219177662,
+   "sha256": "8516559ff267a169c32f51a1b440dd648da6eb5a1463879ceb1296b1fb6c2734",
+   "source": {
+    "repo_id": "einarolafsson/toxoplasma-plaque-segmentation-cpsam-r6",
+    "repo_type": "model",
+    "revision": "b1ee8b3df96615ec5eee983e196472a7ab96b9e0",
+    "filename": "weights/cpsam_plaque_r6",
+    "sha256": "744aee3f71efa68f6a369a6f91fe5850dc61e35f3dc20d53dda2c04fce17b35f",
+    "url": "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam-r6/resolve/b1ee8b3df96615ec5eee983e196472a7ab96b9e0/weights/cpsam_plaque_r6"
+   },
+   "opset": 17,
+   "input": {
+    "name": "image",
+    "dtype": "float32",
+    "shape": [
+     "N",
+     3,
+     256,
+     256
+    ],
+    "layout": "NCHW",
+    "channels": "first three image channels; missing channels are zero (Cellpose slices the patch-embedding weights to the given channel count, which equals zero-filling)"
+   },
+   "output": {
+    "name": "flows",
+    "dtype": "float32",
+    "shape": [
+     "N",
+     3,
+     256,
+     256
+    ],
+    "layout": "NCHW",
+    "channels": [
+     "dY",
+     "dX",
+     "cellprob"
+    ],
+    "cellprob": "logits (no sigmoid)",
+    "consumed_as": "cellpose.core.run_net: tiles averaged, then dP = y[:2], cellprob = y[2]"
+   },
+   "preprocess": {
+    "normalize": {
+     "method": "cellpose.transforms.normalize99 per channel",
+     "percentiles": [
+      1.0,
+      99.0
+     ],
+     "formula": "(x - p1) / (p99 - p1) as float32",
+     "flat_channel": "channels with zero range, or p99 - p1 <= 1e-3, become all zeros",
+     "downsample": "percentiles use a strided subsample only when a channel has more than 224**3 pixels"
+    },
+    "diam_mean": 30.0,
+    "rescale": "30 / diameter when diameter > 0, else 1",
+    "resize": "cv2.INTER_LINEAR to (int(Ly * rescale), int(Lx * rescale)) when rescale != 1",
+    "pad": "cellpose.transforms.get_pad_yx(div=16, extra=1, min_size=(256, 256)), zero padding, split as evenly as possible",
+    "bsize": 256,
+    "tile_overlap": 0.1,
+    "batch_size": 8,
+    "tiles": "ny = 1 if Ly <= 256 else ceil(1.2 * Ly / 256); starts = linspace(0, Ly - 256, ny).astype(int); same for x",
+    "blend": "cellpose.transforms.average_tiles with _taper_mask(sig=7.5): weight 1 / (1 + exp((|i - 127.5| - 108) / 7.5)) per axis, outer product",
+    "resample": "crop padding, then resize the flows back to the original Ly x Lx with cv2.INTER_LINEAR (resample=True)",
+    "augment": false
+   },
+   "postprocess": {
+    "function": "cellpose.dynamics.resize_and_compute_masks",
+    "niter": "int(200 / rescale) when resample is True, else 200",
+    "flow_threshold": 0.4,
+    "cellprob_threshold": 0.0,
+    "min_size": 15,
+    "max_size_fraction": 0.4,
+    "dynamics": "follow_flows on dP * (cellprob > cellprob_threshold) / 5 for niter steps; get_masks_torch; remove_bad_flow_masks(threshold=flow_threshold); fill_holes_and_remove_small_masks(min_size)",
+    "spacr_defaults": {
+     "web_app": {
+      "flow_threshold": 0.4,
+      "cellprob_threshold": 0.0,
+      "source": "tools/web_mask_generator/app.py defaults",
+      "diameter": "required; resolve it as the desktop plaque run does"
+     },
+     "desktop": {
+      "flow_threshold": 0.4,
+      "cellprob_threshold": 0.0,
+      "source": "tools/web_mask_generator/plaque.py run_plaque_download"
+     }
+    }
+   },
+   "check": {
+    "runtime": "onnxruntime CPUExecutionProvider",
+    "reference": "torch float32 CPU",
+    "inputs": "2 tiles, numpy default_rng(698).random float32 in [0, 1)",
+    "rel_definition": "max_abs_diff / max(|torch output|)",
+    "outputs": {
+     "flows": {
+      "max_abs_diff": 1.049041748046875e-05,
+      "max_rel_diff": 1.0771439742950363e-06,
+      "reference_max_abs": 9.739104270935059,
+      "channels": {
+       "dY": {
+        "max_abs_diff": 3.1478703022003174e-06,
+        "max_rel_diff": 8.418608691909608e-05,
+        "reference_max_abs": 0.03739181160926819
+       },
+       "dX": {
+        "max_abs_diff": 3.3527612686157227e-06,
+        "max_rel_diff": 6.134621403884933e-05,
+        "reference_max_abs": 0.0546531081199646
+       },
+       "cellprob": {
+        "max_abs_diff": 1.049041748046875e-05,
+        "max_rel_diff": 1.0771439742950363e-06,
+        "reference_max_abs": 9.739104270935059
+       }
+      }
+     }
+    },
+    "tolerance": {
+     "flows_max_abs_diff": 0.001
+    },
+    "passed": true
+   }
+  },
+  "toxoplasma_pv_v4": {
+   "family": "toxoplasma_pv",
+   "kind": "cellpose",
+   "file": "toxoplasma_pv_v4-776de617c49a.onnx",
+   "bytes": 1219177662,
+   "sha256": "776de617c49af96f9a3e46175e26dc99ded7b1c6c3f65f3a7f7bd5485b785969",
+   "source": {
+    "repo_id": "einarolafsson/toxoplasma-pv-segmentation-cpsam-r7",
+    "repo_type": "model",
+    "revision": "01b1083f61b1a004c6d9ef4975777580f9379007",
+    "filename": "weights/cpsam_v2_toxo_r7",
+    "sha256": "621a475c9bfb6865be7de12c5c4638f4509d734e0c4d39adb15ea541e48961d2",
+    "url": "https://huggingface.co/einarolafsson/toxoplasma-pv-segmentation-cpsam-r7/resolve/01b1083f61b1a004c6d9ef4975777580f9379007/weights/cpsam_v2_toxo_r7"
+   },
+   "opset": 17,
+   "input": {
+    "name": "image",
+    "dtype": "float32",
+    "shape": [
+     "N",
+     3,
+     256,
+     256
+    ],
+    "layout": "NCHW",
+    "channels": "first three image channels; missing channels are zero (Cellpose slices the patch-embedding weights to the given channel count, which equals zero-filling)"
+   },
+   "output": {
+    "name": "flows",
+    "dtype": "float32",
+    "shape": [
+     "N",
+     3,
+     256,
+     256
+    ],
+    "layout": "NCHW",
+    "channels": [
+     "dY",
+     "dX",
+     "cellprob"
+    ],
+    "cellprob": "logits (no sigmoid)",
+    "consumed_as": "cellpose.core.run_net: tiles averaged, then dP = y[:2], cellprob = y[2]"
+   },
+   "preprocess": {
+    "normalize": {
+     "method": "cellpose.transforms.normalize99 per channel",
+     "percentiles": [
+      1.0,
+      99.0
+     ],
+     "formula": "(x - p1) / (p99 - p1) as float32",
+     "flat_channel": "channels with zero range, or p99 - p1 <= 1e-3, become all zeros",
+     "downsample": "percentiles use a strided subsample only when a channel has more than 224**3 pixels"
+    },
+    "diam_mean": 30.0,
+    "rescale": "30 / diameter when diameter > 0, else 1",
+    "resize": "cv2.INTER_LINEAR to (int(Ly * rescale), int(Lx * rescale)) when rescale != 1",
+    "pad": "cellpose.transforms.get_pad_yx(div=16, extra=1, min_size=(256, 256)), zero padding, split as evenly as possible",
+    "bsize": 256,
+    "tile_overlap": 0.1,
+    "batch_size": 8,
+    "tiles": "ny = 1 if Ly <= 256 else ceil(1.2 * Ly / 256); starts = linspace(0, Ly - 256, ny).astype(int); same for x",
+    "blend": "cellpose.transforms.average_tiles with _taper_mask(sig=7.5): weight 1 / (1 + exp((|i - 127.5| - 108) / 7.5)) per axis, outer product",
+    "resample": "crop padding, then resize the flows back to the original Ly x Lx with cv2.INTER_LINEAR (resample=True)",
+    "augment": false
+   },
+   "postprocess": {
+    "function": "cellpose.dynamics.resize_and_compute_masks",
+    "niter": "int(200 / rescale) when resample is True, else 200",
+    "flow_threshold": 0.4,
+    "cellprob_threshold": 0.0,
+    "min_size": 15,
+    "max_size_fraction": 0.4,
+    "dynamics": "follow_flows on dP * (cellprob > cellprob_threshold) / 5 for niter steps; get_masks_torch; remove_bad_flow_masks(threshold=flow_threshold); fill_holes_and_remove_small_masks(min_size)",
+    "spacr_defaults": {
+     "web_app": {
+      "flow_threshold": 0.4,
+      "cellprob_threshold": -1.0,
+      "source": "tools/web_mask_generator/app.py defaults",
+      "magnification": 20
+     },
+     "desktop": {
+      "object_role": "pathogen",
+      "pathogen_flow_threshold": 0.4,
+      "pathogen_cellprob_threshold": -1,
+      "pathogen_diameter": null,
+      "magnification": 40,
+      "diameter_at_default_magnification": 40,
+      "diameter_rule": "blank pathogen_diameter resolves from magnification via spacr.utils._get_diam(magnification, obj='pathogen')",
+      "normalization_note": "the spaCR desktop route normalizes with spacr.io._normalize_img_batch and calls Cellpose with normalize=False; the preprocess block here describes Cellpose's own normalize=True path",
+      "source": "spacr.settings.set_default_settings_preprocess_generate_masks"
+     }
+    }
+   },
+   "check": {
+    "runtime": "onnxruntime CPUExecutionProvider",
+    "reference": "torch float32 CPU",
+    "inputs": "2 tiles, numpy default_rng(698).random float32 in [0, 1)",
+    "rel_definition": "max_abs_diff / max(|torch output|)",
+    "outputs": {
+     "flows": {
+      "max_abs_diff": 1.049041748046875e-05,
+      "max_rel_diff": 9.9853378929412e-07,
+      "reference_max_abs": 10.505821228027344,
+      "channels": {
+       "dY": {
+        "max_abs_diff": 3.285706043243408e-06,
+        "max_rel_diff": 9.622715368807477e-05,
+        "reference_max_abs": 0.03414531052112579
+       },
+       "dX": {
+        "max_abs_diff": 3.580935299396515e-06,
+        "max_rel_diff": 7.353674687661034e-05,
+        "reference_max_abs": 0.04869586229324341
+       },
+       "cellprob": {
+        "max_abs_diff": 1.049041748046875e-05,
+        "max_rel_diff": 9.9853378929412e-07,
+        "reference_max_abs": 10.505821228027344
+       }
+      }
+     }
+    },
+    "tolerance": {
+     "flows_max_abs_diff": 0.001
+    },
+    "passed": true
+   }
+  },
+  "toxoplasma_well_detector_v2": {
+   "family": "toxoplasma_well_detector",
+   "kind": "detector",
+   "file": "toxoplasma_well_detector_v2-449857d41fb2.onnx",
+   "bytes": 9608520,
+   "sha256": "449857d41fb21150422df5b8454a452412457492cdaeaaa3fe3ca85383e4a4e6",
+   "source": {
+    "repo_id": "einarolafsson/toxoplasma-plaque-well-detector-yolo26",
+    "repo_type": "model",
+    "revision": "c15a1f03207adcbd3e32c64f21175781170fa4fa",
+    "filename": "weights/best.pt",
+    "sha256": "f2a1e1110f09b2a1d5ef5545adaba7c57f1158669d0bfc50d8fabe9f86da30c7",
+    "url": "https://huggingface.co/einarolafsson/toxoplasma-plaque-well-detector-yolo26/resolve/c15a1f03207adcbd3e32c64f21175781170fa4fa/weights/best.pt"
+   },
+   "opset": 17,
+   "input": {
+    "name": "images",
+    "dtype": "float32",
+    "shape": [
+     "N",
+     3,
+     "H",
+     "W"
+    ],
+    "layout": "NCHW",
+    "color": "RGB",
+    "range": [
+     0.0,
+     1.0
+    ]
+   },
+   "output": {
+    "name": "output0",
+    "dtype": "float32",
+    "shape": [
+     "N",
+     5,
+     "H*W/64 + H*W/256 + H*W/1024"
+    ],
+    "layout": "rows 0-3 are box cx, cy, w, h in letterboxed input pixels; rows 4.. are per-class scores with sigmoid applied; anchors ordered stride 8, 16, 32",
+    "nms_included": false,
+    "head_note": "one-to-many head, exactly what desktop predict runs (ultralytics nms=None keeps NMS outside the graph)",
+    "num_classes": 1,
+    "class_names": [
+     "plaque_well"
+    ],
+    "end2end": false,
+    "one2one_head_present": true,
+    "max_det": 300,
+    "stride": 32,
+    "head": "Detect"
+   },
+   "preprocess": {
+    "channel_order": "RGB into the network. spacr.plaque.detect_wells flips an RGB HxWx3 array to BGR and ultralytics flips it back, so the browser feeds RGB directly",
+    "grayscale": "a single channel is repeated to three",
+    "scale": "uint8 pixels / 255",
+    "letterbox": {
+     "size": 640,
+     "ratio": "r = min(640 / H, 640 / W) (scale up allowed)",
+     "resize": "cv2.INTER_LINEAR to (round(W * r), round(H * r)); skipped when the size is unchanged",
+     "padding": "rect: dw = (640 - round(W * r)) % 32, dh = (640 - round(H * r)) % 32, so the padded image is only rounded up to a multiple of 32 (ultralytics predict with PyTorch weights, rect=True, auto=True)",
+     "pad_value": 114,
+     "center": true,
+     "pad_split": "dw /= 2, dh /= 2; top = round(dh - 0.1), bottom = round(dh + 0.1), left = round(dw - 0.1), right = round(dw + 0.1)",
+     "stride": 32,
+     "dynamic_graph": true
+    }
+   },
+   "postprocess": {
+    "nms": {
+     "conf": 0.25,
+     "iou": 0.7,
+     "max_det": 300,
+     "agnostic": false,
+     "function": "ultralytics.utils.nms.non_max_suppression"
+    },
+    "unletterbox": "subtract the left/top padding, divide by r, clip to the image",
+    "wells": "x0, y0, x1, y1 rounded to integers; drop boxes with width or height <= 0; drop boxes with min(w, h) / max(w, h) < min_axis_ratio; sort by (y0, x0)",
+    "desktop_settings": {
+     "confidence": 0.25,
+     "imgsz": 640,
+     "min_axis_ratio": 0.7,
+     "source": "spacr.plaque.detect_wells via tools/web_mask_generator/detector.py"
+    }
+   },
+   "check": {
+    "runtime": "onnxruntime CPUExecutionProvider",
+    "reference": "ultralytics torch float32 CPU (unfused)",
+    "inputs": "1 image, numpy default_rng(698).random float32 in [0, 1), 640x640",
+    "rel_definition": "max_abs_diff / max(|torch output|)",
+    "tolerance": {
+     "boxes": 0.01,
+     "scores": 0.001
+    },
+    "outputs": {
+     "output0": {
+      "max_abs_diff": 0.00030517578125,
+      "max_rel_diff": 4.607283876229557e-07,
+      "reference_max_abs": 662.3767700195312,
+      "boxes": {
+       "max_abs_diff": 0.00030517578125,
+       "max_rel_diff": 4.607283876229557e-07,
+       "reference_max_abs": 662.3767700195312
+      },
+      "scores": {
+       "max_abs_diff": 1.1539827937667724e-07,
+       "max_rel_diff": 4.663124411972245e-05,
+       "reference_max_abs": 0.002474698703736067
+      }
+     }
+    },
+    "passed": true,
+    "output_shape": [
+     1,
+     5,
+     8400
+    ]
+   }
+  },
+  "toxoplasma_well_detector_v3": {
+   "family": "toxoplasma_well_detector",
+   "kind": "detector",
+   "file": "toxoplasma_well_detector_v3-1c9988e07909.onnx",
+   "bytes": 10423260,
+   "sha256": "1c9988e079091166d32b05a97351a652b136bef7b998f7b292eae2aca20bd069",
+   "source": {
+    "repo_id": "einarolafsson/toxoplasma-plaque-well-detector-yolo11-v4-geldoc",
+    "repo_type": "model",
+    "revision": "a31e978758b7f8f4d98b6007d3d6e52e874cd618",
+    "filename": "weights/yolo_welldetect_v4_geldoc.pt",
+    "sha256": "046861021594256957292cfe9488a84e758077a12dac31fe66b8b4083f8dfa18",
+    "url": "https://huggingface.co/einarolafsson/toxoplasma-plaque-well-detector-yolo11-v4-geldoc/resolve/a31e978758b7f8f4d98b6007d3d6e52e874cd618/weights/yolo_welldetect_v4_geldoc.pt"
+   },
+   "opset": 17,
+   "input": {
+    "name": "images",
+    "dtype": "float32",
+    "shape": [
+     "N",
+     3,
+     "H",
+     "W"
+    ],
+    "layout": "NCHW",
+    "color": "RGB",
+    "range": [
+     0.0,
+     1.0
+    ]
+   },
+   "output": {
+    "name": "output0",
+    "dtype": "float32",
+    "shape": [
+     "N",
+     5,
+     "H*W/64 + H*W/256 + H*W/1024"
+    ],
+    "layout": "rows 0-3 are box cx, cy, w, h in letterboxed input pixels; rows 4.. are per-class scores with sigmoid applied; anchors ordered stride 8, 16, 32",
+    "nms_included": false,
+    "head_note": "one-to-many head, exactly what desktop predict runs (ultralytics nms=None keeps NMS outside the graph)",
+    "num_classes": 1,
+    "class_names": [
+     "plaque_well"
+    ],
+    "end2end": false,
+    "one2one_head_present": false,
+    "max_det": 300,
+    "stride": 32,
+    "head": "Detect"
+   },
+   "preprocess": {
+    "channel_order": "RGB into the network. spacr.plaque.detect_wells flips an RGB HxWx3 array to BGR and ultralytics flips it back, so the browser feeds RGB directly",
+    "grayscale": "a single channel is repeated to three",
+    "scale": "uint8 pixels / 255",
+    "letterbox": {
+     "size": 640,
+     "ratio": "r = min(640 / H, 640 / W) (scale up allowed)",
+     "resize": "cv2.INTER_LINEAR to (round(W * r), round(H * r)); skipped when the size is unchanged",
+     "padding": "rect: dw = (640 - round(W * r)) % 32, dh = (640 - round(H * r)) % 32, so the padded image is only rounded up to a multiple of 32 (ultralytics predict with PyTorch weights, rect=True, auto=True)",
+     "pad_value": 114,
+     "center": true,
+     "pad_split": "dw /= 2, dh /= 2; top = round(dh - 0.1), bottom = round(dh + 0.1), left = round(dw - 0.1), right = round(dw + 0.1)",
+     "stride": 32,
+     "dynamic_graph": true
+    }
+   },
+   "postprocess": {
+    "nms": {
+     "conf": 0.25,
+     "iou": 0.7,
+     "max_det": 300,
+     "agnostic": false,
+     "function": "ultralytics.utils.nms.non_max_suppression"
+    },
+    "unletterbox": "subtract the left/top padding, divide by r, clip to the image",
+    "wells": "x0, y0, x1, y1 rounded to integers; drop boxes with width or height <= 0; drop boxes with min(w, h) / max(w, h) < min_axis_ratio; sort by (y0, x0)",
+    "desktop_settings": {
+     "confidence": 0.25,
+     "imgsz": 640,
+     "min_axis_ratio": 0.7,
+     "source": "spacr.plaque.detect_wells via tools/web_mask_generator/detector.py"
+    }
+   },
+   "check": {
+    "runtime": "onnxruntime CPUExecutionProvider",
+    "reference": "ultralytics torch float32 CPU (unfused)",
+    "inputs": "1 image, numpy default_rng(698).random float32 in [0, 1), 640x640",
+    "rel_definition": "max_abs_diff / max(|torch output|)",
+    "tolerance": {
+     "boxes": 0.01,
+     "scores": 0.001
+    },
+    "outputs": {
+     "output0": {
+      "max_abs_diff": 0.0006103515625,
+      "max_rel_diff": 9.57271790712817e-07,
+      "reference_max_abs": 637.5948486328125,
+      "boxes": {
+       "max_abs_diff": 0.0006103515625,
+       "max_rel_diff": 9.57271790712817e-07,
+       "reference_max_abs": 637.5948486328125
+      },
+      "scores": {
+       "max_abs_diff": 3.241002559661865e-07,
+       "max_rel_diff": 1.4605234610094964e-06,
+       "reference_max_abs": 0.22190691530704498
+      }
+     }
+    },
+    "passed": true,
+    "output_shape": [
+     1,
+     5,
+     8400
+    ]
+   }
+  },
+  "live-cell-v1": {
+   "family": "live_cell",
+   "kind": "cellpose",
+   "file": "live-cell-v1-a5f3b57c7cd4.onnx",
+   "bytes": 1219177662,
+   "sha256": "a5f3b57c7cd4188828465b8db3ddaaf6d32925848e5e6781e3b2414c5cd46ead",
+   "source": {
+    "repo_id": "einarolafsson/live-cell-segmentation-cpsam",
+    "repo_type": "model",
+    "revision": "9b8b759eaf01318c61eeec77bb85455feff9de1b",
+    "sha256": "7ade69377093fe81830ddc7c52ba8618bef1fefe7d1243c01b9c1beed7fcb090"
+   },
+   "opset": 17,
+   "input": {
+    "name": "image",
+    "dtype": "float32",
+    "shape": [
+     "N",
+     3,
+     256,
+     256
+    ],
+    "layout": "NCHW",
+    "channels": "first three image channels; missing channels are zero (Cellpose slices the patch-embedding weights to the given channel count, which equals zero-filling)"
+   },
+   "output": {
+    "name": "flows",
+    "dtype": "float32",
+    "shape": [
+     "N",
+     3,
+     256,
+     256
+    ],
+    "layout": "NCHW",
+    "channels": [
+     "dY",
+     "dX",
+     "cellprob"
+    ],
+    "cellprob": "logits (no sigmoid)",
+    "consumed_as": "cellpose.core.run_net: tiles averaged, then dP = y[:2], cellprob = y[2]"
+   },
+   "preprocess": {
+    "normalize": {
+     "method": "cellpose.transforms.normalize99 per channel",
+     "percentiles": [
+      1.0,
+      99.0
+     ],
+     "formula": "(x - p1) / (p99 - p1) as float32",
+     "flat_channel": "channels with zero range, or p99 - p1 <= 1e-3, become all zeros",
+     "downsample": "percentiles use a strided subsample only when a channel has more than 224**3 pixels"
+    },
+    "diam_mean": 30.0,
+    "rescale": "30 / diameter when diameter > 0, else 1",
+    "resize": "cv2.INTER_LINEAR to (int(Ly * rescale), int(Lx * rescale)) when rescale != 1",
+    "pad": "cellpose.transforms.get_pad_yx(div=16, extra=1, min_size=(256, 256)), zero padding, split as evenly as possible",
+    "bsize": 256,
+    "tile_overlap": 0.1,
+    "batch_size": 8,
+    "tiles": "ny = 1 if Ly <= 256 else ceil(1.2 * Ly / 256); starts = linspace(0, Ly - 256, ny).astype(int); same for x",
+    "blend": "cellpose.transforms.average_tiles with _taper_mask(sig=7.5): weight 1 / (1 + exp((|i - 127.5| - 108) / 7.5)) per axis, outer product",
+    "resample": "crop padding, then resize the flows back to the original Ly x Lx with cv2.INTER_LINEAR (resample=True)",
+    "augment": false
+   },
+   "postprocess": {
+    "function": "cellpose.dynamics.resize_and_compute_masks",
+    "niter": "int(200 / rescale) when resample is True, else 200",
+    "flow_threshold": 0.4,
+    "cellprob_threshold": 0.0,
+    "min_size": 15,
+    "max_size_fraction": 0.4,
+    "dynamics": "follow_flows on dP * (cellprob > cellprob_threshold) / 5 for niter steps; get_masks_torch; remove_bad_flow_masks(threshold=flow_threshold); fill_holes_and_remove_small_masks(min_size)",
+    "spacr_defaults": {
+     "web_app": {
+      "flow_threshold": 0.4,
+      "cellprob_threshold": 0.0,
+      "source": "tools/web_mask_generator/app.py defaults",
+      "magnification": 20
+     },
+     "desktop": {
+      "object_role": "cell",
+      "cell_flow_threshold": 0.4,
+      "cell_cellprob_threshold": 0,
+      "cell_diameter": null,
+      "magnification": 40,
+      "diameter_at_default_magnification": 160,
+      "diameter_rule": "blank cell_diameter resolves from magnification via spacr.utils._get_diam(magnification, obj='cell')",
+      "normalization_note": "the spaCR desktop route normalizes with spacr.io._normalize_img_batch and calls Cellpose with normalize=False; the preprocess block here describes Cellpose's own normalize=True path",
+      "source": "spacr.settings.set_default_settings_preprocess_generate_masks"
+     }
+    }
+   },
+   "check": {
+    "runtime": "onnxruntime CPUExecutionProvider",
+    "reference": "torch float32 CPU",
+    "inputs": "2 tiles, numpy default_rng(698).random float32 in [0, 1)",
+    "rel_definition": "max_abs_diff / max(|torch output|)",
+    "outputs": {
+     "flows": {
+      "max_abs_diff": 1.1444091796875e-05,
+      "max_rel_diff": 1.0962416087272525e-06,
+      "reference_max_abs": 10.439388275146484,
+      "channels": {
+       "dY": {
+        "max_abs_diff": 3.4123659133911133e-06,
+        "max_rel_diff": 7.393328634749225e-05,
+        "reference_max_abs": 0.04615466296672821
+       },
+       "dX": {
+        "max_abs_diff": 3.538094460964203e-06,
+        "max_rel_diff": 0.00010063367160798568,
+        "reference_max_abs": 0.03515815734863281
+       },
+       "cellprob": {
+        "max_abs_diff": 1.1444091796875e-05,
+        "max_rel_diff": 1.0962416087272525e-06,
+        "reference_max_abs": 10.439388275146484
+       }
+      }
+     }
+    },
+    "tolerance": {
+     "flows_max_abs_diff": 0.001
+    },
+    "passed": true
+   }
+  }
+ }
+}
