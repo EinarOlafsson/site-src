@@ -786,6 +786,11 @@ html:not(.js) .fc-front { aspect-ratio: 388 / 252; }
 .mask-family-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,18rem);gap:var(--s1) var(--s4);align-items:end}
 .mask-family-head h3{margin:0 0 .25rem}.mask-family-head p{margin:0}
 .mask-generator label.mask-version{margin:0}
+.mask-family-actions{display:grid;gap:var(--s1);justify-items:stretch}
+.mask-generator .btn .ico{width:18px;height:18px;margin-right:.45rem;color:currentColor;flex:none}
+.mask-colab-btn{justify-content:center}
+.mask-colab{display:grid;gap:var(--s1);justify-items:start;margin:0 0 var(--s2)}
+.mask-colab p{margin:0}
 .mask-card{margin-top:var(--s2)}.mask-card summary,.mask-more summary,.mask-error summary{cursor:pointer;color:var(--text-dim);font-size:15px}
 .mask-card summary:hover,.mask-more summary:hover{color:var(--text)}
 .mask-card[open]{padding-bottom:var(--s1)}

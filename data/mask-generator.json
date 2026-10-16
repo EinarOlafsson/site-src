@@ -1,11 +1,10 @@
 {
-  "schema": 2,
+  "schema": 3,
   "source_commit": "7eee39dd38953dbe12c103a23695d32d6abf0857",
-  "hosted": {
-    "space": "einarolafsson/spacr-mask-generator",
-    "url": "https://einarolafsson-spacr-mask-generator.hf.space",
-    "page": "https://huggingface.co/spaces/einarolafsson/spacr-mask-generator",
-    "client": "https://cdn.jsdelivr.net/npm/@gradio/client@2.7.1/dist/index.min.js"
+  "colab": {
+    "repository": "EinarOlafsson/spacr",
+    "branch": "nightly",
+    "notebook": "tools/web_mask_generator/colab/by_class/{family}.ipynb"
   },
   "browser": {
     "runtime": "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.30.0/dist/ort.webgpu.min.mjs",
@@ -16,7 +15,6 @@
   "protocol": [
     "path",
     "model_key",
-    "accepted",
     "selected_series",
     "selected_t",
     "selected_z",

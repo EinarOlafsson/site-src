@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
 import { MASK_STRINGS, FIELDS, FILTERS, modelCatalogue, renderMaskGenerator, validateBrowserManifest, validateBuildConfig, validateExamples } from "./mask-generator.mjs";
-import { INFER_INPUTS, browserSettings, channelLimit, diameterFor, endpointFor, familyFromHash, format, hostedPayload, parseChannels, removeBorderObjects, serviceKey, validateConfig } from "../src/assets/js/mask-generator.js";
+import { INFER_INPUTS, browserSettings, channelLimit, colabUrl, diameterFor, familyFromHash, format, parseChannels, removeBorderObjects, serviceKey, validateConfig } from "../src/assets/js/mask-generator.js";
 import { acceptedFile, extensionOf, previewRGBA } from "../src/assets/js/mask-io.js";
 import { englishFor, translator, readPartials } from "./i18n.mjs";
 
@@ -20,8 +20,8 @@ const clone = object => structuredClone(object);
 const html = () => renderMaskGenerator(config, models, statuses, tr, { browserModels, examples });
 const pageConfig = () => JSON.parse(html().match(/data-mask-config>(.*?)<\/script>/s)[1]);
 
-// The live Space's named API routes (gradio_api/info, 2026-10-15).
-const SPACE_ENDPOINTS = ["/segment_toxoplasma_pv", "/segment_plaque", "/detect_wells", "/segment_toxoplasma_from_cellmask", "/segment_live_cell", "/segment_nuclei_from_cellmask", "/segment_cell_from_hoechst", "/segment_toxoplasma_from_hoechst"];
+// spaCR's generated notebooks, one per model class (tools/web_mask_generator/colab/by_class/ on nightly).
+const NOTEBOOKS = ["toxoplasma_pv", "toxoplasma_plaque", "toxoplasma_well_detector", "cell_from_hoechst", "nuclei_from_cellmask", "toxoplasma_from_cellmask", "toxoplasma_from_hoechst", "live_cell"];
 
 test("all eight real families keep defaults, versions and the public live-cell alias", () => {
   const families = catalogue();
@@ -49,38 +49,37 @@ test("unsafe cards, missing versions and invalid family identities fail before H
   assert.throws(() => modelCatalogue(duplicate, models), /duplicate/);
 });
 
-test("the hosted service's positional contract has all 24 inputs in order", () => {
+test("the form contract names all 23 inputs in order", () => {
   assert.deepEqual(config.protocol, INFER_INPUTS);
   const names = [...FIELDS, ...FILTERS].map(field => field[0]);
-  names.push("path", "model_key", "accepted", "chosen_channels", "native_scale", "advanced", "background_switch", "border_switch");
+  names.push("path", "model_key", "chosen_channels", "native_scale", "advanced", "background_switch", "border_switch");
   assert.deepEqual([...names].sort(), [...INFER_INPUTS].sort());
   const reversed = clone(config); reversed.protocol.reverse();
   assert.throws(() => modelCatalogue(reversed, models), /protocol/);
   assert.throws(() => validateConfig({ ...pageConfig(), protocol: reversed.protocol }), /protocol/);
-});
-
-test("hosted payload names every input in order and maps keys and routes to the live Space", () => {
-  const values = Object.fromEntries(INFER_INPUTS.map(name => [name, name]));
-  values.model_key = "live-cell-v1"; values.accepted = true;
-  const payload = hostedPayload(values, "FILE", file => ({ handled: file }));
-  assert.deepEqual(Object.keys(payload), INFER_INPUTS);
-  assert.deepEqual(payload.path, { handled: "FILE" });
-  assert.equal(payload.model_key, "live_cell_v1");
-  assert.equal(hostedPayload({ ...values, accepted: "yes" }, "F", f => f).accepted, false);
-  assert.deepEqual(catalogue().map(endpointFor).sort(), [...SPACE_ENDPOINTS].sort());
+  assert.equal(serviceKey("live-cell-v1"), "live_cell_v1");
   assert.equal(serviceKey("toxoplasma_pv_v4"), "toxoplasma_pv_v4");
 });
 
-test("pinned libraries and the hosted URL are validated", () => {
+test("each model class links its own spaCR notebook in Google Colab; no hosted Space is linked", () => {
+  assert.deepEqual(catalogue().map(family => family.id).sort(), [...NOTEBOOKS].sort());
+  assert.equal(colabUrl(config.colab, "toxoplasma_pv"), "https://colab.research.google.com/github/EinarOlafsson/spacr/blob/nightly/tools/web_mask_generator/colab/by_class/toxoplasma_pv.ipynb");
+  const page = html();
+  for (const id of NOTEBOOKS) assert.match(page, new RegExp(`href="${colabUrl(config.colab, id).replace(/[.?/]/g, "\\$&")}"[^>]*target="_blank" rel="noopener"`));
+  assert.doesNotMatch(page, /hf\.space|huggingface\.co\/spaces|ZeroGPU|name="accepted"/);
+  for (const bad of [{ ...config.colab, branch: "a b" }, { ...config.colab, notebook: "../x/{family}.ipynb" }, { ...config.colab, notebook: "x.ipynb" }, { ...config.colab, repository: "javascript:alert(1)" }]) {
+    assert.throws(() => validateBuildConfig({ ...clone(config), colab: bad }), /Colab/);
+  }
+  assert.throws(() => validateBuildConfig({ ...clone(config), hosted: { url: "https://x.hf.space" } }), /Colab/);
+});
+
+test("pinned libraries are validated", () => {
   assert.equal(validateBuildConfig(config), config);
-  for (const url of [config.hosted.client, config.browser.runtime, config.readers.geotiff, config.readers.pdfjs]) assert.match(url, /@\d+\.\d+\.\d+\//);
+  for (const url of [config.browser.runtime, config.readers.geotiff, config.readers.pdfjs]) assert.match(url, /@\d+\.\d+\.\d+\//);
   const floating = clone(config); floating.browser.runtime = "https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.webgpu.min.mjs";
   assert.throws(() => validateBuildConfig(floating), /pin/);
-  const foreign = clone(config); foreign.hosted.url = "https://example.com";
-  assert.throws(() => validateBuildConfig(foreign), /hf.space/);
-  assert.throws(() => validateConfig({ ...pageConfig(), hosted: foreign.hosted }), /hf.space/);
-  const none = clone(config); none.hosted.url = null;
-  assert.doesNotThrow(() => validateBuildConfig(none));
+  const foreign = clone(config); foreign.browser.runtime = "https://example.com/ort@1.0.0/ort.mjs";
+  assert.throws(() => validateBuildConfig(foreign), /CDN/);
 });
 
 test("browser manifest stays unpublished until a Hugging Face base URL and verified files exist", () => {
@@ -114,7 +113,7 @@ test("source defaults are retained rather than borrowing another family's settin
   assert.equal(config.families.find(f => f.id === "toxoplasma_pv").score, -1);
 });
 
-test("browser settings follow spaCR's desktop defaults and refuse hosted-only filters", () => {
+test("browser settings follow spaCR's desktop defaults and refuse desktop-only filters", () => {
   const families = Object.fromEntries(config.families.map(f => [f.id, f]));
   const base = { chosen_diameter: null, native_scale: false, flow_threshold: 0.4, score_threshold: 0, chosen_magnification: 20, advanced: "{}", background_value: null, signal_value: null, lower_value: null, background_switch: "default", perimeter_value: null, border_switch: "default", detection_confidence: 0.25, minimum_axis_ratio: 0.7, detector_image_size: 640 };
   assert.equal(diameterFor("cell", 20), 120);
@@ -127,8 +126,8 @@ test("browser settings follow spaCR's desktop defaults and refuse hosted-only fi
   const pv = browserSettings(families.toxoplasma_pv, { ...base, score_threshold: -1, background_switch: "disabled", border_switch: "enabled" });
   assert.deepEqual([pv.diameter, pv.resample, pv.normalization.removeBackground, pv.removeBorder], [20, false, false, true]);
   assert.equal(browserSettings(families.cell_from_hoechst, { ...base, native_scale: true }).diameter, null);
-  assert.throws(() => browserSettings(families.cell_from_hoechst, { ...base, perimeter_value: 0.2 }), /hosted_only/);
-  assert.throws(() => browserSettings(families.cell_from_hoechst, { ...base, advanced: '{"object_filters": []}' }), /hosted_only/);
+  assert.throws(() => browserSettings(families.cell_from_hoechst, { ...base, perimeter_value: 0.2 }), /desktop_only/);
+  assert.throws(() => browserSettings(families.cell_from_hoechst, { ...base, advanced: '{"object_filters": []}' }), /desktop_only/);
   assert.throws(() => browserSettings(families.toxoplasma_plaque, base), /diameter/);
   assert.equal(browserSettings(families.toxoplasma_plaque, { ...base, chosen_diameter: 52 }).normalize, true);
   assert.equal(browserSettings(families.toxoplasma_well_detector, base).kind, "detector");
@@ -165,11 +164,14 @@ test("rendered HTML has one tab per model class, live controls and no premature 
   for (const name of INFER_INPUTS) assert.match(page, new RegExp(`name="${name}"`));
   assert.match(page, /boxes, not segmentation masks/);
   assert.match(page, /raw logits, not calibrated probabilities/);
-  assert.match(page, /Checking the hosted GPU service/);
+  assert.match(page, /Checking the in-browser model/);
+  assert.match(page, /name="route" value="browser" checked/);
+  assert.match(page, /name="route" value="colab">/);
   const browser = pageConfig();
   assert.equal(validateConfig(browser), browser);
   assert.equal(browser.examples.length, examples.records.length);
-  assert.equal(browser.strings["mask.hosted_na"], MASK_STRINGS["mask.hosted_na"]);
+  assert.equal(browser.strings["mask.browser_na2"], MASK_STRINGS["mask.browser_na2"]);
+  assert.equal(browser.hosted, undefined);
 });
 
 test("family deep links select only real families and preserve malformed-link fallback", () => {

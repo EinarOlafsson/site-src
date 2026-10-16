@@ -76,19 +76,14 @@ test("result archives, NPY arrays and label PNGs round-trip", async () => {
 });
 
 test("errors become short translated messages with the raw text kept as details", () => {
-  const quota = friendlyError({ message: "You have exceeded your ZeroGPU quota (180s requested vs. 167s left). Try again in 21:50:40.", title: "ZeroGPU quota exceeded" }, text, "hosted");
-  assert.equal(quota.message, text("err_quota", { wait: "21:50:40" }));
-  assert.match(quota.detail, /180s requested/);
-  const worker = friendlyError({ message: "ValueError", title: "ZeroGPU worker error" }, text, "hosted");
-  assert.equal(worker.message, text("err_server"));
-  assert.match(worker.detail, /ValueError/);
-  assert.equal(friendlyError(new Error("ValueError"), text, "hosted").message, text("err_server"));
-  const refused = friendlyError(new Error("Enter the resolved diameter or explicitly choose native scale."), text, "hosted");
-  assert.equal(refused.message, text("err_refused", { reason: "Enter the resolved diameter or explicitly choose native scale." }));
-  assert.equal(friendlyError(new TypeError("Failed to fetch"), text, "hosted").message, text("err_offline"));
-  assert.equal(friendlyError(new Error("GPU task aborted"), text, "hosted").message, text("err_busy"));
-  assert.equal(friendlyError(new Error("model checksum"), text, "browser").message, text("err_model"));
-  assert.equal(friendlyError(new Error("diameter"), text, "hosted").message, text("err_diameter"));
-  assert.equal(friendlyError(new RangeError("Array buffer allocation failed"), text, "browser").message, text("err_memory"));
-  assert.equal(friendlyError(new Error("weird"), text, "browser").message, text("err_generic"));
+  assert.equal(friendlyError(new Error("model checksum"), text).message, text("err_model"));
+  assert.equal(friendlyError(new Error("HTTP 404"), text).message, text("err_model"));
+  assert.equal(friendlyError(new TypeError("Failed to fetch"), text).message, text("err_model"));
+  assert.equal(friendlyError(new Error("diameter"), text).message, text("err_diameter"));
+  assert.equal(friendlyError(new Error("json"), text).message, text("err_json"));
+  assert.equal(friendlyError(new Error("desktop_only"), text).message, text("err_desktop_only"));
+  const memory = friendlyError(new RangeError("Array buffer allocation failed"), text);
+  assert.equal(memory.message, text("err_memory2"));
+  assert.match(memory.detail, /allocation failed/);
+  assert.equal(friendlyError(new Error("weird"), text).message, text("err_generic"));
 });

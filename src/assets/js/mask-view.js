@@ -157,27 +157,21 @@ export function formatNumber(value, lang, digits = 0) {
 }
 
 /**
- * A short, translated explanation for an error from either route, plus the
+ * A short, translated explanation for an error from the browser route, plus the
  * raw text for a "Technical details" disclosure. text(key, values) translates.
  */
-export function friendlyError(error, text, route) {
+export function friendlyError(error, text) {
   const raw = String(error?.message || error?.title || error || "").trim();
   const title = String(error?.title || "").trim();
   const detail = [title && title !== raw ? title : "", raw].filter(Boolean).join(": ");
   const all = `${title} ${raw}`;
   let message;
-  if (/quota/i.test(all)) {
-    const wait = /try again in\s+([0-9:]+)/i.exec(all)?.[1];
-    message = wait ? text("err_quota", { wait }) : text("err_quota_nowait");
-  } else if (/^(diameter)$/.test(raw)) message = text("err_diameter");
+  if (/^(diameter)$/.test(raw)) message = text("err_diameter");
   else if (/^(json)$/.test(raw)) message = text("err_json");
-  else if (/^(hosted_only)$/.test(raw)) message = text("err_hosted_only");
-  else if (/model (checksum|size)|^HTTP \d+$/.test(raw) && route === "browser") message = text("err_model");
-  else if (/out of memory|allocation failed|RangeError|Array buffer allocation/i.test(all)) message = text("err_memory");
-  else if (/Failed to fetch|NetworkError|Could not resolve app config|Could not get API info|connection|ECONN|Load failed|fetch failed|space .*(sleep|paus|build)/i.test(all)) message = text(route === "browser" ? "err_model" : "err_offline");
-  else if (/GPU task aborted|timed? ?out|No GPU|GPU is (busy|unavailable)|queue is full/i.test(all)) message = text("err_busy");
-  else if (route === "hosted" && /^[A-Z][A-Za-z]*(Error|Exception)$|worker error|^Error$/.test(raw || title)) message = text("err_server");
-  else if (route === "hosted" && raw && !/^[A-Z][A-Za-z]*Error\b/.test(raw) && raw.length < 300) message = text("err_refused", { reason: raw });
+  else if (/^(desktop_only)$/.test(raw)) message = text("err_desktop_only");
+  else if (/model (checksum|size)|^HTTP \d+$/.test(raw)) message = text("err_model");
+  else if (/out of memory|allocation failed|RangeError|Array buffer allocation/i.test(all)) message = text("err_memory2");
+  else if (/Failed to fetch|NetworkError|connection|ECONN|Load failed|fetch failed/i.test(all)) message = text("err_model");
   else message = text("err_generic");
   return { message, detail: detail && detail !== message ? detail : "" };
 }

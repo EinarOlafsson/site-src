@@ -101,7 +101,7 @@ async function readPdf(buffer, urls, { page = 0, dpi = 150 } = {}) {
 }
 
 // Returns { format, width, height, dtype, channels: TypedArray[], names, pages? }
-// or { format, serverOnly: true } for files only the hosted service can read.
+// or { format, serverOnly: true } for files only the Colab notebook can read (CZI, ND2).
 export async function readImage(file, urls, options = {}) {
   const extension = extensionOf(file.name);
   if (SERVER_ONLY.includes(extension)) return { format: extension.slice(1).toUpperCase(), serverOnly: true };

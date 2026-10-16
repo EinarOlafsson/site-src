@@ -1,13 +1,14 @@
 // Renders the Mask generator tab: one sub-tab per model class, the model's
-// score card, and the shared form. Processing runs either on the spaCR
-// Hugging Face Space (ZeroGPU) or in the visitor's browser (WebGPU/WASM with
-// exported ONNX models); src/assets/js/mask-generator.js does the work.
-// Neither route is announced as ready here: the client checks availability
-// at run time and says so when a route is not yet available.
-import { INFER_INPUTS } from "../src/assets/js/mask-generator.js";
+// score card, and the shared form. Processing runs in the visitor's browser
+// (WebGPU/WASM with exported ONNX models, the default) or in Google Colab
+// (the spaCR notebook for the model class, the real spaCR pipeline on
+// Google's free GPU under the visitor's own Google account);
+// src/assets/js/mask-generator.js does the work. The browser route is not
+// announced as ready here: the client checks at run time.
+import { INFER_INPUTS, colabUrl, validateColab } from "../src/assets/js/mask-generator.js";
 export const MASK_STRINGS = {
   "mask.title": "Mask generator",
-  "mask.intro2": "Drop in an image and get masks from a spaCR model: one page per model class. Run it on a free hosted GPU (Hugging Face ZeroGPU, the real spaCR pipeline) or entirely in your browser (WebGPU, nothing is uploaded). The download is a ZIP with the image, the mask, the flows, the cell probability, a per-object CSV and a README.",
+  "mask.intro3": "Drop in an image and get masks from a spaCR model: one page per model class. Run it entirely in your browser (WebGPU, nothing is uploaded), or open it in Google Colab, where the real spaCR pipeline runs on Google's free GPU under your own Google account. The download is a ZIP with the image, the mask, the flows, the cell probability, a per-object CSV and a README.",
   "mask.family": "Model class",
   "mask.version": "Model version",
   "mask.recommended": "Recommended input",
@@ -20,25 +21,25 @@ export const MASK_STRINGS = {
   "mask.input.toxoplasma_from_hoechst": "One Hoechst (DNA) channel; the model outlines parasite vacuoles from it.",
   "mask.input.live_cell": "One transmitted-light channel (phase contrast, bright field or DIC).",
   "mask.route": "Where to run",
-  "mask.hosted": "Hosted GPU (Hugging Face Space, ZeroGPU)",
   "mask.browser": "In my browser (WebGPU, no upload)",
-  "mask.hosted_checking": "Checking the hosted GPU service…",
-  "mask.hosted_ready": "Hosted GPU is available. It runs the real spaCR pipeline on Hugging Face's free ZeroGPU; anonymous visitors get a small daily GPU allowance.",
-  "mask.hosted_na": "Hosted GPU not yet available. Try again later, or run the model in your browser.",
-  "mask.browser_na": "In-browser model not yet published for this model version. Use the hosted GPU for now.",
+  "mask.colab": "Google Colab (free GPU, your Google account)",
+  "mask.colab_open": "Open in Google Colab",
+  "mask.colab_text": "Opens the spaCR notebook for this model class in Google Colab. It installs spaCR, takes your image or a held-out test image, runs the real spaCR pipeline on Google's free GPU (or, more slowly, on the CPU when no GPU is assigned) and offers the same ZIP for download. You need a Google account.",
+  "mask.colab_hint": "No WebGPU here, or no in-browser model yet? Google Colab runs the real spaCR pipeline on a free GPU instead.",
+  "mask.checking": "Checking the in-browser model…",
+  "mask.browser_na2": "In-browser model not yet published for this model version. Use Google Colab for now.",
   "mask.browser_ready_gpu": "In-browser model available. Your browser supports WebGPU; the model (about 1.2 GB for segmentation models) is downloaded once and cached.",
   "mask.browser_ready_cpu": "In-browser model available, but this browser does not expose WebGPU, so it runs on the CPU and can take several minutes.",
-  "mask.privacy2": "Hosted GPU: your file is sent to the spaCR Space on Hugging Face, processed, and deleted from its temporary cache within about an hour. In my browser: the file never leaves your computer. Maximum file size 64 MB. For research use only.",
-  "mask.consent": "I agree to upload this image for processing and understand that the ZIP includes the original file.",
+  "mask.privacy3": "In my browser: the file never leaves your computer. Google Colab: the notebook runs in your own Colab session under your Google account; spaCR does not receive your file. Maximum file size 64 MB. For research use only.",
   "mask.drop": "Drop an image or PDF here, or choose a file",
   "mask.choose": "Choose a file",
-  "mask.formats2": "TIFF and OME-TIFF (multi-channel), PNG, JPEG, BMP and PDF. CZI and ND2 are read by the hosted service only.",
+  "mask.formats3": "TIFF and OME-TIFF (multi-channel), PNG, JPEG, BMP and PDF. CZI and ND2 open in the Google Colab notebook.",
   "mask.example2": "Random test image from Hugging Face",
   "mask.example_loading": "Loading a held-out test image from Hugging Face…",
   "mask.example_credit": "Test image: {name}, from {source}.",
   "mask.reading": "Reading the image…",
   "mask.image_info": "{width} × {height} pixels, {channels} channel(s), {dtype}.",
-  "mask.server_only": "This format is read by the hosted service; choose its channels by number below.",
+  "mask.server_only2": "The browser cannot read this format. Open it in the Google Colab notebook, where spaCR reads it.",
   "mask.too_large": "This file is larger than 64 MB.",
   "mask.bad_type": "This file type is not supported.",
   "mask.read_failed": "This image could not be read in the browser.",
@@ -80,7 +81,6 @@ export const MASK_STRINGS = {
   "mask.run": "Generate masks",
   "mask.detect": "Detect wells",
   "mask.cancel": "Cancel",
-  "mask.uploading": "Uploading to the hosted GPU and waiting in the queue…",
   "mask.model_download": "Downloading the model ({done} of {total} MB)…",
   "mask.model_verify": "Checking the model file…",
   "mask.model_start": "Starting the model…",
@@ -88,13 +88,11 @@ export const MASK_STRINGS = {
   "mask.postprocess": "Building masks and packaging the ZIP…",
   "mask.done_objects": "Done: {count} objects.",
   "mask.done_wells": "Done: {count} wells.",
-  "mask.quota_hint": "If the hosted GPU says the free allowance is used up, sign in on the Space page on Hugging Face for a larger allowance, or run the model in your browser.",
-  "mask.open_space": "Open the Space on Hugging Face",
   "mask.download": "Download ZIP",
   "mask.output": "Download contents",
   "mask.labels": "Original upload, selected image, label TIFF, object measurements CSV, README and provenance. Flows and cell scores are included only when the model returns them; cell scores may be raw logits, not calibrated probabilities.",
   "mask.boxes": "Original upload, selected image, detection boxes and confidence scores, CSV, README and provenance. This detector returns boxes, not segmentation masks, flows or cell probabilities.",
-  "mask.browser_note": "The browser route runs the same model weights exported to ONNX with the same normalization, tiling and Cellpose mask dynamics; the shared-perimeter merge and additional JSON object filters run only on the hosted route.",
+  "mask.browser_note2": "The browser route runs the same model weights exported to ONNX with the same normalization, tiling and Cellpose mask dynamics; the shared-perimeter merge and additional JSON object filters run only in the spaCR desktop app.",
   "mask.card": "Model card and test data",
   "mask.snapshot": "Scores are copied from the published model snapshot, not recomputed here. Compare only the test sets described in each model card.",
   "mask.scores": "Scores and model card",
@@ -118,18 +116,11 @@ export const MASK_STRINGS = {
   "mask.download_png": "Mask PNG",
   "mask.download_tiff": "Mask TIFF",
   "mask.download_csv": "Objects CSV",
-  "mask.no_preview": "No browser preview for this format. The hosted GPU reads it, and the result is shown here after the run.",
-  "mask.err_quota": "The free hosted GPU allowance for this connection is used up. It refills in {wait}.",
-  "mask.err_quota_nowait": "The free hosted GPU allowance for this connection is used up for now.",
-  "mask.err_busy": "The hosted GPU is busy or the run timed out. Try again in a minute.",
-  "mask.err_offline": "The hosted GPU service could not be reached. It may be starting up; try again in a minute.",
-  "mask.err_server": "The hosted service could not process this image with these settings. Check the channel and the diameter, or try another image.",
-  "mask.err_refused": "The hosted service did not accept the request: {reason}",
   "mask.err_model": "The model could not be downloaded or verified. Check your connection and try again.",
-  "mask.err_memory": "The browser ran out of memory. Try a smaller image or the hosted GPU.",
+  "mask.err_memory2": "The browser ran out of memory. Try a smaller image, or Google Colab.",
   "mask.err_diameter": "Enter the plaque diameter in pixels, or choose native scale.",
   "mask.err_json": "The additional desktop settings are not valid JSON.",
-  "mask.err_hosted_only": "The shared-perimeter merge and additional JSON filters run only on the hosted GPU.",
+  "mask.err_desktop_only": "The shared-perimeter merge and additional JSON filters run only in the spaCR desktop app.",
   "mask.err_example": "The test image could not be loaded from Hugging Face. Try again.",
   "mask.err_generic": "Something went wrong while processing this image.",
   "mask.details": "Technical details"
@@ -157,18 +148,19 @@ export const FILTERS = [
   ["lower_value", "lower", "", 0, 100, "masks"],
   ["perimeter_value", "perimeter", "", 0, 1, "masks"]
 ];
+const COLAB_ICON = '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4 11 13"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>';
 export const LAYERS = ["image", "masks", "outlines", "flows", "cellprob", "boxes"];
 const esc = value => String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const safeJSON = value => JSON.stringify(value).replace(/</g, "\\u003c");
-const HTTPS = /^https:\/\/(cdn\.jsdelivr\.net\/npm\/|[a-z0-9-]+\.hf\.space$|huggingface\.co\/)/;
+const HTTPS = /^https:\/\/(cdn\.jsdelivr\.net\/npm\/|huggingface\.co\/)/;
 
 export function validateBuildConfig(config) {
-  if (config.schema !== 2 || JSON.stringify(config.protocol) !== JSON.stringify(INFER_INPUTS)) throw new Error("Invalid mask protocol");
-  const urls = [config.hosted?.client, config.browser?.runtime, config.browser?.wasm_paths, config.readers?.geotiff, config.readers?.pdfjs, config.readers?.pdfjsWorker];
+  if (config.schema !== 3 || JSON.stringify(config.protocol) !== JSON.stringify(INFER_INPUTS)) throw new Error("Invalid mask protocol");
+  const urls = [config.browser?.runtime, config.browser?.wasm_paths, config.readers?.geotiff, config.readers?.pdfjs, config.readers?.pdfjsWorker];
   if (urls.some(url => typeof url !== "string" || !HTTPS.test(url))) throw new Error("Mask generator libraries must come from pinned CDN URLs");
   for (const url of urls) if (url.includes("cdn.jsdelivr.net") && !/@\d+\.\d+\.\d+\//.test(url)) throw new Error("Mask generator libraries must pin an exact version");
-  if (config.hosted.url !== null && !HTTPS.test(config.hosted.url)) throw new Error("Hosted service must be an hf.space URL");
-  if (typeof config.hosted.page !== "string" || !config.hosted.page.startsWith("https://huggingface.co/spaces/")) throw new Error("Hosted service needs its Space page");
+  if ("hosted" in config) throw new Error("The hosted Space route was replaced by Google Colab");
+  validateColab(config.colab);
   return config;
 }
 
@@ -223,7 +215,8 @@ export function renderMaskGenerator(config, snapshot, statuses, tr, extras = {})
   const cards = families.map(family => `<section class="mask-family" id="mask-${family.id}" role="tabpanel" aria-labelledby="mask-tab-${family.id}" data-family="${family.id}">
     <div class="mask-family-head"><div><h3>${title(family)}</h3>
     <p class="note"><strong>${t("recommended")}:</strong> ${t(`input.${family.id}`)}</p></div>
-    <label class="mask-version"><span>${t("version")}</span><select data-model-select="${family.id}">${family.versions.map(model => `<option value="${esc(model.key)}"${model.key === family.default ? " selected" : ""}>${esc(model.display)}${model.key === family.default ? ` · ${esc(tr("mc.default"))}` : ""}</option>`).join("")}</select></label></div>
+    <div class="mask-family-actions"><a class="btn mask-colab-btn" href="${esc(colabUrl(config.colab, family.id))}" target="_blank" rel="noopener">${COLAB_ICON}<span>${t("colab_open")}</span></a>
+    <label class="mask-version"><span>${t("version")}</span><select data-model-select="${family.id}">${family.versions.map(model => `<option value="${esc(model.key)}"${model.key === family.default ? " selected" : ""}>${esc(model.display)}${model.key === family.default ? ` · ${esc(tr("mc.default"))}` : ""}</option>`).join("")}</select></label></div></div>
     <details class="mask-card"><summary>${t("scores")}</summary>
     ${family.versions.map(model => `<article data-model="${esc(model.key)}"><h4>${esc(model.display)}</h4><table><caption>${esc(tr("mc.all_scores"))}</caption><tbody>${["f1_50", "precision", "recall", "aji", "dice", "map50", "map50_95"].flatMap(key => {
       const score = model.metrics?.[key]?.finetuned;
@@ -242,7 +235,7 @@ export function renderMaskGenerator(config, snapshot, statuses, tr, extras = {})
     strings: Object.fromEntries(Object.keys(MASK_STRINGS).map(key => [key, tr(key)]))
   };
   return `<div class="mask-generator" data-mask-generator>
-    <p class="lede">${t("intro2")}</p>
+    <p class="lede">${t("intro3")}</p>
     <div class="mask-family-tabs" role="tablist" aria-label="${t("family")}">${tabs}</div>
     <div class="mask-models">${cards}</div>
     <form class="mask-app" data-mask-form novalidate>
@@ -254,7 +247,7 @@ export function renderMaskGenerator(config, snapshot, statuses, tr, extras = {})
             <p class="mask-drop-title">${t("drop")}</p>
             <div class="btns"><label class="btn primary"><span>${t("choose")}</span><input class="vh" type="file" name="path" accept=".tif,.tiff,.png,.jpg,.jpeg,.bmp,.pdf,.czi,.nd2"></label>
             <button class="btn" type="button" data-example>${t("example2")}</button></div>
-            <p class="note" id="mask-formats">${t("formats2")}</p>
+            <p class="note" id="mask-formats">${t("formats3")}</p>
           </div>
           <canvas class="mask-canvas" data-view-canvas role="img" aria-label="${t("preview")}" hidden></canvas>
           <p class="mask-drop-msg" data-view-msg hidden></p>
@@ -276,18 +269,19 @@ export function renderMaskGenerator(config, snapshot, statuses, tr, extras = {})
         </section>
       </div>
       <div class="mask-controls">
-        <fieldset class="mask-route"><legend>${t("route")}</legend><div class="mask-seg"><label><input type="radio" name="route" value="hosted" checked> <span>${t("hosted")}</span></label><label><input type="radio" name="route" value="browser"> <span>${t("browser")}</span></label></div></fieldset>
-        <p class="note mask-status" data-route-status role="status" aria-live="polite">${t("hosted_checking")}</p>
+        <fieldset class="mask-route"><legend>${t("route")}</legend><div class="mask-seg"><label><input type="radio" name="route" value="browser" checked> <span>${t("browser")}</span></label><label><input type="radio" name="route" value="colab"> <span>${t("colab")}</span></label></div></fieldset>
+        <p class="note mask-status" data-route-status role="status" aria-live="polite">${t("checking")}</p>
+        <div class="mask-colab" data-colab hidden><p class="note">${t("colab_text")}</p><a class="btn primary" data-colab-link href="${esc(colabUrl(config.colab, families[0].id))}" target="_blank" rel="noopener">${COLAB_ICON}<span>${t("colab_open")}</span></a></div>
+        <p class="note" data-colab-hint hidden>${t("colab_hint")}</p>
+        <div class="mask-browser-run" data-browser-run>
         <fieldset data-channels hidden><legend>${t("channels2")}</legend><p class="note" data-channel-hint></p><div class="mask-chips" data-channel-list></div>
           <label data-channel-numbers hidden>${t("channel_numbers")}<input type="text" name="chosen_channels" inputmode="numeric" value="0"></label></fieldset>
         <div class="mask-fields">${number(main[0])}
           <label class="mask-check" data-scope="segmentation"><input type="checkbox" name="native_scale"> <span data-label="native_scale">${t("auto")}</span></label>${main.slice(1).map(number).join("")}</div>
-        <label class="mask-check" data-hosted-consent><input type="checkbox" name="accepted"> <span>${t("consent")}</span></label>
         <div class="mask-run"><button class="btn primary" type="submit" disabled data-run><span class="mask-spinner" data-run-spinner aria-hidden="true" hidden></span><span data-run-label>${t("run")}</span></button><button class="btn" type="button" data-cancel hidden>${t("cancel")}</button></div>
         <progress data-progress hidden></progress>
         <p class="note mask-status" data-run-status role="status" aria-live="polite"></p>
         <div class="mask-error" data-error role="alert" hidden><p data-error-text></p><details data-error-more hidden><summary>${t("details")}</summary><code data-error-detail></code></details></div>
-        <p class="note" data-quota-hint hidden>${t("quota_hint")} <a href="${esc(config.hosted.page)}" rel="noopener">${t("open_space")}</a></p>
         <details class="mask-more"><summary>${t("more")}</summary>
           <div class="mask-fields">${more.map(number).join("")}</div>
           <div data-scope="masks"><h4>${t("advanced")}</h4><p class="note">${t("defaults")}</p><div class="mask-fields">${FILTERS.map(number).join("")}
@@ -295,8 +289,9 @@ export function renderMaskGenerator(config, snapshot, statuses, tr, extras = {})
           <label>${t("border")}<select name="border_switch">${["default", "enabled", "disabled"].map(option).join("")}</select></label></div>
           <label>${t("extra")}<textarea name="advanced" rows="2">{}</textarea></label></div>
         </details>
-        <p class="note">${t("privacy2")}</p>
-        <p class="note" data-browser-note hidden>${t("browser_note")}</p>
+        </div>
+        <p class="note">${t("privacy3")}</p>
+        <p class="note" data-browser-note>${t("browser_note2")}</p>
       </div>
     </form>
     <script type="application/json" data-mask-config>${safeJSON(publicConfig)}</script>

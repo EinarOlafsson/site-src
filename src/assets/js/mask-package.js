@@ -581,7 +581,7 @@ export async function buildDetectionZip({
 }
 
 /* ------------------------------------------------------------------ */
-/* readers for the result viewer (hosted and browser ZIPs alike)       */
+/* readers for the result viewer (the browser route's ZIPs)          */
 /* ------------------------------------------------------------------ */
 
 async function inflateRaw(bytes) {

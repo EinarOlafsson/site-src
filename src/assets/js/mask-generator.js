@@ -1,34 +1,45 @@
 // Mask generator client. Two routes, chosen by the visitor:
-//   hosted  - the spaCR Hugging Face Space (ZeroGPU) through @gradio/client;
-//             the file is uploaded after explicit consent.
-//   browser - the exported ONNX model in onnxruntime-web (WebGPU, WASM
-//             fallback); the file never leaves the computer.
-// Each route reports "not yet available" until it actually is.
+//   browser - the default: the exported ONNX model in onnxruntime-web (WebGPU,
+//             WASM fallback); the file never leaves the computer.
+//   colab   - a link to the spaCR notebook for the model class in Google
+//             Colab, which runs the real spaCR pipeline on Google's free GPU
+//             under the visitor's own Google account. Preferred when the
+//             browser has no WebGPU.
+// The browser route says when its model is not yet published.
 // The drop zone becomes the image viewer as soon as a file is chosen, and the
 // result viewer (layers + opacity, like Cellpose's) after a run.
 import { acceptedFile, extensionOf, fetchExample, previewRGBA, readImage, sha256Hex } from "./mask-io.js";
 import { boxStats, cellprobGrey, composite, flowRGB, formatNumber, friendlyError, labelStats, outlineMask } from "./mask-view.js";
 
 export const INFER_INPUTS = Object.freeze([
-  "path", "model_key", "accepted", "selected_series", "selected_t", "selected_z", "chosen_channels",
+  "path", "model_key", "selected_series", "selected_t", "selected_z", "chosen_channels",
   "selected_page", "selected_dpi", "chosen_diameter", "native_scale", "flow_threshold", "score_threshold",
   "chosen_magnification", "advanced", "detection_confidence", "minimum_axis_ratio", "background_value",
   "signal_value", "lower_value", "background_switch", "perimeter_value", "border_switch", "detector_image_size"
 ]);
 
 export const serviceKey = key => String(key).replace(/^live-cell-v/, "live_cell_v");
-export const endpointFor = family => family.id === "toxoplasma_plaque" ? "/segment_plaque" : family.output === "boxes" ? "/detect_wells" : `/segment_${family.id}`;
 export const channelLimit = family => family.output === "boxes" ? 3 : family.id === "toxoplasma_plaque" ? 3 : 1;
 
+export function validateColab(colab) {
+  if (!colab || !/^[A-Za-z0-9-]+\/[A-Za-z0-9_.-]+$/.test(colab.repository) || !/^[A-Za-z0-9_.-]+$/.test(colab.branch)
+    || !/^[A-Za-z0-9_./-]+\{family\}\.ipynb$/.test(colab.notebook) || colab.notebook.includes("..")) throw new Error("Invalid Colab notebook link");
+  return colab;
+}
+
+// The Open in Colab link for one model class (Colab opens a notebook straight from GitHub).
+export const colabUrl = (colab, familyId) =>
+  `https://colab.research.google.com/github/${colab.repository}/blob/${colab.branch}/${colab.notebook.replace("{family}", familyId)}`;
+
 export function validateConfig(config) {
-  if (config.schema !== 2 || JSON.stringify(config.protocol) !== JSON.stringify(INFER_INPUTS)) throw new Error("Unsupported inference protocol");
+  if (config.schema !== 3 || JSON.stringify(config.protocol) !== JSON.stringify(INFER_INPUTS)) throw new Error("Unsupported inference protocol");
   if (!Array.isArray(config.families) || !config.families.length) throw new Error("Missing model families");
   const ids = new Set();
   for (const family of config.families) {
     if (!/^[a-z_]+$/.test(family.id) || ids.has(family.id) || !family.versions.includes(family.default)) throw new Error("Invalid family/default");
     ids.add(family.id);
   }
-  if (config.hosted.url !== null && !/^https:\/\/[a-z0-9-]+\.hf\.space$/.test(config.hosted.url)) throw new Error("Hosted service must be an hf.space URL");
+  validateColab(config.colab);
   return config;
 }
 
@@ -63,26 +74,11 @@ export function parseChannels(text) {
   return channels;
 }
 
-// The 24 positional inputs of the hosted service, named as its API names them.
-export function hostedPayload(values, file, handleFile) {
-  return {
-    path: handleFile(file), model_key: serviceKey(values.model_key), accepted: values.accepted === true,
-    selected_series: values.selected_series, selected_t: values.selected_t, selected_z: values.selected_z,
-    chosen_channels: values.chosen_channels, selected_page: values.selected_page, selected_dpi: values.selected_dpi,
-    chosen_diameter: values.chosen_diameter, native_scale: values.native_scale, flow_threshold: values.flow_threshold,
-    score_threshold: values.score_threshold, chosen_magnification: values.chosen_magnification, advanced: values.advanced,
-    detection_confidence: values.detection_confidence, minimum_axis_ratio: values.minimum_axis_ratio,
-    background_value: values.background_value, signal_value: values.signal_value, lower_value: values.lower_value,
-    background_switch: values.background_switch, perimeter_value: values.perimeter_value, border_switch: values.border_switch,
-    detector_image_size: values.detector_image_size
-  };
-}
-
 export function formValues(form, channels) {
   const get = name => form.elements[name];
   const n = name => numberOrNull(get(name).value);
   return {
-    model_key: get("model_key").value, accepted: get("accepted").checked,
+    model_key: get("model_key").value,
     selected_series: n("selected_series") ?? 0, selected_t: n("selected_t") ?? 0, selected_z: n("selected_z") ?? 0,
     chosen_channels: channels, selected_page: n("selected_page") ?? 0, selected_dpi: n("selected_dpi") ?? 150,
     chosen_diameter: n("chosen_diameter"), native_scale: get("native_scale").checked, flow_threshold: n("flow_threshold") ?? 0.4,
@@ -104,7 +100,7 @@ export function browserSettings(family, values) {
   }
   let advanced = {};
   try { advanced = JSON.parse(values.advanced || "{}"); } catch { throw new Error("json"); }
-  if (values.perimeter_value > 0 || (advanced && Object.keys(advanced).length)) throw new Error("hosted_only");
+  if (values.perimeter_value > 0 || (advanced && Object.keys(advanced).length)) throw new Error("desktop_only");
   const diameter = values.native_scale ? null : values.chosen_diameter > 0 ? values.chosen_diameter : diameterFor(desktop.role, values.chosen_magnification);
   const pick = (value, fallback) => value === null || value === undefined ? fallback : value;
   const toggle = (state, fallback) => state === "enabled" ? true : state === "disabled" ? false : fallback;
@@ -176,7 +172,7 @@ export function initMaskGenerator(root, environment = globalThis) {
   const tabs = $$('.mask-family-tabs [role="tab"]');
   const cards = $$("[data-family]");
   const defaults = [...form.querySelectorAll("input[name], select[name], textarea[name]")].map(element => [element, element.type === "checkbox" ? element.defaultChecked : element.value]);
-  const state = { family: config.families[0], file: null, image: null, credit: "", hosted: null, sessions: new Map(), job: null, urls: [], view: null, result: null, cancelled: false, frame: 0 };
+  const state = { family: config.families[0], file: null, image: null, credit: "", sessions: new Map(), job: null, urls: [], view: null, result: null, cancelled: false, frame: 0 };
   const status = (selector, message) => { $(selector).textContent = message || ""; };
 
   const route = () => form.elements.route.value;
@@ -192,23 +188,6 @@ export function initMaskGenerator(root, environment = globalThis) {
     return published.get(entry.sha256);
   }
 
-  async function probeHosted() {
-    if (!config.hosted.url) return false;
-    if (state.hosted !== null) return state.hosted;
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 15000);
-    try {
-      const response = await environment.fetch(`${config.hosted.url}/config`, { signal: controller.signal });
-      const body = response.ok ? await response.json() : null;
-      state.hosted = Boolean(body && Array.isArray(body.components));
-    } catch {
-      state.hosted = false;
-    } finally {
-      clearTimeout(timer);
-    }
-    return state.hosted;
-  }
-
   function selectedChannels() {
     if (!state.image || state.image.serverOnly) return parseChannels(form.elements.chosen_channels.value);
     return $$("[data-channel-list] input:checked").map(input => Number(input.value));
@@ -221,24 +200,26 @@ export function initMaskGenerator(root, environment = globalThis) {
     return channels.length <= channelLimit(state.family);
   }
 
+  const webgpu = () => Boolean(environment.isSecureContext && environment.navigator?.gpu);
+
   async function refreshRoute() {
-    const hosted = route() === "hosted";
-    $("[data-hosted-consent]").hidden = !hosted;
-    $("[data-browser-note]").hidden = hosted;
-    let ready;
-    if (hosted) {
-      status("[data-route-status]", text("hosted_checking"));
-      ready = await probeHosted();
-      if (route() !== "hosted") return;
-      status("[data-route-status]", text(ready ? "hosted_ready" : "hosted_na"));
-    } else {
-      ready = await browserReady();
-      if (route() !== "browser") return;
-      const gpu = Boolean(environment.isSecureContext && environment.navigator?.gpu);
-      status("[data-route-status]", text(ready ? (gpu ? "browser_ready_gpu" : "browser_ready_cpu") : "browser_na"));
+    const colab = route() === "colab";
+    $("[data-colab]").hidden = !colab;
+    $("[data-browser-run]").hidden = colab;
+    $("[data-browser-note]").hidden = colab;
+    $("[data-route-status]").hidden = colab;
+    $("[data-colab-link]").href = colabUrl(config.colab, state.family.id);
+    if (colab) {
+      $("[data-colab-hint]").hidden = true;
+      return;
     }
-    const fileOk = Boolean(state.file) && (hosted || (state.image && !state.image.serverOnly));
-    $("[data-run]").disabled = !(ready && fileOk && channelsValid() && (!hosted || form.elements.accepted.checked) && !state.job);
+    const ready = await browserReady();
+    if (route() !== "browser") return;
+    const gpu = webgpu();
+    status("[data-route-status]", text(ready ? (gpu ? "browser_ready_gpu" : "browser_ready_cpu") : "browser_na2"));
+    $("[data-colab-hint]").hidden = ready && gpu;
+    const fileOk = Boolean(state.file) && Boolean(state.image) && !state.image.serverOnly;
+    $("[data-run]").disabled = !(ready && fileOk && channelsValid() && !state.job);
   }
 
   // ---- viewer: the drop zone turns into the image, then into the result viewer
@@ -281,7 +262,7 @@ export function initMaskGenerator(root, environment = globalThis) {
     const image = state.image;
     const base = baseFor(image, selectedChannels());
     state.view = base ? { width: image.width, height: image.height, base } : null;
-    viewerMessage(image?.serverOnly ? text("no_preview") : "");
+    viewerMessage(image?.serverOnly ? text("server_only2") : "");
     render();
   }
 
@@ -324,7 +305,7 @@ export function initMaskGenerator(root, environment = globalThis) {
     status("[data-file-status]", text("reading"));
     try {
       state.image = await readImage(file, config.readers, { page: numberOrNull(form.elements.selected_page.value) ?? 0, dpi: numberOrNull(form.elements.selected_dpi.value) ?? 150 });
-      const info = state.image.serverOnly ? text("server_only") : text("image_info", { width: state.image.width, height: state.image.height, channels: state.image.channels.length, dtype: state.image.dtype });
+      const info = state.image.serverOnly ? text("server_only2") : text("image_info", { width: state.image.width, height: state.image.height, channels: state.image.channels.length, dtype: state.image.dtype });
       status("[data-file-status]", [credit, `${file.name}: ${info}`].filter(Boolean).join(" "));
     } catch {
       state.image = null;
@@ -366,7 +347,7 @@ export function initMaskGenerator(root, environment = globalThis) {
     $("[data-error-more]").hidden = !detail;
     $("[data-error]").hidden = false;
   }
-  function hideError() { $("[data-error]").hidden = true; $("[data-quota-hint]").hidden = true; }
+  function hideError() { $("[data-error]").hidden = true; }
 
   // ---- results
   function revokeAll() { for (const url of state.urls) URL.revokeObjectURL(url); state.urls = []; }
@@ -453,27 +434,6 @@ export function initMaskGenerator(root, environment = globalThis) {
     bar.hidden = value === null;
     if (value === null || value < 0) bar.removeAttribute("value");
     else { bar.max = max; bar.value = value; }
-  }
-
-  async function runHosted(values) {
-    const { Client, handle_file } = await once(config.hosted.client);
-    status("[data-run-status]", text("uploading"));
-    progress(-1, 1);
-    const client = await Client.connect(config.hosted.url, { events: ["data", "status"] });
-    const job = client.submit(endpointFor(state.family), hostedPayload(values, state.file, handle_file));
-    state.job = job;
-    let data = null;
-    for await (const message of job) {
-      if (message.type === "status" && message.stage === "error") throw Object.assign(new Error(message.message || message.title || "Error"), { title: message.title || "" });
-      if (message.type === "status" && message.stage === "pending" && Number.isFinite(message.position)) status("[data-run-status]", `${text("uploading")} (${message.position + 1})`);
-      if (message.type === "data") { data = message.data; break; }
-    }
-    if (state.cancelled) return;
-    if (!data || !data[0]?.url) throw Object.assign(new Error(text("hosted_na")), { friendly: true });
-    status("[data-run-status]", text("postprocess"));
-    const response = await fetch(data[0].url);
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    await showResult(new Uint8Array(await response.arrayBuffer()));
   }
 
   async function session(entry) {
@@ -583,13 +543,11 @@ export function initMaskGenerator(root, environment = globalThis) {
     $("[data-run]").disabled = true;
     busy(true);
     try {
-      if (where === "hosted") await runHosted(values);
-      else await runBrowser(values);
+      await runBrowser(values);
     } catch (error) {
       if (!state.cancelled) {
         status("[data-run-status]", "");
         showError(error, where);
-        if (where === "hosted" && /quota/i.test(`${error?.title} ${error?.message}`)) $("[data-quota-hint]").hidden = false;
       }
     } finally {
       if (state.cancelled) status("[data-run-status]", "");
@@ -613,7 +571,7 @@ export function initMaskGenerator(root, environment = globalThis) {
   function selectFamily(family, focus = false) {
     if (state.family.id !== family.id) {
       for (const [element, value] of defaults) {
-        if (["route", "path", "model_key", "accepted"].includes(element.name)) continue;
+        if (["route", "path", "model_key"].includes(element.name)) continue;
         if (element.type === "checkbox") element.checked = value; else element.value = value;
       }
       clearResult();
@@ -647,7 +605,6 @@ export function initMaskGenerator(root, environment = globalThis) {
   for (const element of form.querySelectorAll('[data-scope="pdf"]')) element.hidden = true;
   $$("[data-model-select]").forEach(select => select.addEventListener("change", showModel));
   form.querySelectorAll('[name="route"]').forEach(radio => radio.addEventListener("change", () => { clearResult(); refreshRoute(); }));
-  form.elements.accepted.addEventListener("change", refreshRoute);
   form.elements.chosen_channels.addEventListener("input", refreshRoute);
   form.elements.path.addEventListener("change", () => { const file = form.elements.path.files[0]; if (file) useFile(file); form.elements.path.value = ""; });
   for (const name of ["selected_page", "selected_dpi"]) form.elements[name].addEventListener("change", () => { if (state.file && extensionOf(state.file.name) === ".pdf") useFile(state.file, state.credit); });
@@ -677,6 +634,7 @@ export function initMaskGenerator(root, environment = globalThis) {
   });
   const onLocation = () => { const family = familyFromHash(environment.location.hash, config.families); if (family) selectFamily(family); };
   environment.addEventListener("hashchange", onLocation);
+  if (!webgpu()) form.querySelector('[name="route"][value="colab"]').checked = true;
   selectFamily(familyFromHash(environment.location.hash, config.families) || state.family);
 }
 

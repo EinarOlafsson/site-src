@@ -4,7 +4,7 @@
 //   node tools/mask-examples.mjs            rewrite data/mask-examples.json
 //   node tools/mask-examples.mjs --check    exit 1 if the pinned records changed upstream
 //
-// Each record has exactly the fields the hosted service's approved-example list
+// Each record has exactly the fields spaCR's approved-example list
 // accepts (family, repo_id, revision, filename, sha256, bytes, credit, split),
 // so the same file can be given to the Space as SPACR_WEB_EXAMPLES_JSON.
 // Only rows whose split is "test" are used; training or validation images are
