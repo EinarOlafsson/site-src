@@ -496,6 +496,11 @@ html.tabs-on .panel-sec { padding-top: var(--s6); }
 .io h3 { margin: 0 0 var(--s2); }
 .plain { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
 .plain li { padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+.hw { table-layout: fixed; max-width: var(--measure); }
+.hw col.hw-os { width: 7.5em; }
+.hw thead th { border-bottom-color: var(--accent); }
+.hw tbody th { color: var(--text); }
+.hw-note { max-width: var(--measure); margin: var(--s2) 0 0; }
 .ways { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s2); grid-template-columns: minmax(0, 1fr); }
 @media (min-width: 640px) { .ways { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 1000px) { .ways { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
