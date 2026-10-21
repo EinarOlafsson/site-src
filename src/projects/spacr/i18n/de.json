@@ -467,15 +467,6 @@
   "mc.aplabel.2a839f": "mAP über IoU 0,5 bis 0,9",
   "mc.group.plaque.title.b2c3a6": "Plaque-Segmentierung",
   "mc.group.plaque.motivation.e8fdef": "Standard-Cellpose-SAM erreicht in der Neubewertung vom 2026-10-11 an kuratierten Referenzdaten auf Kristallviolett-Plaque-Bildfeldern F1 0,128 bis 0,338 bei IoU 0,5. Jedes Modell wird auf den Bildfeldern bewertet, die es weder im Training noch in der Validierung gesehen hat (die Mengen unterscheiden sich zwischen den Modellen), und das Standardmodell auf denselben Bildfeldern: 0,707 für v1 gegenüber Standard-cpsam 0,258, 0,455 für v2 gegenüber 0,189, 0,732 für v3 gegenüber 0,128 und 0,765 für v4 gegenüber Standard-cpsam_v2 0,338.",
-  "mc.note.b94e28": "Neu bewertet am 2026-10-11 an kuratierten Referenzdaten: 329 strikt zurückgehaltene Bildfelder zusammengefasst, bei IoU 0,5, mit dem Standardmodell auf denselben Bildfeldern. Frühere Werte auf anderen Datensätzen sind überholt.",
-  "mc.testsize.b1fc75": "329 strikt zurückgehaltene Bildfelder (54 ohne Objekt)",
-  "mc.bstitle.63d44c": "Frühere Auswertung (263 zurückgehaltene Bildfelder, 2026-10-10), F1 bei IoU 0,5 nach Bildquelle",
-  "mc.bsnote.f008ec": "Auf diesem früheren Datensatz erreichte v3 bei jeder Quelle höhere Werte als v4; auf dem strikt zurückgehaltenen Datensatz vom 2026-10-11 erreicht v4 höhere Werte. v4 ist der Standard, weil die Modelle von spaCR auf cpsam_v2 aufbauen (Modellkarte).",
-  "mc.bscol.449239": "Alle 263",
-  "mc.bscol.1c456b": "Gel Doc",
-  "mc.bscol.48a2ba": "Literatur, zurückgehalten",
-  "mc.bscol.053f79": "Prüfrunde 4",
-  "mc.bscol.f8d10e": "PMC, bereitgestellt",
   "mc.group.wells.title.511486": "Erkennung von Plaque-Wells",
   "mc.group.wells.motivation.89fe02": "Das Plaque-Modul findet zuerst jedes Well in einem Plattenbild oder einer veröffentlichten Abbildung und segmentiert dann die Plaques darin; das erkannte Well liefert außerdem den Durchmesser, mit dem sich Plaque-Flächen zwischen Mikroskopen vergleichen lassen. Standard-YOLO hat keine Klasse für Plaque-Wells, daher wird jeder Detektor mit dem vorherigen verglichen: Auf 129 zurückgehaltenen Testbildern erreicht v2 mAP50 0,946 gegenüber 0,884 für v1, mit 49 falschen Boxen auf Bildern ohne Well gegenüber 152.",
   "mc.note.adbec0": "Auf 3 Gel-Doc-Validierungsplatten steigt mAP50-95 von 0,895 auf 0,931; beide Modelle finden auf allen 3 die erwartete Zahl von Wells.",
@@ -623,5 +614,7 @@
   "mask.err_json": "Die zusätzlichen Desktop-Einstellungen sind kein gültiges JSON.",
   "mask.err_example": "Das Testbild konnte nicht von Hugging Face geladen werden. Versuchen Sie es erneut.",
   "mask.err_generic": "Bei der Verarbeitung dieses Bildes ist etwas schiefgegangen.",
-  "mask.details": "Technische Details"
+  "mask.details": "Technische Details",
+  "mc.testsrc.a86669": "Strikt: Testaufteilung des kuratierten Plaque-Datensatzes vom 2026-10-15 (einarolafsson/toxoplasma-plaque-curated-2026-10-15, Revision 91d4f1cd), nach Quellpublikation oder Platte gruppiert; nie für Training oder Checkpoint-Auswahl verwendet",
+  "mc.testsize.620c9c": "153"
 }

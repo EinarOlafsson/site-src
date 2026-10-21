@@ -467,15 +467,6 @@
   "mc.aplabel.2a839f": "mAP con IoU de 0,5 a 0,9",
   "mc.group.plaque.title.b2c3a6": "Segmentación de placas de lisis",
   "mc.group.plaque.motivation.e8fdef": "Cellpose-SAM de serie obtiene F1 de 0,128 a 0,338 con IoU 0,5 en campos de placas de lisis teñidas con cristal violeta en la reevaluación del 2026-10-11 con datos de referencia curados. Cada modelo se puntúa en los campos que nunca vio en el entrenamiento ni en la validación (los conjuntos difieren entre modelos), y el modelo de serie en los mismos campos: 0,707 de v1 frente a 0,258 de cpsam de serie, 0,455 de v2 frente a 0,189, 0,732 de v3 frente a 0,128 y 0,765 de v4 frente a 0,338 de cpsam_v2 de serie.",
-  "mc.note.b94e28": "Reevaluado el 2026-10-11 con datos de referencia curados: 329 campos de reserva estricta agrupados, con IoU 0,5, con el modelo de serie en los mismos campos. Las puntuaciones anteriores en otros conjuntos quedan sustituidas.",
-  "mc.testsize.b1fc75": "329 campos de reserva estricta (54 sin objeto)",
-  "mc.bstitle.63d44c": "Evaluación anterior (263 campos reservados, 2026-10-10), F1 con IoU 0,5 por origen de la imagen",
-  "mc.bsnote.f008ec": "En este conjunto anterior v3 puntuó más que v4 en todos los orígenes; en la reserva estricta del 2026-10-11 v4 puntúa más. v4 es el predeterminado porque los modelos de spaCR se basan en cpsam_v2 (ficha del modelo).",
-  "mc.bscol.449239": "Los 263",
-  "mc.bscol.1c456b": "Gel Doc",
-  "mc.bscol.48a2ba": "Reserva de literatura",
-  "mc.bscol.053f79": "Revisión de la ronda 4",
-  "mc.bscol.f8d10e": "PMC preparado",
   "mc.group.wells.title.511486": "Detección de pocillos de placas de lisis",
   "mc.group.wells.motivation.89fe02": "El módulo de placas primero encuentra cada pocillo en una imagen de placa o en una figura publicada y luego segmenta las placas de su interior; el pocillo detectado también da el diámetro que hace comparables las áreas de las placas entre microscopios. YOLO de serie no tiene clase de pocillo de placas de lisis, así que cada detector se compara con el anterior: en 129 imágenes de prueba reservadas, v2 obtiene mAP50 0,946 frente a 0,884 de v1, con 49 recuadros falsos en imágenes sin pocillos frente a 152.",
   "mc.note.adbec0": "En 3 placas de validación de Gel Doc, mAP50-95 sube de 0,895 a 0,931; ambos modelos recuperan el número esperado de pocillos en las 3.",
@@ -623,5 +614,7 @@
   "mask.err_json": "Los ajustes de escritorio adicionales no son JSON válido.",
   "mask.err_example": "No se pudo cargar la imagen de prueba desde Hugging Face. Vuelva a intentarlo.",
   "mask.err_generic": "Algo salió mal al procesar esta imagen.",
-  "mask.details": "Detalles técnicos"
+  "mask.details": "Detalles técnicos",
+  "mc.testsrc.a86669": "Estricto: partición de prueba del conjunto de placas de lisis curado del 2026-10-15 (einarolafsson/toxoplasma-plaque-curated-2026-10-15, revisión 91d4f1cd), agrupada por publicación de origen o placa; nunca utilizada para entrenamiento ni selección de checkpoints",
+  "mc.testsize.620c9c": "153"
 }

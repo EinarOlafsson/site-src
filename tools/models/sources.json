@@ -1,6 +1,6 @@
 {
- "generated": "2026-10-12",
- "spacr_commit": "a212fd3aedb88a4a25b815e0ccbc44fb4569cee0",
+ "generated": "2026-10-20",
+ "spacr_commit": "262c5b40156526b47b61d23d30cd8784cab34b83",
  "hf_revisions": {
   "model:einarolafsson/cross-channel-cell-from-hoechst-cpsam": "397320ba0471ae9752ee3b36acc79788fbc0ad79",
   "model:einarolafsson/cross-channel-nuclei-from-cellmask-cpsam": "04d1784878261494a5a43e2cc4851d985b49024b",
@@ -1263,6 +1263,78 @@
    "value": 13915,
    "raw": "13915",
    "source": "https://github.com/EinarOlafsson/spacr/blob/a212fd3aedb88a4a25b815e0ccbc44fb4569cee0/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r6.json"
+  },
+  {
+   "what": "toxoplasma_plaque_v5 object_f1 this",
+   "value": 0.816,
+   "raw": 0.8157148643175375,
+   "source": "https://github.com/EinarOlafsson/spacr/blob/262c5b40156526b47b61d23d30cd8784cab34b83/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r7.json"
+  },
+  {
+   "what": "toxoplasma_plaque_v5 object_f1 stock",
+   "value": 0.227,
+   "raw": 0.2267648864333947,
+   "source": "https://github.com/EinarOlafsson/spacr/blob/262c5b40156526b47b61d23d30cd8784cab34b83/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r7.json"
+  },
+  {
+   "what": "toxoplasma_plaque_v5 boundary_f1 this",
+   "value": 0.759,
+   "raw": 0.7585289828763156,
+   "source": "https://github.com/EinarOlafsson/spacr/blob/262c5b40156526b47b61d23d30cd8784cab34b83/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r7.json"
+  },
+  {
+   "what": "toxoplasma_plaque_v5 boundary_f1 stock",
+   "value": 0.288,
+   "raw": 0.2882878407970929,
+   "source": "https://github.com/EinarOlafsson/spacr/blob/262c5b40156526b47b61d23d30cd8784cab34b83/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r7.json"
+  },
+  {
+   "what": "toxoplasma_plaque_v5 precision this",
+   "value": 0.867,
+   "raw": 0.8673557278208441,
+   "source": "https://github.com/EinarOlafsson/spacr/blob/262c5b40156526b47b61d23d30cd8784cab34b83/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r7.json"
+  },
+  {
+   "what": "toxoplasma_plaque_v5 precision stock",
+   "value": 0.189,
+   "raw": 0.18943589743589745,
+   "source": "https://github.com/EinarOlafsson/spacr/blob/262c5b40156526b47b61d23d30cd8784cab34b83/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r7.json"
+  },
+  {
+   "what": "toxoplasma_plaque_v5 recall this",
+   "value": 0.77,
+   "raw": 0.7698776758409785,
+   "source": "https://github.com/EinarOlafsson/spacr/blob/262c5b40156526b47b61d23d30cd8784cab34b83/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r7.json"
+  },
+  {
+   "what": "toxoplasma_plaque_v5 recall stock",
+   "value": 0.282,
+   "raw": 0.2824159021406728,
+   "source": "https://github.com/EinarOlafsson/spacr/blob/262c5b40156526b47b61d23d30cd8784cab34b83/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r7.json"
+  },
+  {
+   "what": "toxoplasma_plaque_v5 aji this",
+   "value": 0.737,
+   "raw": 0.7366249992787408,
+   "source": "https://github.com/EinarOlafsson/spacr/blob/262c5b40156526b47b61d23d30cd8784cab34b83/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r7.json"
+  },
+  {
+   "what": "toxoplasma_plaque_v5 aji stock",
+   "value": 0.178,
+   "raw": 0.1784235190948173,
+   "source": "https://github.com/EinarOlafsson/spacr/blob/262c5b40156526b47b61d23d30cd8784cab34b83/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r7.json"
+  },
+  {
+   "what": "toxoplasma_plaque_v5 dice this",
+   "value": 0.896,
+   "raw": 0.8962402486208038,
+   "source": "https://github.com/EinarOlafsson/spacr/blob/262c5b40156526b47b61d23d30cd8784cab34b83/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r7.json"
+  },
+  {
+   "what": "toxoplasma_plaque_v5 dice stock",
+   "value": 0.329,
+   "raw": 0.3291295466874519,
+   "source": "https://github.com/EinarOlafsson/spacr/blob/262c5b40156526b47b61d23d30cd8784cab34b83/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r7.json"
   }
  ]
 }

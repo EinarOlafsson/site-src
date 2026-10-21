@@ -1,6 +1,6 @@
 {
- "generated": "2026-10-12",
- "spacr_commit": "a212fd3aedb88a4a25b815e0ccbc44fb4569cee0",
+ "generated": "2026-10-20",
+ "spacr_commit": "262c5b40156526b47b61d23d30cd8784cab34b83",
  "note": "Numbers are copied from the cited sources and rounded to 3 decimals; null means the source does not record the metric. 'vanilla' holds the comparison named in baseline_label.",
  "groups": [
   {
@@ -492,6 +492,52 @@
       "note": "On this earlier set v3 scored above v4 on every source; on the 2026-10-11 strict hold-out v4 scores higher. v4 is the default because spaCR's models build on cpsam_v2 (model card).",
       "source": "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam-r6/blob/c12c0e269/README.md"
      }
+    },
+    {
+     "key": "toxoplasma_plaque_v5",
+     "display": "Toxoplasma Plaque v5",
+     "version": "v5",
+     "base": "cpsam_v2",
+     "status": "default",
+     "status_quote": "Default plaque model in spaCR; toxoplasma_plaque_v3 is recommended for Gel Doc wells.",
+     "repo_url": "https://huggingface.co/einarolafsson/toxoplasma-plaque-segmentation-cpsam-r7",
+     "test": {
+      "size": "153",
+      "objects": 6540,
+      "source": "strict: the test split of the curated plaque dataset of 2026-10-15 (einarolafsson/toxoplasma-plaque-curated-2026-10-15, revision 91d4f1cd), grouped by source paper or plate; never used for training or checkpoint selection"
+     },
+     "metrics": {
+      "f1_50": {
+       "finetuned": 0.816,
+       "vanilla": 0.227
+      },
+      "f1_75": null,
+      "ap": null,
+      "precision": {
+       "finetuned": 0.867,
+       "vanilla": 0.189
+      },
+      "recall": {
+       "finetuned": 0.77,
+       "vanilla": 0.282
+      },
+      "aji": {
+       "finetuned": 0.737,
+       "vanilla": 0.178
+      },
+      "dice": {
+       "finetuned": 0.896,
+       "vanilla": 0.329
+      },
+      "map50": null,
+      "map50_95": null
+     },
+     "baseline_label": "stock cpsam_v2",
+     "note": null,
+     "sources": [
+      "https://github.com/EinarOlafsson/spacr/blob/262c5b40156526b47b61d23d30cd8784cab34b83/spacr/model_zoo.py",
+      "https://github.com/EinarOlafsson/spacr/blob/262c5b40156526b47b61d23d30cd8784cab34b83/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r7.json"
+     ]
     }
    ]
   },

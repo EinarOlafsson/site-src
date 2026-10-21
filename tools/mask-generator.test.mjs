@@ -26,9 +26,9 @@ const NOTEBOOKS = ["toxoplasma_pv", "toxoplasma_plaque", "toxoplasma_well_detect
 test("all eight real families keep defaults, versions and the public live-cell alias", () => {
   const families = catalogue();
   assert.equal(families.length, 8);
-  assert.equal(families.flatMap(family => family.versions).length, 17);
+  assert.equal(families.flatMap(family => family.versions).length, 18);
   assert.equal(families.find(family => family.id === "toxoplasma_pv").default, "toxoplasma_pv_v4");
-  assert.equal(families.find(family => family.id === "toxoplasma_plaque").default, "toxoplasma_plaque_v4");
+  assert.equal(families.find(family => family.id === "toxoplasma_plaque").default, "toxoplasma_plaque_v5");
   assert.equal(families.find(family => family.id === "toxoplasma_well_detector").default, "toxoplasma_well_detector_v3");
   assert.equal(families.find(family => family.id === "live_cell").default, "live-cell-v1");
 });
@@ -158,7 +158,7 @@ test("rendered HTML has one tab per model class, live controls and no premature 
   const page = html();
   assert.equal((page.match(/role="tab" /g) || []).length, 8);
   assert.equal((page.match(/role="tabpanel"/g) || []).length, 8);
-  assert.equal((page.match(/data-model="/g) || []).length, 17);
+  assert.equal((page.match(/data-model="/g) || []).length, 18);
   assert.match(page, /type="submit" disabled/);
   assert.doesNotMatch(page, /type="file"[^>]*disabled/);
   for (const name of INFER_INPUTS) assert.match(page, new RegExp(`name="${name}"`));

@@ -467,15 +467,6 @@
   "mc.aplabel.2a839f": "mAP sobre IoU de 0,5 a 0,9",
   "mc.group.plaque.title.b2c3a6": "Segmentação de placas de lise",
   "mc.group.plaque.motivation.e8fdef": "O Cellpose-SAM original obtém F1 de 0,128 a 0,338 com IoU 0,5 em campos de placas de lise coradas com cristal violeta na reavaliação de 2026-10-11 com dados de referência curados. Cada modelo é pontuado nos campos que nunca viu no treinamento nem na validação (os conjuntos diferem entre os modelos), e o modelo original nos mesmos campos: 0,707 do v1 contra 0,258 do cpsam original, 0,455 do v2 contra 0,189, 0,732 do v3 contra 0,128 e 0,765 do v4 contra 0,338 do cpsam_v2 original.",
-  "mc.note.b94e28": "Reavaliado em 2026-10-11 com dados de referência curados: 329 campos de reserva estrita agrupados, com IoU 0,5, com o modelo original nos mesmos campos. Pontuações anteriores em outros conjuntos foram substituídas.",
-  "mc.testsize.b1fc75": "329 campos de reserva estrita (54 sem objeto)",
-  "mc.bstitle.63d44c": "Avaliação anterior (263 campos reservados, 2026-10-10), F1 com IoU 0,5 por origem da imagem",
-  "mc.bsnote.f008ec": "Neste conjunto anterior, o v3 pontuou acima do v4 em todas as origens; na reserva estrita de 2026-10-11, o v4 pontua mais alto. O v4 é o padrão porque os modelos do spaCR se baseiam no cpsam_v2 (ficha do modelo).",
-  "mc.bscol.449239": "Todos os 263",
-  "mc.bscol.1c456b": "Gel Doc",
-  "mc.bscol.48a2ba": "Reserva da literatura",
-  "mc.bscol.053f79": "Revisão da rodada 4",
-  "mc.bscol.f8d10e": "PMC preparado",
   "mc.group.wells.title.511486": "Detecção de poços de placas de lise",
   "mc.group.wells.motivation.89fe02": "O módulo de placas primeiro encontra cada poço em uma imagem de placa ou figura publicada e depois segmenta as placas dentro dele; o poço detectado também fornece o diâmetro que torna as áreas das placas comparáveis entre microscópios. O YOLO original não tem classe de poço de placas de lise, então cada detector é comparado ao anterior: em 129 imagens de teste reservadas, o v2 obtém mAP50 0,946 contra 0,884 do v1, com 49 caixas falsas em imagens sem poços contra 152.",
   "mc.note.adbec0": "Em 3 placas de validação Gel Doc, o mAP50-95 sobe de 0,895 para 0,931; os dois modelos recuperam o número esperado de poços nas 3.",
@@ -623,5 +614,7 @@
   "mask.err_json": "As configurações adicionais do desktop não são um JSON válido.",
   "mask.err_example": "Não foi possível carregar a imagem de teste do Hugging Face. Tente novamente.",
   "mask.err_generic": "Algo deu errado ao processar esta imagem.",
-  "mask.details": "Detalhes técnicos"
+  "mask.details": "Detalhes técnicos",
+  "mc.testsrc.a86669": "Estrito: partição de teste do conjunto de dados de placas de lise com curadoria de 2026-10-15 (einarolafsson/toxoplasma-plaque-curated-2026-10-15, revisão 91d4f1cd), agrupada por artigo de origem ou placa; nunca utilizada no treinamento nem na seleção de checkpoints",
+  "mc.testsize.620c9c": "153"
 }

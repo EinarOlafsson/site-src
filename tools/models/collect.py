@@ -573,16 +573,71 @@ def build(src, zoo, zoo_url, sha):
     return groups
 
 
+def append_model_card(data, zoo, card, key, source_url, zoo_url):
+    """Add a published compact card without reinterpreting historical score sets."""
+    if card.get("schema") != "spacr-model-card-v2" or card.get("key") != key:
+        raise ValueError("model card identity or schema mismatch")
+    record = zoo[key]
+    if card.get("repo_id") != record["repo_id"]:
+        raise ValueError("model card repository mismatch")
+    group = next(g for g in data["groups"] if g["id"] == card["family"])
+    if any(m["key"] == key for g in data["groups"] for m in g["models"]):
+        raise ValueError("model already exists in the public snapshot")
+    scores = card["scores"]
+    holdout = scores["holdout"]
+    aliases = {"object_f1": "f1_50", "precision": "precision", "recall": "recall",
+               "aji": "aji", "dice": "dice"}
+    values = metrics()
+    for row in scores["rows"]:
+        name = aliases.get(row["key"])
+        if name:
+            values[name] = pair(*(r3(row[side]) if row.get(side) is not None else None
+                                  for side in ("this", "stock")))
+    if values["f1_50"] is None:
+        raise ValueError("published card has no object F1")
+    model = {"key": key, "display": card["display_name"], "version": key.rsplit("_", 1)[1],
+             "base": scores["stock_model"], "status": card["status"],
+             "status_quote": card["about"]["status"],
+             "repo_url": f"{HF}/{record['repo_id']}",
+             "test": {"size": str(holdout["n_fields"]), "objects": holdout["n_objects"],
+                      "source": holdout["rule"]},
+             "metrics": values, "baseline_label": "stock " + scores["stock_model"],
+             "note": None, "sources": [zoo_url, source_url]}
+    group["models"].append(model)
+    return model
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--spacr-sha", default=None)
     ap.add_argument("--cache", default=os.environ.get("MODELS_CACHE", "/mnt/wd4tb/scratch/n687v3/models/cache"))
+    ap.add_argument("--append-model-card", metavar="KEY",
+                    help="append one current published compact card, retaining historical metrics")
     a = ap.parse_args()
     sha = a.spacr_sha or nightly_sha()
     src = Sources(a.cache, sha)
     zoo_dest, zoo_url = src.gh(ZOO_PATH)
     zoo = zoo_records(zoo_dest)
-    groups = build(src, zoo, zoo_url, sha)
+    if a.append_model_card:
+        with open(OUT, encoding="utf-8") as fh:
+            previous = json.load(fh)
+        with open(RUN_RECORD, encoding="utf-8") as fh:
+            previous_sources = json.load(fh)
+        slug = zoo[a.append_model_card]["repo_id"].split("/")[-1]
+        card_path, card_url = src.gh(f"spacr/resources/model_cards/{slug}.json")
+        with open(card_path, encoding="utf-8") as fh:
+            card = json.load(fh)
+        append_model_card(previous, zoo, card, a.append_model_card, card_url, zoo_url)
+        groups = previous["groups"]
+        RECORD.extend(previous_sources["numbers"])
+        for row in card["scores"]["rows"]:
+            for side in ("this", "stock"):
+                if row.get(side) is not None:
+                    RECORD.append({"what": f"{a.append_model_card} {row['key']} {side}",
+                                   "value": r3(row[side]), "raw": row[side], "source": card_url})
+    else:
+        previous_sources = {}
+        groups = build(src, zoo, zoo_url, sha)
     listed = {m["key"] for g in groups for m in g["models"]}
     missing = [k for k in zoo if k not in listed and not zoo[k].get("third_party")
                and not (k == "live_cell_v1" and "live-cell-v1" in listed)]
@@ -605,7 +660,8 @@ def main():
         fh.write(text + "\n")
     with open(RUN_RECORD, "w", encoding="utf-8") as fh:
         json.dump({"generated": data["generated"], "spacr_commit": sha,
-                   "hf_revisions": {f"{k[1]}:{OWNER}/{k[0]}": v for k, v in sorted(src.revs.items())},
+                   "hf_revisions": {**previous_sources.get("hf_revisions", {}),
+                                    **{f"{k[1]}:{OWNER}/{k[0]}": v for k, v in sorted(src.revs.items())}},
                    "numbers": RECORD}, fh, indent=1, ensure_ascii=False, default=str)
         fh.write("\n")
     print(f"wrote {OUT} ({len(text.encode())} bytes), {len(RECORD)} sourced numbers")

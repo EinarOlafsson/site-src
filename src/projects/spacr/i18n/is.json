@@ -467,15 +467,6 @@
   "mc.aplabel.2a839f": "mAP yfir IoU 0,5 til 0,9",
   "mc.group.plaque.title.b2c3a6": "Hlutun skellna",
   "mc.group.plaque.motivation.e8fdef": "Venjulegt Cellpose-SAM fær F1 0,128 til 0,338 við IoU 0,5 á myndsviðum með skellum litaðum með kristalfjólubláu í endurmatinu 2026-10-11 á yfirförnum viðmiðunargögnum. Hvert líkan er metið á myndsviðum sem það sá aldrei í þjálfun eða sannprófun (gagnasöfnin eru ólík milli líkana), og venjulega líkanið á sömu myndsviðum: 0,707 fyrir v1 á móti venjulegu cpsam 0,258, 0,455 fyrir v2 á móti 0,189, 0,732 fyrir v3 á móti 0,128 og 0,765 fyrir v4 á móti venjulegu cpsam_v2 0,338.",
-  "mc.note.b94e28": "Endurmetið 2026-10-11 á yfirförnum viðmiðunargögnum: 329 ströng frátekin myndsvið sameinuð, við IoU 0,5, með venjulega líkanið á sömu myndsviðum. Fyrri einkunnir á öðrum gagnasöfnum eru leystar af hólmi.",
-  "mc.testsize.b1fc75": "329 ströng frátekin myndsvið (54 án hlutar)",
-  "mc.bstitle.63d44c": "Fyrra mat (263 frátekin myndsvið, 2026-10-10), F1 við IoU 0,5 eftir uppruna mynda",
-  "mc.bsnote.f008ec": "Á þessu fyrra gagnasafni fékk v3 hærra en v4 fyrir hvern uppruna; á ströngu fráteknu gögnunum 2026-10-11 fær v4 hærra. v4 er sjálfgefið vegna þess að líkön spaCR byggja á cpsam_v2 (líkanaspjald).",
-  "mc.bscol.449239": "Öll 263",
-  "mc.bscol.1c456b": "Gel Doc",
-  "mc.bscol.48a2ba": "Frátekin heimildasöfn",
-  "mc.bscol.053f79": "Yfirferð í umferð 4",
-  "mc.bscol.f8d10e": "PMC, undirbúið",
   "mc.group.wells.title.511486": "Greining skellubrunna",
   "mc.group.wells.motivation.89fe02": "Skellueiningin finnur fyrst hvern brunn á plötumynd eða í birtri mynd og hlutar síðan skellurnar í honum; greindi brunnurinn gefur líka þvermálið sem gerir flatarmál skellna sambærileg milli smásjáa. Venjulegt YOLO hefur engan flokk fyrir skellubrunna, svo hver skynjari er borinn saman við þann fyrri: á 129 fráteknum prófunarmyndum fær v2 mAP50 0,946 á móti 0,884 fyrir v1, með 49 rangar kassa á myndum án brunna á móti 152.",
   "mc.note.adbec0": "Á 3 sannprófunarplötum frá Gel Doc hækkar mAP50-95 úr 0,895 í 0,931; bæði líkönin finna væntanlegan fjölda brunna á þeim öllum 3.",
@@ -623,5 +614,7 @@
   "mask.err_json": "Viðbótarstillingarnar fyrir skjáborðsforritið eru ekki gilt JSON.",
   "mask.err_example": "Ekki tókst að sækja prófunarmyndina frá Hugging Face. Reyndu aftur.",
   "mask.err_generic": "Eitthvað fór úrskeiðis við úrvinnslu þessarar myndar.",
-  "mask.details": "Tæknilegar upplýsingar"
+  "mask.details": "Tæknilegar upplýsingar",
+  "mc.testsrc.a86669": "Strangt: prófunarhluti yfirfarna skellugagnasafnsins frá 2026-10-15 (einarolafsson/toxoplasma-plaque-curated-2026-10-15, útgáfa 91d4f1cd), flokkaður eftir upprunagrein eða plötu; aldrei notaður við þjálfun eða val á vistuðu líkani",
+  "mc.testsize.620c9c": "153"
 }

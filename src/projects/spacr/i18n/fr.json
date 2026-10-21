@@ -467,15 +467,6 @@
   "mc.aplabel.2a839f": "mAP sur IoU de 0,5 à 0,9",
   "mc.group.plaque.title.b2c3a6": "Segmentation des plages de lyse",
   "mc.group.plaque.motivation.e8fdef": "Cellpose-SAM d’origine obtient un F1 de 0,128 à 0,338 à IoU 0,5 sur des champs de plages de lyse au cristal violet dans la réévaluation du 2026-10-11 sur une vérité terrain curée. Chaque modèle est évalué sur les champs qu’il n’a jamais vus à l’entraînement ni à la validation (les ensembles diffèrent selon les modèles), et le modèle d’origine sur les mêmes champs : 0,707 pour v1 contre 0,258 pour cpsam d’origine, 0,455 pour v2 contre 0,189, 0,732 pour v3 contre 0,128 et 0,765 pour v4 contre 0,338 pour cpsam_v2 d’origine.",
-  "mc.note.b94e28": "Réévalué le 2026-10-11 sur une vérité terrain curée : 329 champs de réserve stricte regroupés, à IoU 0,5, avec le modèle d’origine sur les mêmes champs. Les scores antérieurs sur d’autres jeux sont remplacés.",
-  "mc.testsize.b1fc75": "329 champs de réserve stricte (54 sans objet)",
-  "mc.bstitle.63d44c": "Évaluation antérieure (263 champs réservés, 2026-10-10), F1 à IoU 0,5 par source d’image",
-  "mc.bsnote.f008ec": "Sur ce jeu antérieur, v3 obtenait un score supérieur à v4 pour chaque source ; sur la réserve stricte du 2026-10-11, v4 obtient un score supérieur. v4 est le modèle par défaut parce que les modèles de spaCR reposent sur cpsam_v2 (fiche du modèle).",
-  "mc.bscol.449239": "Les 263",
-  "mc.bscol.1c456b": "Gel Doc",
-  "mc.bscol.48a2ba": "Réserve littérature",
-  "mc.bscol.053f79": "Revue du tour 4",
-  "mc.bscol.f8d10e": "PMC préparé",
   "mc.group.wells.title.511486": "Détection des puits de plages de lyse",
   "mc.group.wells.motivation.89fe02": "Le module de plages de lyse trouve d’abord chaque puits dans une image de plaque ou une figure publiée, puis segmente les plages à l’intérieur ; le puits détecté donne aussi le diamètre qui rend les surfaces de plages comparables d’un microscope à l’autre. YOLO d’origine n’a pas de classe pour les puits de plages de lyse ; chaque détecteur est donc comparé au précédent : sur 129 images de test réservées, v2 obtient un mAP50 de 0,946 contre 0,884 pour v1, avec 49 fausses boîtes sur des images sans puits contre 152.",
   "mc.note.adbec0": "Sur 3 plaques de validation Gel Doc, le mAP50-95 passe de 0,895 à 0,931 ; les deux modèles retrouvent le nombre de puits attendu sur les 3.",
@@ -623,5 +614,7 @@
   "mask.err_json": "Les réglages de bureau supplémentaires ne sont pas un JSON valide.",
   "mask.err_example": "L’image de test n’a pas pu être chargée depuis Hugging Face. Réessayez.",
   "mask.err_generic": "Un problème est survenu pendant le traitement de cette image.",
-  "mask.details": "Détails techniques"
+  "mask.details": "Détails techniques",
+  "mc.testsrc.a86669": "Strict : partition de test du jeu de données de plages de lyse sélectionné et vérifié du 2026-10-15 (einarolafsson/toxoplasma-plaque-curated-2026-10-15, révision 91d4f1cd), regroupée par publication source ou plaque ; jamais utilisée pour l’entraînement ni la sélection des checkpoints",
+  "mc.testsize.620c9c": "153"
 }

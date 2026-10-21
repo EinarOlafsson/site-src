@@ -467,15 +467,6 @@
   "mc.aplabel.2a839f": "mAP över IoU 0,5 till 0,9",
   "mc.group.plaque.title.b2c3a6": "Segmentering av plack",
   "mc.group.plaque.motivation.e8fdef": "Standard-Cellpose-SAM får F1 0,128 till 0,338 vid IoU 0,5 på synfält med plack färgade med kristallviolett i omvärderingen 2026-10-11 på kurerad referensdata. Varje modell poängsätts på de synfält den aldrig sett i träning eller validering (uppsättningarna skiljer sig mellan modellerna), och standardmodellen på samma synfält: 0,707 för v1 mot standard-cpsam 0,258, 0,455 för v2 mot 0,189, 0,732 för v3 mot 0,128 och 0,765 för v4 mot standard-cpsam_v2 0,338.",
-  "mc.note.b94e28": "Omvärderad 2026-10-11 på kurerad referensdata: 329 strikt undanhållna synfält sammanslagna, vid IoU 0,5, med standardmodellen på samma synfält. Tidigare poäng på andra uppsättningar är ersatta.",
-  "mc.testsize.b1fc75": "329 strikt undanhållna synfält (54 utan objekt)",
-  "mc.bstitle.63d44c": "Tidigare utvärdering (263 undanhållna synfält, 2026-10-10), F1 vid IoU 0,5 efter bildkälla",
-  "mc.bsnote.f008ec": "På den här tidigare uppsättningen fick v3 högre poäng än v4 för varje källa; på den strikt undanhållna uppsättningen 2026-10-11 får v4 högre poäng. v4 är standard eftersom spaCR:s modeller bygger på cpsam_v2 (modellkort).",
-  "mc.bscol.449239": "Alla 263",
-  "mc.bscol.1c456b": "Gel Doc",
-  "mc.bscol.48a2ba": "Litteraturuppsättning, undanhållen",
-  "mc.bscol.053f79": "Granskning, omgång 4",
-  "mc.bscol.f8d10e": "PMC, förberedd",
   "mc.group.wells.title.511486": "Detektion av plackbrunnar",
   "mc.group.wells.motivation.89fe02": "Plackmodulen hittar först varje brunn i en plattbild eller publicerad figur och segmenterar sedan placken i den; den detekterade brunnen ger också den diameter som gör plackytor jämförbara mellan mikroskop. Standard-YOLO har ingen klass för plackbrunnar, så varje detektor jämförs med den förra: på 129 undanhållna testbilder får v2 mAP50 0,946 mot 0,884 för v1, med 49 falska rutor på bilder utan brunnar mot 152.",
   "mc.note.adbec0": "På 3 valideringsplattor från Gel Doc stiger mAP50-95 från 0,895 till 0,931; båda modellerna återfinner det förväntade antalet brunnar på alla 3.",
@@ -623,5 +614,7 @@
   "mask.err_json": "De extra skrivbordsinställningarna är inte giltig JSON.",
   "mask.err_example": "Testbilden kunde inte hämtas från Hugging Face. Försök igen.",
   "mask.err_generic": "Något gick fel när bilden bearbetades.",
-  "mask.details": "Tekniska detaljer"
+  "mask.details": "Tekniska detaljer",
+  "mc.testsrc.a86669": "Strikt: testdel av det granskade plackdatasetet från 2026-10-15 (einarolafsson/toxoplasma-plaque-curated-2026-10-15, revision 91d4f1cd), grupperad efter källartikel eller platta; aldrig använd för träning eller val av kontrollpunkt",
+  "mc.testsize.620c9c": "153"
 }
