@@ -60,7 +60,7 @@
     {
       "id": "toxoplasma_plaque",
       "stem": "toxoplasma_plaque",
-      "default": "toxoplasma_plaque_v5",
+      "default": "toxoplasma_plaque_v6",
       "output": "labels",
       "channels": [
         1,

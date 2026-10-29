@@ -1,6 +1,6 @@
 {
- "generated": "2026-10-20",
- "spacr_commit": "262c5b40156526b47b61d23d30cd8784cab34b83",
+ "generated": "2026-10-29",
+ "spacr_commit": "fe47813cf41f82ba0de06c919f39af13c77d140c",
  "hf_revisions": {
   "model:einarolafsson/cross-channel-cell-from-hoechst-cpsam": "397320ba0471ae9752ee3b36acc79788fbc0ad79",
   "model:einarolafsson/cross-channel-nuclei-from-cellmask-cpsam": "04d1784878261494a5a43e2cc4851d985b49024b",
@@ -1335,6 +1335,78 @@
    "value": 0.329,
    "raw": 0.3291295466874519,
    "source": "https://github.com/EinarOlafsson/spacr/blob/262c5b40156526b47b61d23d30cd8784cab34b83/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-r7.json"
+  },
+  {
+   "what": "toxoplasma_plaque_v6 object_f1 this",
+   "value": 0.768,
+   "raw": 0.7682996646765355,
+   "source": "https://github.com/EinarOlafsson/spacr/blob/fe47813cf41f82ba0de06c919f39af13c77d140c/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-v6.json"
+  },
+  {
+   "what": "toxoplasma_plaque_v6 object_f1 stock",
+   "value": 0.294,
+   "raw": 0.294082628884391,
+   "source": "https://github.com/EinarOlafsson/spacr/blob/fe47813cf41f82ba0de06c919f39af13c77d140c/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-v6.json"
+  },
+  {
+   "what": "toxoplasma_plaque_v6 boundary_f1 this",
+   "value": 0.781,
+   "raw": 0.7810663737785009,
+   "source": "https://github.com/EinarOlafsson/spacr/blob/fe47813cf41f82ba0de06c919f39af13c77d140c/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-v6.json"
+  },
+  {
+   "what": "toxoplasma_plaque_v6 boundary_f1 stock",
+   "value": 0.303,
+   "raw": 0.3028450070352241,
+   "source": "https://github.com/EinarOlafsson/spacr/blob/fe47813cf41f82ba0de06c919f39af13c77d140c/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-v6.json"
+  },
+  {
+   "what": "toxoplasma_plaque_v6 precision this",
+   "value": 0.777,
+   "raw": 0.7770057899090157,
+   "source": "https://github.com/EinarOlafsson/spacr/blob/fe47813cf41f82ba0de06c919f39af13c77d140c/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-v6.json"
+  },
+  {
+   "what": "toxoplasma_plaque_v6 precision stock",
+   "value": 0.557,
+   "raw": 0.5570590888588183,
+   "source": "https://github.com/EinarOlafsson/spacr/blob/fe47813cf41f82ba0de06c919f39af13c77d140c/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-v6.json"
+  },
+  {
+   "what": "toxoplasma_plaque_v6 recall this",
+   "value": 0.76,
+   "raw": 0.7597864768683275,
+   "source": "https://github.com/EinarOlafsson/spacr/blob/fe47813cf41f82ba0de06c919f39af13c77d140c/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-v6.json"
+  },
+  {
+   "what": "toxoplasma_plaque_v6 recall stock",
+   "value": 0.2,
+   "raw": 0.19977353607246845,
+   "source": "https://github.com/EinarOlafsson/spacr/blob/fe47813cf41f82ba0de06c919f39af13c77d140c/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-v6.json"
+  },
+  {
+   "what": "toxoplasma_plaque_v6 aji this",
+   "value": 0.752,
+   "raw": 0.7517018663010968,
+   "source": "https://github.com/EinarOlafsson/spacr/blob/fe47813cf41f82ba0de06c919f39af13c77d140c/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-v6.json"
+  },
+  {
+   "what": "toxoplasma_plaque_v6 aji stock",
+   "value": 0.249,
+   "raw": 0.24927029702681155,
+   "source": "https://github.com/EinarOlafsson/spacr/blob/fe47813cf41f82ba0de06c919f39af13c77d140c/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-v6.json"
+  },
+  {
+   "what": "toxoplasma_plaque_v6 dice this",
+   "value": 0.909,
+   "raw": 0.9091348427146121,
+   "source": "https://github.com/EinarOlafsson/spacr/blob/fe47813cf41f82ba0de06c919f39af13c77d140c/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-v6.json"
+  },
+  {
+   "what": "toxoplasma_plaque_v6 dice stock",
+   "value": 0.414,
+   "raw": 0.41417697482223975,
+   "source": "https://github.com/EinarOlafsson/spacr/blob/fe47813cf41f82ba0de06c919f39af13c77d140c/spacr/resources/model_cards/toxoplasma-plaque-segmentation-cpsam-v6.json"
   }
  ]
 }
